@@ -6,14 +6,15 @@ version: 2
 
 jobs:
   build:
-    docker:
-      - image: circleci/openjdk:8-jdk
+    machine:
+      image: ubuntu-1604:201903-01
 
     working_directory: ~/project
 
     environment:
-      JAVA_TOOL_OPTIONS: -Xmx2G -Djava.security.egd=file:/dev/./urandom
+      JAVA_TOOL_OPTIONS: -Xmx2G
       TERM: dumb
+      DEBIAN_FRONTEND: noninteractive
 
     steps:
       - checkout
@@ -21,9 +22,11 @@ jobs:
       - run:
           name: Configure
           command: |
+            sudo -E apt-get -y -q update
+            sudo -E apt-get -y -q install haveged openjdk-8-jdk
+            sudo -E systemctl restart haveged
             mkdir -p ~/.gradle
             echo "org.gradle.warning.mode=none" > ~/.gradle/gradle.properties
-            sudo sed -i.bak -e "s/securerandom.source=file:\/dev\/random/securerandom.source=file:\/dev\/.\/urandom/g" -e "s/securerandom.strongAlgorithms=NativePRNGBlocking/securerandom.strongAlgorithms=NativePRNG/g" /etc/java-8-openjdk/security/java.security
 
       # Download and cache dependencies
       - restore_cache:
@@ -60,14 +63,15 @@ jobs:
           key: dependencies-{{ .Environment.CIRCLE_JOB}}-{{ checksum "build.gradle" }}
 
   publish:
-    docker:
-      - image: circleci/openjdk:8-jdk
+    machine:
+      image: ubuntu-1604:201903-01
 
     working_directory: ~/project
 
     environment:
-      JAVA_TOOL_OPTIONS: -Xmx2G -Djava.security.egd=file:/dev/./urandom
+      JAVA_TOOL_OPTIONS: -Xmx2G
       TERM: dumb
+      DEBIAN_FRONTEND: noninteractive
 
     steps:
       - checkout
@@ -75,11 +79,11 @@ jobs:
       - run:
           name: Configure
           command: |
-            sudo apt-get -y update
-            sudo apt-get -y install graphviz
+            sudo -E apt-get -y -q update
+            sudo -E apt-get -y -q install haveged openjdk-8-jdk
+            sudo -E systemctl restart haveged
             mkdir -p ~/.gradle
             echo "org.gradle.warning.mode=none" > ~/.gradle/gradle.properties
-            sudo sed -i.bak -e "s/securerandom.source=file:\/dev\/random/securerandom.source=file:\/dev\/.\/urandom/g" -e "s/securerandom.strongAlgorithms=NativePRNGBlocking/securerandom.strongAlgorithms=NativePRNG/g" /etc/java-8-openjdk/security/java.security
 
       # Download and cache dependencies
       - restore_cache:
@@ -171,7 +175,7 @@ workflows:
   nightly:
     triggers:
       - schedule:
-          cron: "00 06 * * *"
+          cron: "00 04 * * *"
           filters:
             branches:
               only:
