@@ -12,9 +12,11 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.mail.attachment;
+
+import org.junit.Before;
 
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.StandaloneProducer;
@@ -34,13 +36,14 @@ public class MultiAttachmentProducerXmlTest extends MailProducerExample {
 
   private MultiAttachmentSmtpProducer producer;
 
-  public MultiAttachmentProducerXmlTest(String name) {
-    super(name);
+  @Before
+  public void setUp() throws Exception {
+    producer = new MultiAttachmentSmtpProducer();
   }
 
   @Override
-  protected void setUp() throws Exception {
-    producer = new MultiAttachmentSmtpProducer();
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override
@@ -49,7 +52,7 @@ public class MultiAttachmentProducerXmlTest extends MailProducerExample {
         + "<!-- The example document for this would be \n"
         + EXAMPLE_XML_FOR_CFG
         + "\nwhich will create 2 attachments to the email \n"
- + "The email itself has the body 'The text body of the email'\n-->\n";
+        + "The email itself has the body 'The text body of the email'\n-->\n";
   }
 
   @Override

@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.mail;
 
@@ -28,20 +28,12 @@ import com.icegreen.greenmail.util.GreenMail;
 
 public class TestPop3sReceive extends Pop3ReceiverCase {
 
-  public TestPop3sReceive(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override
-  public void setUp() throws Exception {
-    super.setUp();
-  }
-
-  @Override
-  public void tearDown() throws Exception {
-    super.tearDown();
-  }
-
   protected MailReceiver createClient(GreenMail gm) throws Exception {
     Pop3Server server = gm.getPop3s();
     String pop3UrlString = server.getProtocol() + "://localhost:" + server.getPort() + "/INBOX";

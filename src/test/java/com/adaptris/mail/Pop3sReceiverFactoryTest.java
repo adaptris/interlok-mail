@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.mail;
 
@@ -23,6 +23,7 @@ import static com.adaptris.mail.JunitMailHelper.testsEnabled;
 import static com.adaptris.mail.MailReceiverCase.DEFAULT_POP3_PASSWORD;
 import static com.adaptris.mail.MailReceiverCase.DEFAULT_POP3_USER;
 import static com.adaptris.mail.MailReceiverCase.createURLName;
+import static org.junit.Assert.fail;
 
 import javax.mail.URLName;
 
@@ -32,8 +33,9 @@ import com.icegreen.greenmail.util.GreenMail;
 @SuppressWarnings("deprecation")
 public class Pop3sReceiverFactoryTest extends Pop3FactoryCase {
 
-  public Pop3sReceiverFactoryTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override
@@ -47,6 +49,7 @@ public class Pop3sReceiverFactoryTest extends Pop3FactoryCase {
   }
 
   // By default this will *fail* because we don't have a trusted certificate.
+  @Override
   public void testCreate_Connect() throws Exception {
     if (!testsEnabled()) return;
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);

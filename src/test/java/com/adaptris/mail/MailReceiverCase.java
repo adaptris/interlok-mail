@@ -12,10 +12,11 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.mail;
 
+import static org.junit.Assert.*;
 import static com.adaptris.mail.JunitMailHelper.DEFAULT_PAYLOAD;
 import static com.adaptris.mail.JunitMailHelper.DEFAULT_RECEIVER;
 import static com.adaptris.mail.JunitMailHelper.DEFAULT_SENDER;
@@ -33,6 +34,7 @@ import javax.mail.Header;
 import javax.mail.URLName;
 import javax.mail.internet.MimeMessage;
 
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,18 +66,9 @@ public abstract class MailReceiverCase extends BaseCase {
 
   protected static final String JAVA_UTIL = "Regex";
 
-  public MailReceiverCase(String name) {
-    super(name);
-  }
-
   abstract MailReceiver createClient(GreenMail gm) throws Exception;
 
-  @Override
-  public void setUp() throws Exception {
-    super.setUp();
-  }
-
-
+  @Test
   public void testConnect() throws Exception {
     if (!testsEnabled()) return;
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
@@ -102,7 +95,7 @@ public abstract class MailReceiverCase extends BaseCase {
     GreenMailUtil.sendTextEmail(to, from, subject, DEFAULT_PAYLOAD, setup);
   }
 
-
+  @Test
   public void testFilterNoMatch_WithDelete() throws Exception {
     if (!testsEnabled()) return;
     String name = Thread.currentThread().getName();
@@ -134,6 +127,7 @@ public abstract class MailReceiverCase extends BaseCase {
     }
   }
 
+  @Test
   public void testFilterMatch_WithDelete() throws Exception {
     if (!testsEnabled()) return;
     String name = Thread.currentThread().getName();
@@ -173,6 +167,7 @@ public abstract class MailReceiverCase extends BaseCase {
     }
   }
 
+  @Test
   public void testJavaUtil_FromFilter() throws Exception {
     if (!testsEnabled()) return;
 
@@ -200,6 +195,7 @@ public abstract class MailReceiverCase extends BaseCase {
     }
   }
 
+  @Test
   public void testJavaUtil_ToFilter() throws Exception {
     if (!testsEnabled()) return;
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
@@ -226,6 +222,7 @@ public abstract class MailReceiverCase extends BaseCase {
     }
   }
 
+  @Test
   public void testJavaUtil_ToFilterNoMatch() throws Exception {
     if (!testsEnabled()) return;
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
@@ -246,7 +243,7 @@ public abstract class MailReceiverCase extends BaseCase {
     }
   }
 
-
+  @Test
   public void testJavaUtil_CustomFilter() throws Exception {
     if (!testsEnabled()) return;
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
@@ -272,7 +269,7 @@ public abstract class MailReceiverCase extends BaseCase {
     }
   }
 
-
+  @Test
   public void testJavaUtil_SubjectFilter() throws Exception {
     if (!testsEnabled()) return;
 
@@ -299,6 +296,7 @@ public abstract class MailReceiverCase extends BaseCase {
     }
   }
 
+  @Test
   public void testJavaUtil_FromSubjectFilter_NullSubject() throws Exception {
     if (!testsEnabled()) return;
 
@@ -325,6 +323,7 @@ public abstract class MailReceiverCase extends BaseCase {
     }
   }
 
+  @Test
   public void testJavaUtil_FromSubjectFilter_WithDelete() throws Exception {
     if (!testsEnabled()) return;
 
@@ -361,10 +360,10 @@ public abstract class MailReceiverCase extends BaseCase {
     MessageParser mp = new MessageParser(msg);
     logger.debug("Got Message :- " + msg.getSubject());
     logger.trace("With ID: " + mp.getMessageId());
-    Enumeration e = msg.getAllHeaders();
-    while (e.hasMoreElements()) {
-      Header h = (Header) e.nextElement();
-      logger.trace("HeaderLine " + h.getName() + ": " + h.getValue());
+    Enumeration<Header> headers = msg.getAllHeaders();
+    while (headers.hasMoreElements()) {
+      Header header = headers.nextElement();
+      logger.trace("HeaderLine " + header.getName() + ": " + header.getValue());
     }
     if (mp.hasAttachments()) {
       while (mp.hasMoreAttachments()) {

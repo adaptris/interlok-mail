@@ -29,21 +29,11 @@ import java.io.PrintStream;
 
 import javax.mail.internet.MimeMessage;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 
 import com.icegreen.greenmail.util.GreenMail;
 
 public class TestEmailSending {
-
-
-
-  private Log logR = LogFactory.getLog(this.getClass());
-
-  public TestEmailSending() {
-
-  }
 
   @Test
   public void testSmtpSend() throws Exception {

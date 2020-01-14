@@ -12,12 +12,16 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.mail.attachment;
 
+import static org.junit.Assert.*;
+
 import java.security.MessageDigest;
 import java.util.List;
+
+import org.junit.Test;
 
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.BaseCase;
@@ -34,20 +38,19 @@ public class XmlMailCreatorTest extends BaseCase {
   private static final String LF = System.lineSeparator();
   private static final String XML_DOCUMENT = "<?xml version=\"1.0\"?>" + LF +
 
-  "<document>" + LF + "<subject>an email with attachemnts perhaps</subject>" + LF
+      "<document>" + LF + "<subject>an email with attachemnts perhaps</subject>" + LF
       + "<content>Quick zephyrs blow, vexing daft Jim</content>" + LF
       + "<!-- This is ADP-01 MD5 Base64 -->" + LF
       + "<attachment encoding=\"base64\" filename=\"attachment1.txt\">dp/HSJfonUsSMM7QRBSRfg==</attachment>" + LF
       + "<!-- This is PENRY MD5 Base64 -->" + LF
       + "<attachment encoding=\"base64\" filename=\"attachment2.txt\">OdjozpCZB9PbCCLZlKregQ==</attachment>" + LF + "</document>";
 
-  /**
-   * @param name
-   */
-  public XmlMailCreatorTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testSetNamespaceContext_XmlBodyHandler() {
     XmlBodyHandler obj = new XmlBodyHandler();
     assertNull(obj.getNamespaceContext());
@@ -59,6 +62,7 @@ public class XmlMailCreatorTest extends BaseCase {
     assertNull(obj.getNamespaceContext());
   }
 
+  @Test
   public void testSetNamespaceContext_XmlAttachmentHandler() {
     XmlAttachmentHandler obj = new XmlAttachmentHandler();
     assertNull(obj.getNamespaceContext());
@@ -70,6 +74,7 @@ public class XmlMailCreatorTest extends BaseCase {
     assertNull(obj.getNamespaceContext());
   }
 
+  @Test
   public void testBodyHandler() throws Exception {
     XmlMailCreator xmc = new XmlMailCreator();
     xmc.setBodyHandler(new XmlBodyHandler("/document/content", "plain/text"));
@@ -79,6 +84,7 @@ public class XmlMailCreatorTest extends BaseCase {
     assertEquals("Quick zephyrs blow, vexing daft Jim", new String(mc.getBytes()));
   }
 
+  @Test
   public void testAttachmentHandler() throws Exception {
     XmlMailCreator xmc = new XmlMailCreator();
     xmc.setAttachmentHandler(new XmlAttachmentHandler("/document/attachment", "@filename", "@encoding"));
@@ -96,6 +102,7 @@ public class XmlMailCreatorTest extends BaseCase {
     assertEquals(MimeConstants.ENCODING_BASE64, a.getContentTransferEncoding());
   }
 
+  @Test
   public void testAttachmentHandler_WithEncoding() throws Exception {
     XmlMailCreator xmc = new XmlMailCreator();
     xmc.setAttachmentHandler(

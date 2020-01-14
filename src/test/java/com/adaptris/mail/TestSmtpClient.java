@@ -27,8 +27,6 @@ import static org.junit.Assert.fail;
 import javax.mail.URLName;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 
 import com.icegreen.greenmail.smtp.SmtpServer;
@@ -39,12 +37,6 @@ public class TestSmtpClient {
   private static final String INVALID_EMAIL_ADDR = "a\"b(c)d,e:f;g<h>i[j\\k]l@example.com";
   private static final String DUMMY_VALUE = "HELO";
   private static final String DUMMY_KEY = "EHLO";
-
-  private Log logR = LogFactory.getLog(this.getClass());
-
-  public TestSmtpClient() {
-
-  }
 
   @Test
   public void testConstructors() throws Exception {

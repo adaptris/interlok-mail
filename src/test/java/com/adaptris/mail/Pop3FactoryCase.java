@@ -16,6 +16,7 @@
 
 package com.adaptris.mail;
 
+import static org.junit.Assert.*;
 import static com.adaptris.mail.JunitMailHelper.DEFAULT_RECEIVER;
 import static com.adaptris.mail.JunitMailHelper.startServer;
 import static com.adaptris.mail.JunitMailHelper.stopServer;
@@ -26,6 +27,8 @@ import static com.adaptris.mail.MailReceiverCase.createURLName;
 
 import javax.mail.URLName;
 
+import org.junit.Test;
+
 import com.adaptris.core.BaseCase;
 import com.icegreen.greenmail.pop3.Pop3Server;
 import com.icegreen.greenmail.util.GreenMail;
@@ -33,16 +36,13 @@ import com.icegreen.greenmail.util.GreenMail;
 @SuppressWarnings("deprecation")
 public abstract class Pop3FactoryCase extends BaseCase {
 
-  public Pop3FactoryCase(String name) {
-    super(name);
-  }
-
   abstract Pop3ReceiverFactory create();
 
   abstract Pop3Server getServer(GreenMail gm);
 
   abstract Pop3ReceiverFactory configure(Pop3ReceiverFactory f);
 
+  @Test
   public void testCreate() throws Exception {
     if (!testsEnabled()) return;
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
@@ -58,6 +58,7 @@ public abstract class Pop3FactoryCase extends BaseCase {
     }
   }
 
+  @Test
   public void testCreate_NotSupported() throws Exception {
     if (!testsEnabled()) return;
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
@@ -77,6 +78,7 @@ public abstract class Pop3FactoryCase extends BaseCase {
     }
   }
 
+  @Test
   public void testCreate_Connect() throws Exception {
     if (!testsEnabled()) return;
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
@@ -94,6 +96,7 @@ public abstract class Pop3FactoryCase extends BaseCase {
     }
   }
 
+  @Test
   public void testCreate_Configure_Connect() throws Exception {
     if (!testsEnabled()) return;
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);

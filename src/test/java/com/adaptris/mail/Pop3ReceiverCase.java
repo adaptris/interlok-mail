@@ -16,6 +16,7 @@
 
 package com.adaptris.mail;
 
+import static org.junit.Assert.*;
 import static com.adaptris.mail.JunitMailHelper.DEFAULT_RECEIVER;
 import static com.adaptris.mail.JunitMailHelper.DEFAULT_SENDER;
 import static com.adaptris.mail.JunitMailHelper.assertFrom;
@@ -26,23 +27,18 @@ import static com.adaptris.mail.JunitMailHelper.testsEnabled;
 
 import javax.mail.internet.MimeMessage;
 
+import org.junit.Test;
+
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetup;
 
 @SuppressWarnings("deprecation")
 public abstract class Pop3ReceiverCase extends MailReceiverCase {
 
-  public Pop3ReceiverCase(String name) {
-    super(name);
-  }
-
+  @Override
   abstract MailReceiver createClient(GreenMail gm) throws Exception;
 
-  public void setUp() throws Exception {
-    super.setUp();
-  }
-
-
+  @Test
   public void testPop3NoFilterNoDelete() throws Exception {
     if (!testsEnabled()) return;
 

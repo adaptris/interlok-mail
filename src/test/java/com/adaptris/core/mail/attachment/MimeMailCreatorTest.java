@@ -16,6 +16,7 @@
 
 package com.adaptris.core.mail.attachment;
 
+import static org.junit.Assert.*;
 import static com.adaptris.core.services.mime.MimeJunitHelper.PAYLOAD_1;
 import static com.adaptris.core.services.mime.MimeJunitHelper.PAYLOAD_2;
 import static com.adaptris.core.services.mime.MimeJunitHelper.PAYLOAD_3;
@@ -24,6 +25,8 @@ import java.util.List;
 
 import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeBodyPart;
+
+import org.junit.Test;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -57,14 +60,13 @@ public class MimeMailCreatorTest extends BaseCase {
       "attachment;"
 
   };
-
-  /**
-   * @param name
-   */
-  public MimeMailCreatorTest(String name) {
-    super(name);
+  
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testBodyCreation() throws Exception {
     MimeMailCreator mmc = new MimeMailCreator();
     try {
@@ -87,6 +89,7 @@ public class MimeMailCreatorTest extends BaseCase {
     assertEquals("text/plain", mc.getContentType());
   }
 
+  @Test
   public void testAttachmentCreation() throws Exception {
     MimeMailCreator mmc = new MimeMailCreator();
     try {

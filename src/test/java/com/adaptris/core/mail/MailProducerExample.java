@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.mail;
 
@@ -26,8 +26,7 @@ public abstract class MailProducerExample extends ProducerCase {
    */
   public static final String BASE_DIR_KEY = "MailProducerExamples.baseDir";
 
-  public MailProducerExample(String name) {
-    super(name);
+  public MailProducerExample() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
