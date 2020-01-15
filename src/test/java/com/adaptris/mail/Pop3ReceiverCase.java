@@ -16,7 +16,6 @@
 
 package com.adaptris.mail;
 
-import static org.junit.Assert.*;
 import static com.adaptris.mail.JunitMailHelper.DEFAULT_RECEIVER;
 import static com.adaptris.mail.JunitMailHelper.DEFAULT_SENDER;
 import static com.adaptris.mail.JunitMailHelper.assertFrom;
@@ -24,11 +23,11 @@ import static com.adaptris.mail.JunitMailHelper.assertTo;
 import static com.adaptris.mail.JunitMailHelper.startServer;
 import static com.adaptris.mail.JunitMailHelper.stopServer;
 import static com.adaptris.mail.JunitMailHelper.testsEnabled;
-
+import static org.junit.Assert.assertEquals;
 import javax.mail.internet.MimeMessage;
-
+import org.apache.commons.io.IOUtils;
+import org.junit.Assume;
 import org.junit.Test;
-
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetup;
 
@@ -40,7 +39,7 @@ public abstract class Pop3ReceiverCase extends MailReceiverCase {
 
   @Test
   public void testPop3NoFilterNoDelete() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
 
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
@@ -56,12 +55,12 @@ public abstract class Pop3ReceiverCase extends MailReceiverCase {
         assertTo(msg, DEFAULT_RECEIVER);
         assertFrom(msg, DEFAULT_SENDER);
       }
-      mbox.disconnect();
+      IOUtils.closeQuietly(mbox);
       mbox.connect();
       assertEquals(1, mbox.getMessages().size());
     }
     finally {
-      mbox.disconnect();
+      IOUtils.closeQuietly(mbox);
       stopServer(gm);
     }
   }

@@ -16,24 +16,23 @@
 
 package com.adaptris.core.mail;
 
-import static org.junit.Assert.*;
 import static com.adaptris.mail.JunitMailHelper.DEFAULT_RECEIVER;
 import static com.adaptris.mail.JunitMailHelper.DEFAULT_SENDER;
 import static com.adaptris.mail.JunitMailHelper.testsEnabled;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-
 import javax.mail.Header;
 import javax.mail.internet.MimeMessage;
-
+import org.junit.Assume;
 import org.junit.Test;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ConfiguredProduceDestination;
-import com.adaptris.core.CoreConstants;
 import com.adaptris.core.NullConnection;
 import com.adaptris.core.ServiceCase;
 import com.adaptris.core.StandaloneProducer;
@@ -98,7 +97,7 @@ public class DefaultMailProducerTest extends MailProducerExample {
 
   @Test
   public void testProduce() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
 
     GreenMail gm = JunitMailHelper.startServer();
     try {
@@ -117,7 +116,7 @@ public class DefaultMailProducerTest extends MailProducerExample {
 
   @Test
   public void testProduceCC() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer();
     try {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
@@ -141,7 +140,7 @@ public class DefaultMailProducerTest extends MailProducerExample {
 
   @Test
   public void testProduceBCC() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer();
     try {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
@@ -165,7 +164,7 @@ public class DefaultMailProducerTest extends MailProducerExample {
 
   @Test
   public void testProduceWithHeaders() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer();
     try {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
@@ -205,7 +204,7 @@ public class DefaultMailProducerTest extends MailProducerExample {
 
   @Test
   public void testProduceAsAttachment() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer();
     try {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
@@ -231,7 +230,7 @@ public class DefaultMailProducerTest extends MailProducerExample {
 
   @Test
   public void testProduceAsAttachmentWithFilename() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer();
     try {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
@@ -239,7 +238,7 @@ public class DefaultMailProducerTest extends MailProducerExample {
       DefaultSmtpProducer mailer = (DefaultSmtpProducer) producer.getProducer();
       mailer.setIsAttachment(true);
       mailer.setAttachmentContentType("text/xml");
-      msg.addMetadata(CoreConstants.EMAIL_ATTACH_FILENAME, "filename.txt");
+      msg.addMetadata(EmailConstants.EMAIL_ATTACH_FILENAME, "filename.txt");
       ServiceCase.execute(producer, msg);
 
       gm.waitForIncomingEmail(1);
@@ -259,7 +258,7 @@ public class DefaultMailProducerTest extends MailProducerExample {
 
   @Test
   public void testProduceAsAttachmentWithMetadataAttachmentContentType() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer();
     try {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
@@ -267,7 +266,7 @@ public class DefaultMailProducerTest extends MailProducerExample {
       DefaultSmtpProducer mailer = (DefaultSmtpProducer) producer.getProducer();
       mailer.setIsAttachment(true);
       mailer.setAttachmentContentType("text/xml");
-      msg.addMetadata(CoreConstants.EMAIL_ATTACH_CONTENT_TYPE, "text/plain");
+      msg.addMetadata(EmailConstants.EMAIL_ATTACH_CONTENT_TYPE, "text/plain");
       ServiceCase.execute(producer, msg);
 
       gm.waitForIncomingEmail(1);
@@ -287,7 +286,7 @@ public class DefaultMailProducerTest extends MailProducerExample {
 
   @Test
   public void testProduceAsAttachmentWithTemplate() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer();
     try {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
@@ -295,7 +294,7 @@ public class DefaultMailProducerTest extends MailProducerExample {
       DefaultSmtpProducer mailer = (DefaultSmtpProducer) producer.getProducer();
       mailer.setIsAttachment(true);
       mailer.setAttachmentContentType("text/plain");
-      msg.addMetadata(CoreConstants.EMAIL_TEMPLATE_BODY, "This is the body");
+      msg.addMetadata(EmailConstants.EMAIL_TEMPLATE_BODY, "This is the body");
       ServiceCase.execute(producer, msg);
 
       gm.waitForIncomingEmail(1);
@@ -315,7 +314,7 @@ public class DefaultMailProducerTest extends MailProducerExample {
 
   @Test
   public void testProduceAsAttachmentWithCharEncodingForTemplate() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer();
     try {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD, "UTF-8");
@@ -323,7 +322,7 @@ public class DefaultMailProducerTest extends MailProducerExample {
       DefaultSmtpProducer mailer = (DefaultSmtpProducer) producer.getProducer();
       mailer.setIsAttachment(true);
       mailer.setAttachmentContentType("text/plain");
-      msg.addMetadata(CoreConstants.EMAIL_TEMPLATE_BODY, "This is the body");
+      msg.addMetadata(EmailConstants.EMAIL_TEMPLATE_BODY, "This is the body");
       ServiceCase.execute(producer, msg);
 
       gm.waitForIncomingEmail(1);

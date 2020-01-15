@@ -16,18 +16,17 @@
 
 package com.adaptris.core.mail;
 
-import static org.junit.Assert.*;
 import static com.adaptris.mail.JunitMailHelper.testsEnabled;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 import java.io.FileInputStream;
 import java.util.List;
 import java.util.Properties;
-
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
-
+import org.junit.Assume;
 import org.junit.Test;
-
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConfiguredConsumeDestination;
@@ -56,7 +55,7 @@ public class DefaultMailConsumerTest extends MailConsumerCase {
 
   @Test
   public void testConsume_NoHandler() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     try {
       sendMessage(gm);
@@ -80,7 +79,7 @@ public class DefaultMailConsumerTest extends MailConsumerCase {
 
   @Test
   public void testConsume_MetadataHandler() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     try {
 
@@ -107,7 +106,7 @@ public class DefaultMailConsumerTest extends MailConsumerCase {
 
   @Test
   public void testConsume_CommonsNetPop3() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     try {
       sendMessage(gm);
@@ -127,7 +126,7 @@ public class DefaultMailConsumerTest extends MailConsumerCase {
 
   @Test
   public void testConsume_CommonsNetPop3_ImapProtocol() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     try {
       MockMessageProducer mockProducer = new MockMessageProducer();
@@ -147,7 +146,7 @@ public class DefaultMailConsumerTest extends MailConsumerCase {
 
   @Test
   public void testConsume_CommonsNetPop3S() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     try {
       sendMessage(gm);
@@ -170,7 +169,7 @@ public class DefaultMailConsumerTest extends MailConsumerCase {
 
   @Test
   public void testPartSelector() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     try {
       sendMessage(gm, 3);

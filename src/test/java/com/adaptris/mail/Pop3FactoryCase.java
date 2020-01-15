@@ -16,7 +16,6 @@
 
 package com.adaptris.mail;
 
-import static org.junit.Assert.*;
 import static com.adaptris.mail.JunitMailHelper.DEFAULT_RECEIVER;
 import static com.adaptris.mail.JunitMailHelper.startServer;
 import static com.adaptris.mail.JunitMailHelper.stopServer;
@@ -24,11 +23,12 @@ import static com.adaptris.mail.JunitMailHelper.testsEnabled;
 import static com.adaptris.mail.MailReceiverCase.DEFAULT_POP3_PASSWORD;
 import static com.adaptris.mail.MailReceiverCase.DEFAULT_POP3_USER;
 import static com.adaptris.mail.MailReceiverCase.createURLName;
-
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import javax.mail.URLName;
-
+import org.apache.commons.io.IOUtils;
+import org.junit.Assume;
 import org.junit.Test;
-
 import com.adaptris.core.BaseCase;
 import com.icegreen.greenmail.pop3.Pop3Server;
 import com.icegreen.greenmail.util.GreenMail;
@@ -44,7 +44,7 @@ public abstract class Pop3FactoryCase extends BaseCase {
 
   @Test
   public void testCreate() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     try {
       Pop3ReceiverFactory fac = create();
@@ -60,7 +60,7 @@ public abstract class Pop3FactoryCase extends BaseCase {
 
   @Test
   public void testCreate_NotSupported() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     Pop3ReceiverFactory fac = create();
     Pop3Server server = getServer(gm);
@@ -80,7 +80,7 @@ public abstract class Pop3FactoryCase extends BaseCase {
 
   @Test
   public void testCreate_Connect() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     Pop3ReceiverFactory fac = create();
     Pop3Server server = getServer(gm);
@@ -92,13 +92,13 @@ public abstract class Pop3FactoryCase extends BaseCase {
     }
     finally {
       stopServer(gm);
-      client.disconnect();
+      IOUtils.closeQuietly(client);
     }
   }
 
   @Test
   public void testCreate_Configure_Connect() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     Pop3ReceiverFactory fac = configure(create());
     Pop3Server server = getServer(gm);
@@ -109,7 +109,7 @@ public abstract class Pop3FactoryCase extends BaseCase {
       client.connect();
     }
     finally {
-      client.disconnect();
+      IOUtils.closeQuietly(client);
       stopServer(gm);
     }
   }

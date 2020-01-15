@@ -16,16 +16,17 @@
 
 package com.adaptris.core.mail;
 
-import static org.junit.Assert.*;
 import static com.adaptris.mail.JunitMailHelper.testsEnabled;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
-
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -34,9 +35,8 @@ import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-
+import org.junit.Assume;
 import org.junit.Test;
-
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessageProducer;
 import com.adaptris.core.Channel;
@@ -86,7 +86,7 @@ public abstract class MailConsumerCase extends MailConsumerExample {
 
   @Test
   public void testAttemptConnectOnInit() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     try {
       MailConsumerImp mailConsumer = createConsumerForTests(gm);
@@ -108,7 +108,7 @@ public abstract class MailConsumerCase extends MailConsumerExample {
 
   @Test
   public void testInit_AttemptConnectOnInitTrue() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     try {
       MailConsumerImp mailConsumer = createConsumerForTests(gm);
@@ -130,7 +130,7 @@ public abstract class MailConsumerCase extends MailConsumerExample {
 
   @Test
   public void testInit_AttemptConnectOnInitFalse() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     try {
       // It is stopped, shouldn't matter if we init, because we shouldn't try the connection

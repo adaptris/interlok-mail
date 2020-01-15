@@ -23,12 +23,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
 import javax.mail.URLName;
 import javax.mail.internet.MimeMessage;
-
+import org.junit.Assume;
 import org.junit.Test;
-
 import com.icegreen.greenmail.smtp.SmtpServer;
 import com.icegreen.greenmail.util.GreenMail;
 
@@ -40,7 +38,7 @@ public class TestSmtpClient {
 
   @Test
   public void testConstructors() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer();
     SmtpServer server = gm.getSmtp();
     String smtpUrl = server.getProtocol() + "://localhost:" + server.getPort();
@@ -56,7 +54,7 @@ public class TestSmtpClient {
 
   @Test
   public void testAddSessionProperties() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer();
     try {
       SmtpClient smtp = createClient(gm);
@@ -75,7 +73,7 @@ public class TestSmtpClient {
 
   @Test
   public void testStartSession() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer();
     try {
       SmtpClient smtp = createClient(gm);
@@ -91,7 +89,7 @@ public class TestSmtpClient {
 
   @Test
   public void testNewMessage_WithoutStartSession() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer();
     try {
       SmtpClient smtp = createClient(gm);
@@ -108,7 +106,7 @@ public class TestSmtpClient {
 
   @Test
   public void testAddMailHeader() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer();
     try {
       SmtpClient smtp = createClient(gm);
@@ -124,7 +122,7 @@ public class TestSmtpClient {
 
   @Test
   public void testRemoveMailHeader() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer();
     try {
       SmtpClient smtp = createClient(gm);
@@ -142,7 +140,7 @@ public class TestSmtpClient {
 
   @Test
   public void testAddTo_NoSession() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer();
     try {
       SmtpClient smtp = createClient(gm);
@@ -159,7 +157,7 @@ public class TestSmtpClient {
 
   @Test
   public void testAddTo() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer();
     try {
       SmtpClient smtp = createClient(gm);
@@ -174,7 +172,7 @@ public class TestSmtpClient {
 
   @Test
   public void testAddTo_Invalid() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer();
     try {
       SmtpClient smtp = createClient(gm);
@@ -192,7 +190,7 @@ public class TestSmtpClient {
 
   @Test
   public void testAddCc_NoSession() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer();
     try {
       SmtpClient smtp = createClient(gm);
@@ -209,7 +207,7 @@ public class TestSmtpClient {
 
   @Test
   public void testAddCc() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer();
     try {
       SmtpClient smtp = createClient(gm);
@@ -223,7 +221,7 @@ public class TestSmtpClient {
 
   @Test
   public void testAddCc_Invalid() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer();
     try {
       SmtpClient smtp = createClient(gm);
@@ -241,7 +239,7 @@ public class TestSmtpClient {
 
   @Test
   public void testAddBcc_NoSession() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer();
     try {
       SmtpClient smtp = createClient(gm);
@@ -258,7 +256,7 @@ public class TestSmtpClient {
 
   @Test
   public void testAddBcc() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer();
     try {
       SmtpClient smtp = createClient(gm);
@@ -272,7 +270,7 @@ public class TestSmtpClient {
 
   @Test
   public void testAddBcc_Invalid() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer();
     try {
       SmtpClient smtp = createClient(gm);
@@ -290,7 +288,7 @@ public class TestSmtpClient {
 
   @Test
   public void testSetFrom_NoSession() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer();
     try {
       SmtpClient smtp = createClient(gm);
@@ -306,7 +304,7 @@ public class TestSmtpClient {
 
   @Test
   public void testSetFrom() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer();
     try {
       SmtpClient smtp = createClient(gm);
@@ -320,7 +318,7 @@ public class TestSmtpClient {
 
   @Test
   public void testAddFrom_Invalid() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer();
     try {
       SmtpClient smtp = createClient(gm);
@@ -338,7 +336,7 @@ public class TestSmtpClient {
 
   @Test
   public void testSetSubject_NoSession() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer();
     try {
       SmtpClient smtp = createClient(gm);
@@ -355,7 +353,7 @@ public class TestSmtpClient {
 
   @Test
   public void testSetSubject() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer();
     try {
       SmtpClient smtp = createClient(gm);
@@ -369,7 +367,7 @@ public class TestSmtpClient {
 
   @Test
   public void testSend_WithoutStartSession() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer();
     try {
       SmtpClient smtp = createClient(gm);
@@ -392,7 +390,7 @@ public class TestSmtpClient {
 
   @Test
   public void testSend_NoFromAddress() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer();
     try {
       SmtpClient smtp = createClient(gm);
@@ -413,7 +411,7 @@ public class TestSmtpClient {
 
   @Test
   public void testSend_NoRecipients() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer();
     try {
       SmtpClient smtp = createClient(gm);
