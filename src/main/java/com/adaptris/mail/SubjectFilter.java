@@ -22,7 +22,7 @@ import java.util.List;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Filter on the Subject.

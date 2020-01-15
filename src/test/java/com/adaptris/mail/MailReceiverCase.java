@@ -26,7 +26,7 @@ import static com.adaptris.mail.JunitMailHelper.assertTo;
 import static com.adaptris.mail.JunitMailHelper.startServer;
 import static com.adaptris.mail.JunitMailHelper.stopServer;
 import static com.adaptris.mail.JunitMailHelper.testsEnabled;
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import java.util.Enumeration;
 

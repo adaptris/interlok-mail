@@ -16,9 +16,9 @@
 
 package com.adaptris.core.mail;
 
-import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
-import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.apache.commons.lang.StringUtils.split;
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.split;
 
 import java.io.Closeable;
 import java.util.HashMap;
@@ -29,7 +29,7 @@ import javax.mail.internet.MimeMessage;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.BooleanUtils;
 
 import com.adaptris.annotation.AdvancedConfig;
