@@ -16,7 +16,6 @@
 
 package com.adaptris.mail;
 
-import static org.junit.Assert.*;
 import static com.adaptris.mail.JunitMailHelper.DEFAULT_PAYLOAD;
 import static com.adaptris.mail.JunitMailHelper.DEFAULT_RECEIVER;
 import static com.adaptris.mail.JunitMailHelper.DEFAULT_SENDER;
@@ -27,17 +26,16 @@ import static com.adaptris.mail.JunitMailHelper.startServer;
 import static com.adaptris.mail.JunitMailHelper.stopServer;
 import static com.adaptris.mail.JunitMailHelper.testsEnabled;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-
+import static org.junit.Assert.assertEquals;
 import java.util.Enumeration;
-
 import javax.mail.Header;
 import javax.mail.URLName;
 import javax.mail.internet.MimeMessage;
-
+import org.apache.commons.io.IOUtils;
+import org.junit.Assume;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.BaseCase;
 import com.adaptris.security.exc.PasswordException;
 import com.adaptris.security.password.Password;
@@ -70,7 +68,7 @@ public abstract class MailReceiverCase extends BaseCase {
 
   @Test
   public void testConnect() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     try {
       MailReceiver mbox = createClient(gm);
@@ -78,7 +76,7 @@ public abstract class MailReceiverCase extends BaseCase {
         mbox.connect();
       }
       finally {
-        mbox.disconnect();
+        IOUtils.closeQuietly(mbox);
       }
 
     }
@@ -97,7 +95,7 @@ public abstract class MailReceiverCase extends BaseCase {
 
   @Test
   public void testFilterNoMatch_WithDelete() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     String name = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
@@ -115,13 +113,13 @@ public abstract class MailReceiverCase extends BaseCase {
     try {
       mbox.connect();
       assertEquals(0, mbox.getMessages().size());
-      mbox.disconnect();
+      IOUtils.closeQuietly(mbox);
       mboxChecker.connect();
       assertEquals(5, mboxChecker.getMessages().size());
     }
     finally {
-      mbox.disconnect();
-      mboxChecker.disconnect();
+      IOUtils.closeQuietly(mbox);
+      IOUtils.closeQuietly(mboxChecker);
       stopServer(gm);
       Thread.currentThread().setName(name);
     }
@@ -129,7 +127,7 @@ public abstract class MailReceiverCase extends BaseCase {
 
   @Test
   public void testFilterMatch_WithDelete() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     String name = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
@@ -154,14 +152,14 @@ public abstract class MailReceiverCase extends BaseCase {
         assertTo(msg, DEFAULT_RECEIVER);
       }
       log.warn(getName() + " disconnecting");
-      mbox.disconnect();
+      IOUtils.closeQuietly(mbox);
 
       mboxChecker.connect();
       assertEquals(0, mboxChecker.getMessages().size());
     }
     finally {
-      mbox.disconnect();
-      mboxChecker.disconnect();
+      IOUtils.closeQuietly(mbox);
+      IOUtils.closeQuietly(mboxChecker);
       stopServer(gm);
       Thread.currentThread().setName(name);
     }
@@ -169,7 +167,7 @@ public abstract class MailReceiverCase extends BaseCase {
 
   @Test
   public void testJavaUtil_FromFilter() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
 
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
@@ -190,14 +188,14 @@ public abstract class MailReceiverCase extends BaseCase {
       }
     }
     finally {
-      mbox.disconnect();
+      IOUtils.closeQuietly(mbox);
       stopServer(gm);
     }
   }
 
   @Test
   public void testJavaUtil_ToFilter() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
     sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
@@ -217,14 +215,14 @@ public abstract class MailReceiverCase extends BaseCase {
       }
     }
     finally {
-      mbox.disconnect();
+      IOUtils.closeQuietly(mbox);
       stopServer(gm);
     }
   }
 
   @Test
   public void testJavaUtil_ToFilterNoMatch() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
     sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
@@ -238,14 +236,14 @@ public abstract class MailReceiverCase extends BaseCase {
       assertEquals(0, mbox.getMessages().size());
     }
     finally {
-      mbox.disconnect();
+      IOUtils.closeQuietly(mbox);
       stopServer(gm);
     }
   }
 
   @Test
   public void testJavaUtil_CustomFilter() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
     sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
@@ -264,14 +262,14 @@ public abstract class MailReceiverCase extends BaseCase {
       }
     }
     finally {
-      mbox.disconnect();
+      IOUtils.closeQuietly(mbox);
       stopServer(gm);
     }
   }
 
   @Test
   public void testJavaUtil_SubjectFilter() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
 
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
@@ -291,14 +289,14 @@ public abstract class MailReceiverCase extends BaseCase {
       }
     }
     finally {
-      mbox.disconnect();
+      IOUtils.closeQuietly(mbox);
       stopServer(gm);
     }
   }
 
   @Test
   public void testJavaUtil_FromSubjectFilter_NullSubject() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
 
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
@@ -317,15 +315,15 @@ public abstract class MailReceiverCase extends BaseCase {
       assertEquals(1, checker.getMessages().size());
     }
     finally {
-      mbox.disconnect();
-      checker.disconnect();
+      IOUtils.closeQuietly(mbox);
+      IOUtils.closeQuietly(checker);
       stopServer(gm);
     }
   }
 
   @Test
   public void testJavaUtil_FromSubjectFilter_WithDelete() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
 
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
@@ -345,13 +343,13 @@ public abstract class MailReceiverCase extends BaseCase {
         assertTo(msg, DEFAULT_RECEIVER);
         assertFrom(msg, DEFAULT_SENDER);
       }
-      mbox.disconnect();
+      IOUtils.closeQuietly(mbox);
       mbox.connect();
       assertEquals(0, mbox.getMessages().size());
-      mbox.disconnect();
+      IOUtils.closeQuietly(mbox);
     }
     finally {
-      mbox.disconnect();
+      IOUtils.closeQuietly(mbox);
       stopServer(gm);
     }
   }

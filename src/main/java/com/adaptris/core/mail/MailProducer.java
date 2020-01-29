@@ -17,12 +17,9 @@
 package com.adaptris.core.mail;
 
 import java.util.Iterator;
-
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldHint;
@@ -196,13 +193,11 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
   }
 
   private String getSubject(AdaptrisMessage msg) {
-    return msg.containsKey(CoreConstants.EMAIL_SUBJECT) ? msg
-        .getMetadataValue(CoreConstants.EMAIL_SUBJECT) : getSubject();
+    return msg.containsKey(EmailConstants.EMAIL_SUBJECT) ? msg.getMetadataValue(EmailConstants.EMAIL_SUBJECT) : getSubject();
   }
 
   private String getCC(AdaptrisMessage msg) {
-    return msg.containsKey(CoreConstants.EMAIL_CC_LIST) ? msg
-        .getMetadataValue(CoreConstants.EMAIL_CC_LIST) : getCcList();
+    return msg.containsKey(EmailConstants.EMAIL_CC_LIST) ? msg.getMetadataValue(EmailConstants.EMAIL_CC_LIST) : getCcList();
 
   }
 
