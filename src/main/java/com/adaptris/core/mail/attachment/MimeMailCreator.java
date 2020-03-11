@@ -16,7 +16,7 @@
 
 package com.adaptris.core.mail.attachment;
 
-import static org.apache.commons.lang.StringUtils.defaultIfBlank;
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;

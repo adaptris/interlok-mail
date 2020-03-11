@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.mail;
 
@@ -23,17 +23,20 @@ import static com.adaptris.mail.JunitMailHelper.testsEnabled;
 import static com.adaptris.mail.MailReceiverCase.DEFAULT_POP3_PASSWORD;
 import static com.adaptris.mail.MailReceiverCase.DEFAULT_POP3_USER;
 import static com.adaptris.mail.MailReceiverCase.createURLName;
-
+import static org.junit.Assert.fail;
 import javax.mail.URLName;
-
+import org.apache.commons.io.IOUtils;
+import org.junit.Assume;
+import org.junit.Test;
 import com.icegreen.greenmail.pop3.Pop3Server;
 import com.icegreen.greenmail.util.GreenMail;
 
 @SuppressWarnings("deprecation")
 public class Pop3sReceiverFactoryTest extends Pop3FactoryCase {
 
-  public Pop3sReceiverFactoryTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override
@@ -47,8 +50,10 @@ public class Pop3sReceiverFactoryTest extends Pop3FactoryCase {
   }
 
   // By default this will *fail* because we don't have a trusted certificate.
+  @Override
+  @Test
   public void testCreate_Connect() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     Pop3sReceiverFactory fac = create();
     Pop3Server server = getServer(gm);
@@ -64,7 +69,7 @@ public class Pop3sReceiverFactoryTest extends Pop3FactoryCase {
     }
     finally {
       stopServer(gm);
-      client.disconnect();
+      IOUtils.closeQuietly(client);
     }
   }
 

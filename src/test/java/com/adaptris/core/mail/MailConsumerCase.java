@@ -12,19 +12,21 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.mail;
 
 import static com.adaptris.mail.JunitMailHelper.testsEnabled;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
-
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -33,7 +35,8 @@ import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-
+import org.junit.Assume;
+import org.junit.Test;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessageProducer;
 import com.adaptris.core.Channel;
@@ -65,8 +68,8 @@ public abstract class MailConsumerCase extends MailConsumerExample {
 
   static final String REGEX_STYLE = "Regex";
   static final String[] TEXT_PAYLOADS = {"The Quick Brown Fox Jumps Over the Lazy Dog",
-                                         "The Quicker Browner Hound Leaps At The Fox",
-                                         "R2D2 and C3PO go into a bar"};
+      "The Quicker Browner Hound Leaps At The Fox",
+  "R2D2 and C3PO go into a bar"};
   static final String DEFAULT_SUBJECT = "Junit Test for com.adaptris.core.mail";
   static final String DEFAULT_POP3_USER = "junit";
   static final String DEFAULT_POP3_PASSWORD = "junit";
@@ -81,17 +84,9 @@ public abstract class MailConsumerCase extends MailConsumerExample {
     }
   }
 
-  public MailConsumerCase(String name) {
-    super(name);
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
-    super.tearDown();
-  }
-
+  @Test
   public void testAttemptConnectOnInit() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     try {
       MailConsumerImp mailConsumer = createConsumerForTests(gm);
@@ -111,8 +106,9 @@ public abstract class MailConsumerCase extends MailConsumerExample {
     }
   }
 
+  @Test
   public void testInit_AttemptConnectOnInitTrue() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     try {
       MailConsumerImp mailConsumer = createConsumerForTests(gm);
@@ -127,12 +123,14 @@ public abstract class MailConsumerCase extends MailConsumerExample {
     }
   }
 
+  @Test
   public void testRedmine_7604() throws Exception {
     testInit_AttemptConnectOnInitFalse();
   }
 
+  @Test
   public void testInit_AttemptConnectOnInitFalse() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     try {
       // It is stopped, shouldn't matter if we init, because we shouldn't try the connection
@@ -160,11 +158,11 @@ public abstract class MailConsumerCase extends MailConsumerExample {
     mimeMessage.setContent(new MimeMultipart());
 
     for (int i=0;i<numPayloads;i++){
-    	String payload = TEXT_PAYLOADS[i % TEXT_PAYLOADS.length];
-    	if (i > TEXT_PAYLOADS.length){
-    		payload += " " + i / TEXT_PAYLOADS.length;
-    	}
-        attachPayload(mimeMessage, payload, "text/plain");
+      String payload = TEXT_PAYLOADS[i % TEXT_PAYLOADS.length];
+      if (i > TEXT_PAYLOADS.length){
+        payload += " " + i / TEXT_PAYLOADS.length;
+      }
+      attachPayload(mimeMessage, payload, "text/plain");
     }
 
     mimeMessage.setSubject(DEFAULT_SUBJECT);
@@ -218,8 +216,8 @@ public abstract class MailConsumerCase extends MailConsumerExample {
    * @see com.adaptris.core.ExampleConfigCase#retrieveObjectForSampleConfig()
    */
   @Override
-  protected List retrieveObjectsForSampleConfig() {
-    List<StandaloneConsumer> result = new ArrayList<StandaloneConsumer>();
+  protected List<StandaloneConsumer> retrieveObjectsForSampleConfig() {
+    List<StandaloneConsumer> result = new ArrayList<>();
 
     MailConsumerImp consumer = create(new QuartzCronPoller("00 */10 * * * ?"));
     result.add(new StandaloneConsumer(configure("pop3://username:password@server:110/INBOX", consumer)));

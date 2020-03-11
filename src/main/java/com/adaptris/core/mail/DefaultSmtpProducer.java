@@ -17,7 +17,6 @@
 package com.adaptris.core.mail;
 
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -123,7 +122,7 @@ public class DefaultSmtpProducer extends MailProducer {
 
       if (isAttachment()) {
         String template = msg
-            .getMetadataValue(CoreConstants.EMAIL_TEMPLATE_BODY);
+            .getMetadataValue(EmailConstants.EMAIL_TEMPLATE_BODY);
         if (template != null) {
           if (msg.getContentEncoding() != null) {
             smtp.setMessage(template.getBytes(msg.getContentEncoding()), ctype);
@@ -131,8 +130,8 @@ public class DefaultSmtpProducer extends MailProducer {
             smtp.setMessage(template.getBytes(), ctype);
           }
         }
-        String fname = resolve(msg, CoreConstants.EMAIL_ATTACH_FILENAME, msg.getUniqueId());
-        String type = resolve(msg, CoreConstants.EMAIL_ATTACH_CONTENT_TYPE, msg.resolve(attachmentContentType()));
+        String fname = resolve(msg, EmailConstants.EMAIL_ATTACH_FILENAME, msg.getUniqueId());
+        String type = resolve(msg, EmailConstants.EMAIL_ATTACH_CONTENT_TYPE, msg.resolve(attachmentContentType()));
         smtp.addAttachment(encodedPayload, fname, type, msg.resolve(attachmentContentEncoding()));
       }
       else {

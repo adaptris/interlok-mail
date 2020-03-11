@@ -16,7 +16,12 @@
 
 package com.adaptris.core.mail;
 
+import static org.junit.Assert.*;
+
 import javax.mail.internet.ContentType;
+
+import org.junit.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ServiceCase;
@@ -65,10 +70,12 @@ public class MimeMessageHeadersTest extends ServiceCase {
       "--_000_1101418961225998173422JavaMailob10userob10aa3prd_--\r\n" + 
       "";
   
-  public MimeMessageHeadersTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testService() throws Exception {
     MimeHeadersAsMetadataService service = retrieveObjectForSampleConfig();
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(EXAMPLE_MSG);
@@ -80,6 +87,7 @@ public class MimeMessageHeadersTest extends ServiceCase {
     assertEquals("email integrations <email@example.com.com>", msg.getMetadataValue("To"));
   }
 
+  @Test
   public void testService_ThrowsException() throws Exception {
     MimeHeadersAsMetadataService service = retrieveObjectForSampleConfig();
     AdaptrisMessage msg = new DefectiveMessageFactory().newMessage("Hello World");

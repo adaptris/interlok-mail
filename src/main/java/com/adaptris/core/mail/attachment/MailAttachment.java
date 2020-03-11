@@ -16,13 +16,13 @@
 
 package com.adaptris.core.mail.attachment;
 
-import static org.apache.commons.lang.StringUtils.defaultIfBlank;
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
 import javax.mail.internet.ContentType;
 import javax.mail.internet.ParseException;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * Representation of an attachment to a mail message.

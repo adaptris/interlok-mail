@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.mail;
 
@@ -35,13 +35,9 @@ import com.adaptris.util.text.mime.SelectByPosition;
 
 public class DefaultMailConsumerPartSelectorTest extends MailConsumerExample {
 
-  public DefaultMailConsumerPartSelectorTest(String name) {
-    super(name);
-  }
-
   @Override
-  protected void setUp() throws Exception {
-    super.setUp();
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override
@@ -75,8 +71,8 @@ public class DefaultMailConsumerPartSelectorTest extends MailConsumerExample {
    * @see com.adaptris.core.ExampleConfigCase#retrieveObjectForSampleConfig()
    */
   @Override
-  protected List retrieveObjectsForSampleConfig() {
-    List<StandaloneConsumer> result = new ArrayList<StandaloneConsumer>();
+  protected List<StandaloneConsumer> retrieveObjectsForSampleConfig() {
+    List<StandaloneConsumer> result = new ArrayList<>();
     result.add(createConfigExample(new FixedIntervalPoller(new TimeInterval(10L, TimeUnit.MINUTES)), new SelectByPosition(1)));
     result.add(createConfigExample(new QuartzCronPoller("00 */10 * * * ?"), new SelectByPosition(1)));
 

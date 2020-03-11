@@ -19,15 +19,12 @@ package com.adaptris.core.mail;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.NullConnection;
 import com.adaptris.mail.Attachment;
@@ -76,11 +73,11 @@ public class DefaultMailConsumer extends ParsingMailConsumerImpl {
       if (mp.getMessage() != null) {
         AdaptrisMessage msg = decode(mp.getMessage());
         if (mp.getMessageId() != null) {
-          msg.addMetadata(CoreConstants.EMAIL_MESSAGE_ID, mp.getMessageId());
+          msg.addMetadata(EmailConstants.EMAIL_MESSAGE_ID, mp.getMessageId());
         }
         headerHandler().handle(mime, msg);
         if (mp.hasAttachments()) {
-          msg.addMetadata(CoreConstants.EMAIL_TOTAL_ATTACHMENTS, String.valueOf(mp.numberOfAttachments()));
+          msg.addMetadata(EmailConstants.EMAIL_TOTAL_ATTACHMENTS, String.valueOf(mp.numberOfAttachments()));
         }
         result.add(msg);
       }
@@ -88,11 +85,11 @@ public class DefaultMailConsumer extends ParsingMailConsumerImpl {
         while (mp.hasMoreAttachments()) {
           Attachment a = mp.nextAttachment();
           AdaptrisMessage msg = decode(a.getBytes());
-          msg.addMetadata(CoreConstants.EMAIL_MESSAGE_ID, mp.getMessageId());
-          msg.addMetadata(CoreConstants.EMAIL_ATTACH_FILENAME, a.getFilename());
-          msg.addMetadata(CoreConstants.EMAIL_ATTACH_CONTENT_TYPE, a.getContentType());
+          msg.addMetadata(EmailConstants.EMAIL_MESSAGE_ID, mp.getMessageId());
+          msg.addMetadata(EmailConstants.EMAIL_ATTACH_FILENAME, a.getFilename());
+          msg.addMetadata(EmailConstants.EMAIL_ATTACH_CONTENT_TYPE, a.getContentType());
           headerHandler().handle(mime, msg);
-          msg.addMetadata(CoreConstants.EMAIL_TOTAL_ATTACHMENTS, String.valueOf(mp.numberOfAttachments()));
+          msg.addMetadata(EmailConstants.EMAIL_TOTAL_ATTACHMENTS, String.valueOf(mp.numberOfAttachments()));
           result.add(msg);
         }
       }

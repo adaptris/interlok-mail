@@ -23,31 +23,18 @@ import static com.adaptris.mail.JunitMailHelper.XML_DOCUMENT;
 import static com.adaptris.mail.JunitMailHelper.createClient;
 import static com.adaptris.mail.JunitMailHelper.testsEnabled;
 import static org.junit.Assert.assertEquals;
-
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-
 import javax.mail.internet.MimeMessage;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.junit.Assume;
 import org.junit.Test;
-
 import com.icegreen.greenmail.util.GreenMail;
 
 public class TestEmailSending {
 
-
-
-  private Log logR = LogFactory.getLog(this.getClass());
-
-  public TestEmailSending() {
-
-  }
-
   @Test
   public void testSmtpSend() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer();
     try {
       SmtpClient smtp = createClient(gm);
@@ -65,7 +52,7 @@ public class TestEmailSending {
 
   @Test
   public void testSmtpSendBase64Encoded() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer();
     try {
       SmtpClient smtp = createClient(gm);
@@ -84,7 +71,7 @@ public class TestEmailSending {
 
   @Test
   public void testSmtpSendWithContentType() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer();
     try {
       SmtpClient smtp = createClient(gm);
@@ -103,7 +90,7 @@ public class TestEmailSending {
 
   @Test
   public void testSmtpSendAttachment() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer();
     try {
       SmtpClient smtp = createClient(gm);
@@ -127,7 +114,7 @@ public class TestEmailSending {
 
   @Test
   public void testSmtpSendAttachmentBase64Encoded() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
 
     GreenMail gm = JunitMailHelper.startServer();
     try {
@@ -153,7 +140,7 @@ public class TestEmailSending {
 
   @Test
   public void testSmtpSendAttachmentUUEncoded() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
 
     GreenMail gm = JunitMailHelper.startServer();
     try {

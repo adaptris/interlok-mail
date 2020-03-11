@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.mail;
 
@@ -24,12 +24,11 @@ public abstract class MailConsumerExample extends ConsumerCase {
 
   /**
    * Key in unit-test.properties that defines where example goes unless overriden {@link #setBaseDir(String)}.
-   * 
+   *
    */
   public static final String BASE_DIR_KEY = "MailConsumerExamples.baseDir";
 
-  public MailConsumerExample(String name) {
-    super(name);
+  public MailConsumerExample() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }

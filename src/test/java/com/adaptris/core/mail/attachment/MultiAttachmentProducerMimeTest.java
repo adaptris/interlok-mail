@@ -12,12 +12,14 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.mail.attachment;
 
 import static com.adaptris.core.mail.attachment.MimeMailCreatorTest.create;
 import static com.adaptris.core.services.mime.MimeJunitHelper.PAYLOAD_2;
+
+import org.junit.Before;
 
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.StandaloneProducer;
@@ -29,13 +31,14 @@ public class MultiAttachmentProducerMimeTest extends MailProducerExample {
 
   private MultiAttachmentSmtpProducer producer;
 
-  public MultiAttachmentProducerMimeTest(String name) {
-    super(name);
+  @Before
+  public void setUp() throws Exception {
+    producer = new MultiAttachmentSmtpProducer();
   }
 
   @Override
-  protected void setUp() throws Exception {
-    producer = new MultiAttachmentSmtpProducer();
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override

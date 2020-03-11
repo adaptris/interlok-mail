@@ -109,7 +109,6 @@ public class JunitMailHelper {
   }
 
   public static void assertTo(MimeMessage m, String email) throws Exception {
-    boolean matched = false;
     Address[] addresses = m.getRecipients(Message.RecipientType.TO);
     if (!find(addresses, email)) {
       fail("Could not find " + email + " in TO list");
@@ -117,7 +116,6 @@ public class JunitMailHelper {
   }
 
   public static void assertCC(MimeMessage m, String email) throws Exception {
-    boolean matched = false;
     Address[] addresses = m.getRecipients(Message.RecipientType.CC);
     if (!find(addresses, email)) {
       fail("Could not find " + email + " in CC list");
@@ -209,4 +207,5 @@ public class JunitMailHelper {
         new ServerSetup(PortManager.nextUnusedPort(basePort), null, ServerSetup.PROTOCOL_IMAPS)
     };
   }
+  
 }

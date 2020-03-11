@@ -12,19 +12,21 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.mail;
 
 import static com.adaptris.mail.JunitMailHelper.testsEnabled;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 import java.io.FileInputStream;
 import java.util.List;
 import java.util.Properties;
-
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
-
+import org.junit.Assume;
+import org.junit.Test;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConfiguredConsumeDestination;
@@ -46,12 +48,14 @@ public class DefaultMailConsumerTest extends MailConsumerCase {
   private static final String EMAIL_WITH_CD = "mail.email.with.cd";
   private static final String EMAIL_WITHOUT_CD = "mail.email.without.cd";
 
-  public DefaultMailConsumerTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testConsume_NoHandler() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     try {
       sendMessage(gm);
@@ -73,8 +77,9 @@ public class DefaultMailConsumerTest extends MailConsumerCase {
     }
   }
 
+  @Test
   public void testConsume_MetadataHandler() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     try {
 
@@ -99,8 +104,9 @@ public class DefaultMailConsumerTest extends MailConsumerCase {
     }
   }
 
+  @Test
   public void testConsume_CommonsNetPop3() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     try {
       sendMessage(gm);
@@ -118,8 +124,9 @@ public class DefaultMailConsumerTest extends MailConsumerCase {
     }
   }
 
+  @Test
   public void testConsume_CommonsNetPop3_ImapProtocol() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     try {
       MockMessageProducer mockProducer = new MockMessageProducer();
@@ -129,7 +136,7 @@ public class DefaultMailConsumerTest extends MailConsumerCase {
       a.requestStart();
       fail();
     } catch (CoreException expected) {
-      
+
     }
     finally {
       JunitMailHelper.stopServer(gm);
@@ -137,8 +144,9 @@ public class DefaultMailConsumerTest extends MailConsumerCase {
 
   }
 
+  @Test
   public void testConsume_CommonsNetPop3S() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     try {
       sendMessage(gm);
@@ -159,8 +167,9 @@ public class DefaultMailConsumerTest extends MailConsumerCase {
     }
   }
 
+  @Test
   public void testPartSelector() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     try {
       sendMessage(gm, 3);
@@ -179,6 +188,7 @@ public class DefaultMailConsumerTest extends MailConsumerCase {
     }
   }
 
+  @Test
   public void testDefaultProducerWithDefaultConsumerWithContentDispositionRedmine727() throws Exception {
     try (FileInputStream fileInputStream = new FileInputStream(PROPERTIES.getProperty(EMAIL_WITH_CD))) {
       Session session = Session.getDefaultInstance(new Properties());
@@ -189,6 +199,7 @@ public class DefaultMailConsumerTest extends MailConsumerCase {
     }
   }
 
+  @Test
   public void testDefaultProducerWithDefaultConsumerWithoutContentDispositionRedmine727() throws Exception {
     try (FileInputStream fileInputStream = new FileInputStream(PROPERTIES.getProperty(EMAIL_WITHOUT_CD))) {
       Session session = Session.getDefaultInstance(new Properties());

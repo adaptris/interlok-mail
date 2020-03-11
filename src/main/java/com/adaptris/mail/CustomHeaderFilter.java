@@ -22,7 +22,7 @@ import java.util.List;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 
 import com.adaptris.core.util.Args;
 

@@ -17,15 +17,15 @@
 package com.adaptris.core.mail;
 
 import static com.adaptris.mail.JunitMailHelper.testsEnabled;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import javax.mail.internet.MimeBodyPart;
-
 import org.apache.commons.io.IOUtils;
-
+import org.junit.Assume;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.stubs.MockMessageListener;
@@ -38,16 +38,14 @@ import com.icegreen.greenmail.util.GreenMail;
 
 public class RawMailConsumerTest extends MailConsumerCase {
 
-  public RawMailConsumerTest(String name) {
-    super(name);
-  }
-
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testConsumer() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     try {
       sendMessage(gm);
@@ -68,8 +66,9 @@ public class RawMailConsumerTest extends MailConsumerCase {
     }
   }
 
+  @Test
   public void testConsumer_MetadataHeaders() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     try {
       sendMessage(gm);
@@ -90,8 +89,9 @@ public class RawMailConsumerTest extends MailConsumerCase {
     }
   }
 
+  @Test
   public void testConsumer_CommonsNet() throws Exception {
-    if (!testsEnabled()) return;
+    Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     try {
       sendMessage(gm);
@@ -118,7 +118,7 @@ public class RawMailConsumerTest extends MailConsumerCase {
   private void compare(AdaptrisMessage msg, String expected) throws Exception {
     try (InputStream msgIn = msg.getInputStream(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
       BodyPartIterator mime = MimeHelper.createBodyPartIterator(msg);
-      MimeBodyPart part = (MimeBodyPart) mime.next();
+      MimeBodyPart part = mime.next();
       try (InputStream partIn = part.getInputStream(); OutputStream bout = out) {
         IOUtils.copy(partIn, bout);
       }
