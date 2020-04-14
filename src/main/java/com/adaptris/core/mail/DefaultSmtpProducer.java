@@ -123,8 +123,7 @@ public class DefaultSmtpProducer extends MailProducer {
       String ctype = getContentType(msg);
 
       if (isAttachment()) {
-        String template = msg
-            .getMetadataValue(EmailConstants.EMAIL_TEMPLATE_BODY);
+        String template = msg.getMetadataValue(EmailConstants.EMAIL_TEMPLATE_BODY);
         if (template != null) {
           if (msg.getContentEncoding() != null) {
             smtp.setMessage(template.getBytes(msg.getContentEncoding()), ctype);

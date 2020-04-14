@@ -73,6 +73,7 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
 
   @NotBlank
   private String smtpUrl = null;
+  @InputFieldHint(expression = true)
   private String subject = null;
   @AdvancedConfig
   @InputFieldHint(expression = true)
@@ -191,10 +192,18 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
     return subject;
   }
 
+  /**
+   * @deprecated since 3.10.0, slated for removal in 3.11.0, use message resolver instead.
+   */
+  @Deprecated(since = "3.10.0", forRemoval = true)
   private String getSubject(AdaptrisMessage msg) {
-    return msg.containsKey(EmailConstants.EMAIL_SUBJECT) ? msg.getMetadataValue(EmailConstants.EMAIL_SUBJECT) : getSubject();
+    return msg.containsKey(EmailConstants.EMAIL_SUBJECT) ? msg.getMetadataValue(EmailConstants.EMAIL_SUBJECT) : msg.resolve(getSubject());
   }
 
+  /**
+   * @deprecated since 3.10.0, slated for removal in 3.11.0, use message resolver instead.
+   */
+  @Deprecated(since = "3.10.0", forRemoval = true)
   private String getCC(AdaptrisMessage msg) {
     return msg.containsKey(EmailConstants.EMAIL_CC_LIST) ? msg.getMetadataValue(EmailConstants.EMAIL_CC_LIST) : msg.resolve(getCcList());
   }
