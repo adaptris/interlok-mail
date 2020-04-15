@@ -195,7 +195,7 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
   /**
    * @deprecated since 3.10.0, slated for removal in 3.11.0, use message resolver instead.
    */
-  @Deprecated(since = "3.10.0", forRemoval = true)
+  @Deprecated
   private String getSubject(AdaptrisMessage msg) {
     return msg.containsKey(EmailConstants.EMAIL_SUBJECT) ? msg.getMetadataValue(EmailConstants.EMAIL_SUBJECT) : msg.resolve(getSubject());
   }
@@ -203,7 +203,7 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
   /**
    * @deprecated since 3.10.0, slated for removal in 3.11.0, use message resolver instead.
    */
-  @Deprecated(since = "3.10.0", forRemoval = true)
+  @Deprecated
   private String getCC(AdaptrisMessage msg) {
     return msg.containsKey(EmailConstants.EMAIL_CC_LIST) ? msg.getMetadataValue(EmailConstants.EMAIL_CC_LIST) : msg.resolve(getCcList());
   }
