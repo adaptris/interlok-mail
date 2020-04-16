@@ -139,6 +139,30 @@ public class DefaultMailProducerTest extends MailProducerExample {
   }
 
   @Test
+  public void testProduceMetadataSubjectCC() throws Exception {
+    Assume.assumeTrue(testsEnabled());
+    GreenMail gm = JunitMailHelper.startServer();
+    try {
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
+      msg.addMetadata(EmailConstants.EMAIL_CC_LIST, "CarbonCopy@CarbonCopy.com");   // these will force the use of (the
+      msg.addMetadata(EmailConstants.EMAIL_SUBJECT, "Some very important subject"); // now deprecated) metadata keys
+      StandaloneProducer producer = createProducerForTests(gm);
+      ServiceCase.execute(producer, msg);
+      gm.waitForIncomingEmail(1);
+      MimeMessage[] msgs = gm.getReceivedMessages();
+      assertEquals(2, msgs.length);
+      for (MimeMessage mime : msgs) {
+        JunitMailHelper.assertFrom(mime, DEFAULT_SENDER);
+        JunitMailHelper.assertTo(mime, DEFAULT_RECEIVER);
+        JunitMailHelper.assertCC(mime, "CarbonCopy@CarbonCopy.com");
+      }
+    }
+    finally {
+      JunitMailHelper.stopServer(gm);
+    }
+  }
+
+  @Test
   public void testProduceNoAddresseeButResolveCC() throws Exception {
     Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer();
