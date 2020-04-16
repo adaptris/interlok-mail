@@ -139,6 +139,32 @@ public class DefaultMailProducerTest extends MailProducerExample {
   }
 
   @Test
+  public void testProduceNoAddresseeButResolveCC() throws Exception {
+    Assume.assumeTrue(testsEnabled());
+    GreenMail gm = JunitMailHelper.startServer();
+    try {
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
+      msg.addMetadata("some-cc-address", "CarbonCopy@CarbonCopy.com");
+      StandaloneProducer producer = createProducerForTests(gm);
+      MailProducer mailer = (MailProducer) producer.getProducer();
+      mailer.setDestination(null);
+      mailer.setCcList("%message{some-cc-address}");
+      ServiceCase.execute(producer, msg);
+      gm.waitForIncomingEmail(1);
+      MimeMessage[] msgs = gm.getReceivedMessages();
+      assertEquals(1, msgs.length);
+      for (MimeMessage mime : msgs) {
+        JunitMailHelper.assertFrom(mime, DEFAULT_SENDER);
+        JunitMailHelper.assertRecipientNull(mime);
+        JunitMailHelper.assertCC(mime, "CarbonCopy@CarbonCopy.com");
+      }
+    }
+    finally {
+      JunitMailHelper.stopServer(gm);
+    }
+  }
+
+  @Test
   public void testProduceBCC() throws Exception {
     Assume.assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer();
@@ -154,6 +180,32 @@ public class DefaultMailProducerTest extends MailProducerExample {
       for (MimeMessage mime : msgs) {
         JunitMailHelper.assertFrom(mime, DEFAULT_SENDER);
         JunitMailHelper.assertTo(mime, DEFAULT_RECEIVER);
+        // We never *see* the BCC so we can't check it.
+      }
+    }
+    finally {
+      JunitMailHelper.stopServer(gm);
+    }
+  }
+
+  @Test
+  public void testProduceNoAddresseeButResolveBCC() throws Exception {
+    Assume.assumeTrue(testsEnabled());
+    GreenMail gm = JunitMailHelper.startServer();
+    try {
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
+      msg.addMetadata("a-bcc-address", "BlindCarbonCopy@BlindCarbonCopy.com");
+      StandaloneProducer producer = createProducerForTests(gm);
+      MailProducer mailer = (MailProducer) producer.getProducer();
+      mailer.setDestination(null);
+      mailer.setBccList("%message{a-bcc-address}");
+      ServiceCase.execute(producer, msg);
+      gm.waitForIncomingEmail(1);
+      MimeMessage[] msgs = gm.getReceivedMessages();
+      assertEquals(1, msgs.length);
+      for (MimeMessage mime : msgs) {
+        JunitMailHelper.assertFrom(mime, DEFAULT_SENDER);
+        JunitMailHelper.assertRecipientNull(mime);
         // We never *see* the BCC so we can't check it.
       }
     }
