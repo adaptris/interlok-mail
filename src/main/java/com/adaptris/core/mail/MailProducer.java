@@ -39,6 +39,7 @@ import com.adaptris.mail.SmtpClient;
 import com.adaptris.security.exc.PasswordException;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Abstract implementation of the AdaptrisMessageProducer interface for handling Email.
@@ -64,8 +65,7 @@ import com.adaptris.util.KeyValuePairSet;
  * of {@link MetadataFilter} In either case the metadata from the AdaptrisMessage will be filtered to a subset before copied as
  * headers.
  * </p>
- * 
- * 
+ *
  * @see CoreConstants#EMAIL_SUBJECT
  * @see CoreConstants#EMAIL_CC_LIST
  */
@@ -73,11 +73,14 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
 
   @NotBlank
   private String smtpUrl = null;
+  @InputFieldHint(expression = true)
   private String subject = null;
   @AdvancedConfig
+  @InputFieldHint(expression = true)
   private String ccList = null;
   private String from = null;
   @AdvancedConfig
+  @InputFieldHint(expression = true)
   private String bccList = null;
   @NotNull
   @Valid
@@ -95,8 +98,6 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
 
   /**
    * @see Object#Object()
-   *
-   *
    */
   public MailProducer() {
     sessionProperties = new KeyValuePairSet();
@@ -136,7 +137,6 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
   public void prepare() throws CoreException {
     registerEncoderMessageFactory();
   }
-
 
   /**
    * Set the SMTP url.
@@ -192,13 +192,20 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
     return subject;
   }
 
+  /**
+   * @deprecated since 3.10.0, slated for removal in 3.11.0, use message resolver instead.
+   */
+  @Deprecated
   private String getSubject(AdaptrisMessage msg) {
-    return msg.containsKey(EmailConstants.EMAIL_SUBJECT) ? msg.getMetadataValue(EmailConstants.EMAIL_SUBJECT) : getSubject();
+    return msg.containsKey(EmailConstants.EMAIL_SUBJECT) ? msg.getMetadataValue(EmailConstants.EMAIL_SUBJECT) : msg.resolve(getSubject());
   }
 
+  /**
+   * @deprecated since 3.10.0, slated for removal in 3.11.0, use message resolver instead.
+   */
+  @Deprecated
   private String getCC(AdaptrisMessage msg) {
-    return msg.containsKey(EmailConstants.EMAIL_CC_LIST) ? msg.getMetadataValue(EmailConstants.EMAIL_CC_LIST) : getCcList();
-
+    return msg.containsKey(EmailConstants.EMAIL_CC_LIST) ? msg.getMetadataValue(EmailConstants.EMAIL_CC_LIST) : msg.resolve(getCcList());
   }
 
   protected SmtpClient getClient(AdaptrisMessage msg) throws MailException, PasswordException {
@@ -215,8 +222,9 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
     if (ccList != null) {
       smtp.addCarbonCopy(ccList);
     }
-    if (getBccList() != null) {
-      smtp.addBlindCarbonCopy(getBccList());
+    String bccList = getBccList();
+    if (!StringUtils.isEmpty(bccList)) {
+      smtp.addBlindCarbonCopy(msg.resolve(bccList));
     }
     if (getFrom() != null) {
       smtp.setFrom(getFrom());

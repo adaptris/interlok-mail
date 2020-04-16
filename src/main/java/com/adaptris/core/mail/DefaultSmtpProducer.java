@@ -30,6 +30,7 @@ import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.mail.SmtpClient;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Email implementation of the AdaptrisMessageProducer interface.
@@ -61,9 +62,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * the <code>javax.mail.Session</code> instance. You need to refer to the javamail documentation to see a list of the available
  * properties and meanings.
  * </p>
- * 
+ *
  * @config default-smtp-producer
- * 
+ *
  * @see MailProducer
  * @see CoreConstants#EMAIL_SUBJECT
  * @see CoreConstants#EMAIL_ATTACH_FILENAME
@@ -73,7 +74,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("default-smtp-producer")
 @AdapterComponent
-@ComponentProfile(summary = "Send an email", tag = "producer,email", recommended = {NullConnection.class})
+@ComponentProfile(summary = "Send an email", tag = "producer,email,smtp,mail", recommended = {NullConnection.class})
 @DisplayOrder(order = {"smtpUrl", "username", "password", "subject", "from", "ccList", "bccList"})
 public class DefaultSmtpProducer extends MailProducer {
 
@@ -99,8 +100,6 @@ public class DefaultSmtpProducer extends MailProducer {
 
   /**
    * @see Object#Object()
-   *
-   *
    */
   public DefaultSmtpProducer() {
     super();
@@ -117,12 +116,14 @@ public class DefaultSmtpProducer extends MailProducer {
       SmtpClient smtp = getClient(msg);
       smtp.setEncoding(msg.resolve(contentEncoding()));
       byte[] encodedPayload = encode(msg);
-      smtp.addTo(destination.getDestination(msg));
+      String toAddresses = destination != null ? destination.getDestination(msg) : null;
+      if (!StringUtils.isEmpty(toAddresses)) {
+        smtp.addTo(toAddresses);
+      }
       String ctype = getContentType(msg);
 
       if (isAttachment()) {
-        String template = msg
-            .getMetadataValue(EmailConstants.EMAIL_TEMPLATE_BODY);
+        String template = msg.getMetadataValue(EmailConstants.EMAIL_TEMPLATE_BODY);
         if (template != null) {
           if (msg.getContentEncoding() != null) {
             smtp.setMessage(template.getBytes(msg.getContentEncoding()), ctype);
@@ -197,7 +198,6 @@ public class DefaultSmtpProducer extends MailProducer {
   public void setContentEncoding(String s) {
     contentEncoding = s;
   }
-
 
   /**
    * Get the encoding of the email.
