@@ -17,6 +17,7 @@
 package com.adaptris.mail;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import java.io.InputStream;
@@ -113,6 +114,10 @@ public class JunitMailHelper {
     if (!find(addresses, email)) {
       fail("Could not find " + email + " in TO list");
     }
+  }
+
+  public static void assertRecipientNull(MimeMessage m) throws Exception {
+    assertNull(m.getRecipients(Message.RecipientType.TO));
   }
 
   public static void assertCC(MimeMessage m, String email) throws Exception {
