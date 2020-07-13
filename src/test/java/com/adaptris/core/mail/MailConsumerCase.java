@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -220,29 +220,29 @@ public abstract class MailConsumerCase extends MailConsumerExample {
     List<StandaloneConsumer> result = new ArrayList<>();
 
     MailConsumerImp consumer = create(new QuartzCronPoller("00 */10 * * * ?"));
-    result.add(new StandaloneConsumer(configure("pop3://username:password@server:110/INBOX", consumer)));
+    result.add(new StandaloneConsumer(configure("pop3://server:110/INBOX", consumer)));
 
     consumer = create(new FixedIntervalPoller(new TimeInterval(10L, TimeUnit.MINUTES)));
-    result.add(new StandaloneConsumer(configure("pop3://username:password@server:110/INBOX", consumer)));
+    result.add(new StandaloneConsumer(configure("pop3://server:110/INBOX", consumer)));
 
 
     consumer = create(new QuartzCronPoller("00 */10 * * * ?"));
-    result.add(new StandaloneConsumer(configure("pop3s://myusername%40gmail.com:mypassword@pop.gmail.com:995/INBOX", consumer)));
+    result.add(new StandaloneConsumer(configure("pop3s://pop.gmail.com:995/INBOX", consumer)));
 
     consumer = create(new FixedIntervalPoller(new TimeInterval(10L, TimeUnit.MINUTES)));
-    result.add(new StandaloneConsumer(configure("pop3s://myusername%40gmail.com:mypassword@pop.gmail.com:995/INBOX", consumer)));
+    result.add(new StandaloneConsumer(configure("pop3s://pop.gmail.com:995/INBOX", consumer)));
 
     consumer = create(new QuartzCronPoller("00 */10 * * * ?"));
-    result.add(new StandaloneConsumer(configure("imaps://myusername%40gmail.com:mypassword@imap.gmail.com:993/INBOX", consumer)));
+    result.add(new StandaloneConsumer(configure("imaps://imap.gmail.com:993/INBOX", consumer)));
 
     consumer = create(new FixedIntervalPoller(new TimeInterval(10L, TimeUnit.MINUTES)));
-    result.add(new StandaloneConsumer(configure("imaps://myusername%40gmail.com:mypassword@imap.gmail.com:993/INBOX", consumer)));
+    result.add(new StandaloneConsumer(configure("imaps://imap.gmail.com:993/INBOX", consumer)));
 
     consumer = create(new QuartzCronPoller("00 */10 * * * ?"));
-    result.add(new StandaloneConsumer(configure("imap://myusername:mypassword@my.imap.server:143/INBOX", consumer)));
+    result.add(new StandaloneConsumer(configure("imap://my.imap.server:143/INBOX", consumer)));
 
     consumer = create(new FixedIntervalPoller(new TimeInterval(10L, TimeUnit.MINUTES)));
-    result.add(new StandaloneConsumer(configure("imap://myusername:mypassword@my.imap.server:143/INBOX", consumer)));
+    result.add(new StandaloneConsumer(configure("imap://my.imap.server:143/INBOX", consumer)));
 
     return result;
   }
@@ -251,7 +251,7 @@ public abstract class MailConsumerCase extends MailConsumerExample {
   protected String createBaseFileName(Object object) {
     String basename = super.createBaseFileName(object);
     StandaloneConsumer c = (StandaloneConsumer) object;
-    String s = c.getConsumer().getDestination().getDestination();
+    String s = ((MailConsumerImp) c.getConsumer()).getMailboxUrl();
     int pos = s.indexOf(":");
     if (pos > 0) {
       basename = basename + "-" + s.substring(0, pos).toUpperCase();
@@ -296,10 +296,10 @@ public abstract class MailConsumerCase extends MailConsumerExample {
     JavamailReceiverFactory fac = new JavamailReceiverFactory();
     fac.getSessionProperties().addKeyValuePair(new KeyValuePair("mail.smtp.starttls.enable", "true"));
     fac.getSessionProperties().addKeyValuePair(new KeyValuePair("mail.pop3.starttls.enable", "true"));
-    impl.setMailReceiverFactory(fac);
-    ConfiguredConsumeDestination dest = new ConfiguredConsumeDestination(destination, "FROM=optionalFilter,"
-        + "SUBJECT=optionalFilter," + "RECIPIENT=optionalFilter");
-    impl.setDestination(dest);
+    impl.setMailboxUrl(destination);
+    impl.setFilterExpression("FROM=optionalFilter,SUBJECT=optionalFilter,RECIPIENT=optionalFilter");
+    impl.setUsername("myUsername");
+    impl.setPassword("MyPassword which might be encoded");
     return impl;
 
   }

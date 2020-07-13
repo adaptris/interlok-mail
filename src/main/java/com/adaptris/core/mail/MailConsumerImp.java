@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,33 +19,35 @@ package com.adaptris.core.mail;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.split;
-
 import java.io.Closeable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.mail.internet.MimeMessage;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.BooleanUtils;
-
+import org.apache.commons.lang3.StringUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisPollingConsumer;
+import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.DestinationHelper;
+import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.interlok.resolver.ExternalResolver;
 import com.adaptris.mail.JavamailReceiverFactory;
 import com.adaptris.mail.MailException;
 import com.adaptris.mail.MailReceiver;
 import com.adaptris.mail.MailReceiverFactory;
 import com.adaptris.mail.MatchProxyFactory;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Email implementation of the AdaptrisMessageConsumer interface.
@@ -104,7 +106,39 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
   @InputFieldDefault(value = "ignore-mail-headers")
   private MailHeaderHandler headerHandler;
 
+  /**
+   * The consume destination contains the MailboxURL that we poll.
+   *
+   */
+  @Getter
+  @Setter
+  @Deprecated
+  @Valid
+  @Removal(version = "4.0.0", message = "Use 'mailbox-url' instead")
+  private ConsumeDestination destination;
+
+  /**
+   * The Mailbox specified as a URL.
+   *
+   */
+  @Getter
+  @Setter
+  // Needs to be @NotBlank when destination is removed.
+  private String mailboxUrl;
+
+  /**
+   * The filter expression to use when listing files.
+   * <p>
+   * If not specified then will default in a file filter that matches all files.
+   * </p>
+   */
+  @Getter
+  @Setter
+  private String filterExpression;
+
+
   protected transient MailReceiver mbox;
+  private transient boolean destinationWarningLogged;
 
   public MailConsumerImp() {
     setRegularExpressionStyle(MatchProxyFactory.DEFAULT_REGEXP_STYLE);
@@ -115,9 +149,11 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
 
   @Override
   protected void prepareConsumer() throws CoreException {
+    DestinationHelper.logConsumeDestinationWarning(destinationWarningLogged,
+        () -> destinationWarningLogged = true, getDestination(),
+        "{} uses destination, use path + methods instead", LoggingHelper.friendlyName(this));
+    DestinationHelper.mustHaveEither(getMailboxUrl(), getDestination());
   }
-
-
 
   @Override
   protected int processMessages() {
@@ -162,10 +198,11 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
 
     try {
       mbox = getMailReceiverFactory().createClient(
-          MailHelper.createURLName(getDestination().getDestination(), getUsername(), ExternalResolver.resolve(getPassword())));
+          MailHelper.createURLName(mailboxUrl(), getUsername(),
+              ExternalResolver.resolve(getPassword())));
       //mbox = new MailComNetClient("localhost", 3110, getUsername(), Password.decode(getPassword()));
       mbox.setRegularExpressionCompiler(regularExpressionStyle());
-      Map<String, String> filters = initFilters(getDestination().getFilterExpression());
+      Map<String, String> filters = initFilters(filterExpression());
 
       log.trace("From filter set to [{}]", filters.get(FROM));
       log.trace("Subject filter set to [{}]", filters.get(SUBJECT));
@@ -233,7 +270,7 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
   boolean deleteOnReceive() {
     return BooleanUtils.toBooleanDefaultIfNull(getDeleteOnReceive(), false);
   }
-  
+
   /**
    * returns the regularExpressionSyntax.
    *
@@ -293,11 +330,11 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
 
   /**
    * Specify whether or not to attempt a connection upon {@link #init()}.
-   * 
+   *
    * @param b true to attempt a connection on init, false otherwise, default is true if unspecified.
    */
   public void setAttemptConnectOnInit(Boolean b) {
-    this.attemptConnectOnInit = b;
+    attemptConnectOnInit = b;
   }
 
   boolean attemptConnectOnInit() {
@@ -310,15 +347,15 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
 
   /**
    * Set the type of client to use to connect to the mailbox.
-   * 
+   *
    * @param f the {@link MailReceiverFactory}, default is a {@link JavamailReceiverFactory}
    */
   public void setMailReceiverFactory(MailReceiverFactory f) {
-    this.mailReceiverFactory = f;
+    mailReceiverFactory = f;
   }
 
   /**
-   * 
+   *
    * @since 3.6.5
    */
   public MailHeaderHandler getHeaderHandler() {
@@ -327,15 +364,30 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
 
   /**
    * Specify how to handle mails headers
-   * 
+   *
    * @param mh the handler, defaults to {@link IgnoreMailHeaders}.
    * @since 3.6.5
    */
   public void setHeaderHandler(MailHeaderHandler mh) {
-    this.headerHandler = Args.notNull(mh, "headerHandler");
+    headerHandler = Args.notNull(mh, "headerHandler");
   }
 
   protected MailHeaderHandler headerHandler() {
     return getHeaderHandler();
   }
+
+
+  @Override
+  protected String newThreadName() {
+    return DestinationHelper.threadName(retrieveAdaptrisMessageListener(), getDestination());
+  }
+
+  protected String mailboxUrl() {
+    return DestinationHelper.consumeDestination(getMailboxUrl(), getDestination());
+  }
+
+  protected String filterExpression() {
+    return DestinationHelper.filterExpression(getFilterExpression(), getDestination());
+  }
+
 }

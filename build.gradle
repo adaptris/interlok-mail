@@ -8,6 +8,7 @@ plugins {
   id  "jacoco"
   id 'com.github.spotbugs' version '4.4.4'
   id 'org.owasp.dependencycheck' version '5.3.2.1'
+  id "io.freefair.lombok" version "5.1.0"
 }
 
 ext {
@@ -20,7 +21,7 @@ ext {
   repoPassword = project.hasProperty('repoPassword') ? project.getProperty('repoPassword') : 'unknown'
   defaultNexusRepo = project.hasProperty('defaultNexusRepo') ? project.getProperty('defaultNexusRepo') : 'https://repo1.maven.org/maven2/'
   offlineJavadocPackageDir = new File(project.buildDir, "offline-javadoc-packages")
-
+  delombokTargetDir = new File("${project.projectDir}/src/main/generated")
   interlokJavadocs= project.hasProperty('interlokJavadocs') ? project.getProperty('interlokJavadocs') : javadocsBaseUrl + "/interlok-core/" + interlokCoreVersion
   interlokCommonJavadocs= project.hasProperty('interlokJavadocs') ? project.getProperty('interlokJavadocs') : javadocsBaseUrl + "/interlok-common/" + interlokCoreVersion
   componentName='Interlok/Mail'
@@ -71,6 +72,7 @@ sourceCompatibility = 1.8
 group   = 'com.adaptris'
 version = releaseVersion
 def versionDir = "$buildDir/version"
+generateLombokConfig.enabled = false
 
 repositories {
   mavenCentral()
@@ -233,7 +235,7 @@ task umlJavadoc(type: Javadoc) {
   onlyIf {
     hasGraphViz()
   }
-  source = sourceSets.main.allJava
+  source = sourceSets.main.extensions.delombokTask
   classpath = project.sourceSets.main.compileClasspath
   configure(options) {
     options.linksOffline(interlokJavadocs, offlineJavadocPackageDir.getCanonicalPath() + "/interlok-core-$interlokCoreVersion-javadoc.jar")
@@ -260,11 +262,6 @@ task umlJavadoc(type: Javadoc) {
     title= componentName
   }
 }
-
-javadoc.dependsOn offlinePackageList,umlJavadoc
-check.dependsOn jacocoTestReport
-processTestResources.dependsOn copyUnitTestProperties
-clean.dependsOn deleteUnitTestProperties
 
 artifacts {
   archives javadocJar
@@ -303,6 +300,24 @@ publishing {
   }
 }
 
+delombok {
+  target = delombokTargetDir
+}
+
+task lgtmCompile(type: JavaCompile, dependsOn: delombok) {
+  group 'Build'
+  description 'Compile for lgtm'
+
+  source = sourceSets.main.extensions.delombokTask
+  destinationDir = sourceSets.main.java.outputDir
+  classpath = project.sourceSets.main.compileClasspath
+}
+
+task deleteGeneratedFiles(type: Delete) {
+  delete delombokTargetDir
+}
+
+
 spotbugsMain {
   effort = "max"
   reportLevel = "high"
@@ -335,3 +350,7 @@ dependencyCheck  {
 
 // disable spotbugsTests which checks our test code..
 spotbugsTest.enabled = false
+javadoc.dependsOn offlinePackageList,umlJavadoc
+check.dependsOn jacocoTestReport
+processTestResources.dependsOn copyUnitTestProperties
+clean.dependsOn deleteUnitTestProperties,deleteGeneratedFiles

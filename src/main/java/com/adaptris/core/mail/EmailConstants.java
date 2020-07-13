@@ -5,7 +5,6 @@ import com.adaptris.annotation.Removal;
 /**
  * @deprecated since 3.10.0, slated for removal in 3.11.0.
  */
-@Removal(message = "Use message resolver to reference metadata keys", version = "3.11.0")
 @Deprecated
 public class EmailConstants {
 
@@ -39,10 +38,7 @@ public class EmailConstants {
   /**
    * Metadata key that specifies the total number of attachments.
    *
-   * @deprecated since 3.10.0, slated for removal in 3.11.0.
    */
-  @Removal(message = "Use message resolver to reference metadata keys: %message{emailtotalattachments}", version = "3.11.0")
-  @Deprecated
   public static final String EMAIL_TOTAL_ATTACHMENTS = "emailtotalattachments";
 
   /**
@@ -57,10 +53,7 @@ public class EmailConstants {
   /**
    * Metadata key specifying the email message container from whence a payload may have spawned.
    *
-   * @deprecated since 3.10.0, slated for removal in 3.11.0.
    */
-  @Removal(message = "Use message resolver to reference metadata keys: %message{emailmessageid}", version = "3.11.0")
-  @Deprecated
   public static final String EMAIL_MESSAGE_ID = "emailmessageid";
 
   /**
