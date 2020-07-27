@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,26 +20,33 @@ import java.util.Iterator;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import org.apache.commons.lang3.StringUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataCollection;
 import com.adaptris.core.MetadataElement;
+import com.adaptris.core.ProduceDestination;
+import com.adaptris.core.ProduceException;
 import com.adaptris.core.ProduceOnlyProducerImp;
 import com.adaptris.core.metadata.MetadataFilter;
 import com.adaptris.core.metadata.RemoveAllMetadataFilter;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.DestinationHelper;
 import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.interlok.resolver.ExternalResolver;
 import com.adaptris.mail.MailException;
 import com.adaptris.mail.SmtpClient;
 import com.adaptris.security.exc.PasswordException;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
-import org.apache.commons.lang3.StringUtils;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Abstract implementation of the AdaptrisMessageProducer interface for handling Email.
@@ -97,16 +104,29 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
   private String username;
 
   /**
-   * @see Object#Object()
+   * The destination is a comma separated list of {@code TO} addresses.
+   *
    */
+  @Getter
+  @Setter
+  @Deprecated
+  @Valid
+  @Removal(version = "4.0.0", message = "Use 'to' instead")
+  private ProduceDestination destination;
+
+  /**
+   * Comma separated list of email addresses to send to.
+   */
+  @InputFieldHint(expression = true)
+  @Getter
+  @Setter
+  // Needs to be @NotBlank when destination is removed.
+  private String to;
+
+  private transient boolean destWarning;
   public MailProducer() {
     sessionProperties = new KeyValuePairSet();
     setMetadataFilter(new RemoveAllMetadataFilter());
-  }
-
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
-  @Override
-  public void close() {
   }
 
   /** @see com.adaptris.core.AdaptrisComponent#init() */
@@ -123,18 +143,13 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
     }
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#start() */
-  @Override
-  public void start() throws CoreException {
-  }
-
-  /** @see com.adaptris.core.AdaptrisComponent#stop() */
-  @Override
-  public void stop() {
-  }
-
   @Override
   public void prepare() throws CoreException {
+    DestinationHelper.logWarningIfNotNull(destWarning, () -> destWarning = true, getDestination(),
+        "{} uses destination, use 'to' instead", LoggingHelper.friendlyName(this));
+    // To is optional if you want to just use bcc !.
+    // DestinationHelper.mustHaveEither(getPath(), getDestination());
+
     registerEncoderMessageFactory();
   }
 
@@ -298,7 +313,7 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
    * <p>
    * Any metadata that is returned by this filter will be sent as headers.
    * </p>
-   * 
+   *
    * @param metadataFilter the filter defaults to {@link RemoveAllMetadataFilter}
    * @see MetadataFilter
    * @since 3.0.2
@@ -336,4 +351,10 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
   public void setUsername(String name) {
     username = name;
   }
+
+  @Override
+  public String endpoint(AdaptrisMessage msg) throws ProduceException {
+    return DestinationHelper.resolveProduceDestination(getTo(), getDestination(), msg);
+  }
+
 }

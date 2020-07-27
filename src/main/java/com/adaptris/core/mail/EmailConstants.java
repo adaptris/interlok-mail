@@ -2,10 +2,6 @@ package com.adaptris.core.mail;
 
 import com.adaptris.annotation.Removal;
 
-/**
- * @deprecated since 3.10.0, slated for removal in 3.11.0.
- */
-@Deprecated
 public class EmailConstants {
 
   /**

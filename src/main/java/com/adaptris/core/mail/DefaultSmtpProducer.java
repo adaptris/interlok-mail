@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,6 +17,7 @@
 package com.adaptris.core.mail;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -26,11 +27,9 @@ import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.NullConnection;
-import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.mail.SmtpClient;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * Email implementation of the AdaptrisMessageProducer interface.
@@ -75,7 +74,8 @@ import org.apache.commons.lang3.StringUtils;
 @XStreamAlias("default-smtp-producer")
 @AdapterComponent
 @ComponentProfile(summary = "Send an email", tag = "producer,email,smtp,mail", recommended = {NullConnection.class})
-@DisplayOrder(order = {"smtpUrl", "username", "password", "subject", "from", "ccList", "bccList"})
+@DisplayOrder(order = {"to", "from", "subject", "ccList", "bccList", "smtpUrl", "username",
+    "password",})
 public class DefaultSmtpProducer extends MailProducer {
 
   @AdvancedConfig
@@ -105,18 +105,13 @@ public class DefaultSmtpProducer extends MailProducer {
     super();
   }
 
-  /**
-   * @see com.adaptris.core.AdaptrisMessageProducer #produce(AdaptrisMessage,
-   *      ProduceDestination)
-   */
   @Override
-  public void produce(AdaptrisMessage msg, ProduceDestination destination)
+  public void doProduce(AdaptrisMessage msg, String toAddresses)
       throws ProduceException {
     try {
       SmtpClient smtp = getClient(msg);
       smtp.setEncoding(msg.resolve(contentEncoding()));
       byte[] encodedPayload = encode(msg);
-      String toAddresses = destination != null ? destination.getDestination(msg) : null;
       if (!StringUtils.isEmpty(toAddresses)) {
         smtp.addTo(toAddresses);
       }
@@ -249,11 +244,11 @@ public class DefaultSmtpProducer extends MailProducer {
 
   /**
    * Set the attachment content encoding.
-   * 
+   *
    * @param enc the encoding for the attachment.
    */
   public void setAttachmentContentEncoding(String enc) {
-    this.attachmentContentEncoding = enc;
+    attachmentContentEncoding = enc;
   }
 
   String attachmentContentEncoding() {

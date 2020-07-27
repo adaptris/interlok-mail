@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -424,7 +424,7 @@ public class DefaultMailProducerTest extends MailProducerExample {
   protected List<StandaloneProducer> retrieveObjectsForSampleConfig() {
     List<StandaloneProducer> result = new ArrayList<>();
     DefaultSmtpProducer smtp = new DefaultSmtpProducer();
-    smtp.setDestination(new ConfiguredProduceDestination("user@domain"));
+    smtp.setTo("user@domain");
     smtp.getSessionProperties().addKeyValuePair(new KeyValuePair("mail.smtp.starttls.enable", "true"));
     smtp.setSubject("Configured subject");
     smtp.setSmtpUrl("smtp://localhost:25");
@@ -435,7 +435,7 @@ public class DefaultMailProducerTest extends MailProducerExample {
     result.add(new StandaloneProducer(smtp));
 
     DefaultSmtpProducer smtps = new DefaultSmtpProducer();
-    smtps.setDestination(new ConfiguredProduceDestination("user@domain"));
+    smtps.setTo("user@domain");
     smtps.getSessionProperties().addKeyValuePair(new KeyValuePair("mail.smtp.starttls.enable", "true"));
     smtps.setSubject("Configured subject");
     smtps.setSmtpUrl("smtps://username%40gmail.com:mypassword;@smtp.gmail.com:465");
