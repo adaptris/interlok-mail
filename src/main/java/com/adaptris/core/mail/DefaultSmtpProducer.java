@@ -24,44 +24,46 @@ import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
+import com.adaptris.core.CoreException;
 import com.adaptris.core.NullConnection;
 import com.adaptris.core.ProduceException;
+import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.mail.SmtpClient;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import lombok.NoArgsConstructor;
 
 /**
  * Email implementation of the AdaptrisMessageProducer interface.
  * <p>
- * Because email is implicitly asynchronous, Request-Reply is invalid, and as such if the request method is used, an
- * <code>UnsupportedOperationException</code> is thrown.
+ * Because email is implicitly asynchronous, Request-Reply is invalid, and as such if the request
+ * method is used, an <code>UnsupportedOperationException</code> is thrown.
  * <p>
- * Available Content-Encoding schemes that are supported are the same as those specified in RFC2045. They include "base64",
- * "quoted-printable", "7bit", "8bit" and "binary
+ * Available Content-Encoding schemes that are supported are the same as those specified in RFC2045.
+ * They include "base64", "quoted-printable", "7bit", "8bit" and "binary
  * </p>
  * <p>
- * The Content-Type may be any arbitary string such as application/edi-x12, however if no appropriate
- * <code>DataContentHandler</code> is installed, then the results can be undefined
+ * The Content-Type may be any arbitary string such as application/edi-x12, however if no
+ * appropriate <code>DataContentHandler</code> is installed, then the results can be undefined
  * </p>
  * <p>
  * The following metadata elements will change behaviour.
  * <ul>
- * <li>emailsubject - Override the configured subject with the value stored against this key.
- * <li>emailtemplatebody - If the producer is configured to send the payload as an attachment, the value stored against this key
- * will be used as the message body.</li>
- * <li>emailattachmentfilename - If this is set, and the message is to be sent as an attachment, then this will be used as the
- * filename, otherwise the messages unique id will be used.</li>
- * <li>emailattachmentcontenttype - If this is set, and the message is to be sent as an attachment, then this will be used as the
+ * <li>emailtemplatebody - If the producer is configured to send the payload as an attachment, the
+ * value stored against this key will be used as the message body.</li>
+ * <li>emailattachmentfilename - If this is set, and the message is to be sent as an attachment,
+ * then this will be used as the filename, otherwise the messages unique id will be used.</li>
  * attachment content-type, otherwise the default setting (or configured setting) will be used.</li>
- * <li>emailcc - If this is set, this this comma separated list will override any configured CC list.</li>
  * </ul>
  * <p>
- * It is possible to control the underlying behaviour of this producer through the use of various properties that will be passed to
- * the <code>javax.mail.Session</code> instance. You need to refer to the javamail documentation to see a list of the available
- * properties and meanings.
+ * It is possible to control the underlying behaviour of this producer through the use of various
+ * properties that will be passed to the <code>javax.mail.Session</code> instance. You need to refer
+ * to the javamail documentation to see a list of the available properties and meanings.
  * </p>
  *
+ * @deprecated since 3.11.0 Use {@link SendEmail} or {@link SendEmailAttachment} instead.
  * @config default-smtp-producer
  *
  * @see MailProducer
@@ -75,7 +77,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Send an email", tag = "producer,email,smtp,mail", recommended = {NullConnection.class})
 @DisplayOrder(order = {"to", "from", "subject", "ccList", "bccList", "smtpUrl", "username",
-    "password",})
+    "password"})
+@Deprecated
+@Removal(version = "4.0.0", message = "Use send-email or send-email-attachment instead")
+@NoArgsConstructor
 public class DefaultSmtpProducer extends MailProducer {
 
   @AdvancedConfig
@@ -98,11 +103,14 @@ public class DefaultSmtpProducer extends MailProducer {
   @InputFieldHint(expression = true)
   private String attachmentContentEncoding = null;
 
-  /**
-   * @see Object#Object()
-   */
-  public DefaultSmtpProducer() {
-    super();
+  private transient boolean classUsageLogged;
+
+  @Override
+  public void prepare() throws CoreException {
+    LoggingHelper.logWarning(classUsageLogged, () -> classUsageLogged = true,
+        "{} is a default-smtp-producer which is deprecated, use 'send-mail' or 'send-attachment' instead",
+        LoggingHelper.friendlyName(this));
+    super.prepare();
   }
 
   @Override

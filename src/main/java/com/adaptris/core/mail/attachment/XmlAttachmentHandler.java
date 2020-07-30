@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -50,7 +50,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * contain namespaces, then Saxon can cause merry havoc in the sense that {@code //NonNamespaceXpath} doesn't work if the document
  * has namespaces in it. We have included a shim so that behaviour can be toggled based on what you have configured.
  * </p>
- * 
+ *
  * @see XPath#newXPathInstance(DocumentBuilderFactoryBuilder, NamespaceContext)
  * @config mail-xml-attachment-handler
  */
@@ -200,12 +200,12 @@ public class XmlAttachmentHandler implements AttachmentHandler {
    * <li>The key is the namespace prefix</li>
    * <li>The value is the namespace uri</li>
    * </ul>
-   * 
+   *
    * @param kvps the namespace context
    * @see SimpleNamespaceContext#create(KeyValuePairSet)
    */
   public void setNamespaceContext(KeyValuePairSet kvps) {
-    this.namespaceContext = kvps;
+    namespaceContext = kvps;
   }
 
   public String getAttachmentEncoding() {
@@ -214,11 +214,11 @@ public class XmlAttachmentHandler implements AttachmentHandler {
 
   /**
    * Specify the Content-Transfer-Encoding to be associated with each attachment.
-   * 
+   *
    * @param e the encoding; default is base64 if not specified.
    */
   public void setAttachmentEncoding(String e) {
-    this.attachmentEncoding = e;
+    attachmentEncoding = e;
   }
 
   public XmlAttachmentHandler withAttachmentEncoding(String s) {
@@ -231,10 +231,10 @@ public class XmlAttachmentHandler implements AttachmentHandler {
   }
 
   public void setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder xml) {
-    this.xmlDocumentFactoryConfig = xml;
+    xmlDocumentFactoryConfig = xml;
   }
 
   DocumentBuilderFactoryBuilder documentFactoryBuilder() {
-    return DocumentBuilderFactoryBuilder.newInstance(getXmlDocumentFactoryConfig());
+    return DocumentBuilderFactoryBuilder.newInstanceIfNull(getXmlDocumentFactoryConfig());
   }
 }
