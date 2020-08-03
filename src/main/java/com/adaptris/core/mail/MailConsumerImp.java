@@ -149,7 +149,7 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
 
   @Override
   protected void prepareConsumer() throws CoreException {
-    DestinationHelper.logConsumeDestinationWarning(destinationWarningLogged,
+    DestinationHelper.logWarningIfNotNull(destinationWarningLogged,
         () -> destinationWarningLogged = true, getDestination(),
         "{} uses destination, use path + methods instead", LoggingHelper.friendlyName(this));
     DestinationHelper.mustHaveEither(getMailboxUrl(), getDestination());
