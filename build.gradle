@@ -24,6 +24,7 @@ ext {
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
   interlokJavadocs= project.hasProperty('interlokJavadocs') ? project.getProperty('interlokJavadocs') : javadocsBaseUrl + "/interlok-core/" + interlokCoreVersion
   interlokCommonJavadocs= project.hasProperty('interlokJavadocs') ? project.getProperty('interlokJavadocs') : javadocsBaseUrl + "/interlok-common/" + interlokCoreVersion
+  verboseTests= project.findProperty('verboseTests') ?: "false"
   componentName='Interlok/Mail'
   organizationName = "Adaptris Ltd"
   organizationUrl = "http://interlok.adaptris.net"
@@ -67,6 +68,9 @@ ext.buildInfo = { ->
 }
 
 
+ext.verboseTestLogging = { ->
+  return verboseTests.equals("true")
+}
 
 sourceCompatibility = 1.8
 group   = 'com.adaptris'
@@ -318,6 +322,14 @@ task deleteGeneratedFiles(type: Delete) {
   delete delombokTargetDir
 }
 
+test {
+  // listen to events in the test execution lifecycle
+  beforeSuite { descriptor ->
+     if (verboseTestLogging()) {
+      logger.lifecycle("Running: " + descriptor)
+     }
+  }
+}
 
 spotbugsMain {
   effort = "max"

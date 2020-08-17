@@ -24,7 +24,6 @@ jobs:
           command: |
             mkdir -p ~/.gradle
             echo "org.gradle.warning.mode=none" > ~/.gradle/gradle.properties
-
             echo "mail.tests.enabled=false" >> ~/project/src/test/resources/unit-tests.properties.template
 
       # Download and cache dependencies
@@ -78,7 +77,6 @@ jobs:
             sudo apt-get -y install graphviz
             mkdir -p ~/.gradle
             echo "org.gradle.warning.mode=none" > ~/.gradle/gradle.properties
-
             echo "mail.tests.enabled=false" >> ~/project/src/test/resources/unit-tests.properties.template
 
       # Download and cache dependencies
@@ -129,6 +127,7 @@ jobs:
           command: |
             mkdir -p ~/.gradle
             echo "org.gradle.warning.mode=none" > ~/.gradle/gradle.properties
+            echo "mail.tests.enabled=false" >> ~/project/src/test/resources/unit-tests.properties.template
 
 
       # Download and cache dependencies
