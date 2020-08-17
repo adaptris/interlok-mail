@@ -122,7 +122,8 @@ dependencies {
     changing= true
     exclude group: "org.apache.logging.log4j"
   }
-  testCompile ("org.mockito:mockito-all:1.10.19")
+  testCompile ("org.mockito:mockito-core:3.5.0")
+  testCompile ("org.mockito:mockito-inline:3.5.0")
   testCompile ("com.icegreen:greenmail:1.5.14")
 
   javadoc("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true}
