@@ -166,14 +166,3 @@ workflows:
     jobs:
       - build
       - buildjava11
-
-  nightly:
-    triggers:
-      - schedule:
-          cron: "00 05 * * *"
-          filters:
-            branches:
-              only:
-                - develop
-    jobs:
-      - build
