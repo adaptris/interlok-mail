@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -67,9 +67,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * with multiple attachments from the same AdaptrisMessage. Additionally, this does not use any configured encode as the MailCreator
  * interface will create the appropriate outputs.
  * </p>
- * 
+ *
  * @config multi-attachment-smtp-producer
- * 
+ *
  * @see MailProducer
  * @see EmailConstants#EMAIL_SUBJECT
  * @see EmailConstants#EMAIL_CC_LIST
@@ -115,11 +115,11 @@ public class MultiAttachmentSmtpProducer extends MailProducer {
    *      ProduceDestination)
    */
   @Override
-  public void produce(AdaptrisMessage msg, ProduceDestination destination)
+  public void doProduce(AdaptrisMessage msg, String toAddresses)
       throws ProduceException {
     try {
       SmtpClient smtp = getClient(msg);
-      smtp.addTo(destination.getDestination(msg));
+      smtp.addTo(toAddresses);
       addBody(smtp, mailCreator.createBody(msg));
       addAttachments(smtp, mailCreator.createAttachments(msg));
       smtp.setEncoding(msg.resolve(contentEncoding()));

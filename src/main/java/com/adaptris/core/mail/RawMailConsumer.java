@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,18 +17,14 @@
 package com.adaptris.core.mail;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.BooleanUtils;
-
+import org.apache.commons.lang3.StringUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -46,17 +42,18 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * The raw MimeMessage will not be parsed, and the contents of the entire MimeMessage will be used to create a single
  * AdaptrisMessage instance for processing. Additionally, any configured encoder will be ignored.
  * </p>
- * 
+ *
  * @config raw-mail-consumer
- * 
- * 
+ *
+ *
  * @see MailConsumerImp
  */
 @XStreamAlias("raw-mail-consumer")
 @AdapterComponent
 @ComponentProfile(summary = "Pickup messages from a email account without trying to parse the MIME message.",
     tag = "consumer,email", recommended = {NullConnection.class})
-@DisplayOrder(order = {"poller", "username", "password", "mailReceiverFactory", "headerHandler"})
+@DisplayOrder(order = {"mailboxUrl", "poller", "username", "password", "mailReceiverFactory",
+    "headerHandler"})
 public class RawMailConsumer extends MailConsumerImp {
 
   @AdvancedConfig
@@ -118,4 +115,5 @@ public class RawMailConsumer extends MailConsumerImp {
   boolean useEmailMessageIdAsUniqueId() {
     return BooleanUtils.toBooleanDefaultIfNull(getUseEmailMessageIdAsUniqueId(), false);
   }
+
 }

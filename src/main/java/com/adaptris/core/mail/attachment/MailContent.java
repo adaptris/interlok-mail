@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,14 +17,10 @@
 package com.adaptris.core.mail.attachment;
 
 import java.security.MessageDigest;
-
 import javax.mail.internet.ContentType;
 import javax.mail.internet.ParseException;
-
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import com.adaptris.util.text.Conversion;
 
 /**
  * Representation of the body of a mail message.
@@ -79,7 +75,7 @@ public class MailContent {
       MessageDigest md = MessageDigest.getInstance("MD5");
       md.update(b);
       byte[] hash = md.digest();
-      result = Conversion.byteArrayToBase64String(hash);
+      result = java.util.Base64.getEncoder().encodeToString(hash);
     }
     catch (Exception e) {
       ;

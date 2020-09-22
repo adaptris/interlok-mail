@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,11 +38,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Each Mime part of the incoming email message will become a separate AdaptrisMessage; attachments are processed separately from
  * the mail body itelf.
  * </p>
- * 
- * 
+ *
+ *
  * @config default-mail-consumer
- * 
- * 
+ *
+ *
  * @see MailConsumerImp
  */
 @XStreamAlias("default-mail-consumer")
@@ -50,9 +50,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(summary = "Pickup messages from a email account parsing the MIME message", tag = "consumer,email", metadata =
 {
     "emailmessageid", "emailtotalattachments", "emailattachmentfilename", "emailattachmentcontenttype"
-}, 
+},
     recommended = {NullConnection.class})
-@DisplayOrder(order = {"poller", "username", "password", "mailReceiverFactory", "partSelector", "headerHandler"})
+@DisplayOrder(order = {"mailboxUrl", "poller", "username", "password", "mailReceiverFactory",
+    "partSelector", "headerHandler"})
 public class DefaultMailConsumer extends ParsingMailConsumerImpl {
 
   /**
