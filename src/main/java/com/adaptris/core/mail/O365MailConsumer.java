@@ -27,7 +27,12 @@ import com.adaptris.core.AdaptrisPollingConsumer;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MultiPayloadAdaptrisMessage;
 import com.adaptris.core.util.DestinationHelper;
-import com.microsoft.aad.msal4j.*;
+import com.microsoft.aad.msal4j.IAccount;
+import com.microsoft.aad.msal4j.IAuthenticationResult;
+import com.microsoft.aad.msal4j.MsalException;
+import com.microsoft.aad.msal4j.PublicClientApplication;
+import com.microsoft.aad.msal4j.SilentParameters;
+import com.microsoft.aad.msal4j.UserNamePasswordParameters;
 import com.microsoft.graph.models.extensions.Attachment;
 import com.microsoft.graph.models.extensions.FileAttachment;
 import com.microsoft.graph.models.extensions.IGraphServiceClient;
@@ -35,17 +40,14 @@ import com.microsoft.graph.models.extensions.InternetMessageHeader;
 import com.microsoft.graph.models.extensions.Message;
 import com.microsoft.graph.requests.extensions.GraphServiceClient;
 import com.microsoft.graph.requests.extensions.IAttachmentCollectionPage;
-import com.microsoft.graph.requests.extensions.IAttachmentRequest;
 import com.microsoft.graph.requests.extensions.IMessageCollectionPage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.With;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.constraints.NotBlank;
-import java.net.URL;
 import java.util.Base64;
 import java.util.Set;
 
@@ -133,6 +135,13 @@ public class O365MailConsumer extends AdaptrisPollingConsumer
     int count = 0;
     try
     {
+
+      /*
+       * FIXME Figure out how to actually get a valid token!  Either as
+       *  an application that can access all mailboxes for all AD users
+       *  or as a user that can access their own mailbox, but without a
+       *  prompt being displayed.
+       */
 //      IAuthenticationResult iAuthResult = getAccessToken(application, account);
 //
 //      log.info("Access token:     " + iAuthResult.accessToken());
@@ -141,6 +150,7 @@ public class O365MailConsumer extends AdaptrisPollingConsumer
 
       IGraphServiceClient graphClient = GraphServiceClient.builder().authenticationProvider(request -> request.addHeader("Authorization", "Bearer " + accessToken)).buildClient();
 
+      // TODO Allow the user to choose the folder and filter themselves
       IMessageCollectionPage messages = graphClient.users(username).mailFolders("inbox").messages().buildRequest().filter("isRead eq false").get();
 
       // TODO handle multiple pages...

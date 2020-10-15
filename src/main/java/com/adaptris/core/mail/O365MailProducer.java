@@ -11,8 +11,6 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.MultiPayloadAdaptrisMessage;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ProduceOnlyProducerImp;
-import com.adaptris.core.util.DestinationHelper;
-import com.adaptris.util.KeyValuePairList;
 import com.microsoft.aad.msal4j.IAccount;
 import com.microsoft.aad.msal4j.IAuthenticationResult;
 import com.microsoft.aad.msal4j.MsalException;
@@ -27,14 +25,12 @@ import com.microsoft.graph.models.extensions.ItemBody;
 import com.microsoft.graph.models.extensions.Message;
 import com.microsoft.graph.models.extensions.Recipient;
 import com.microsoft.graph.models.generated.BodyType;
-import com.microsoft.graph.requests.extensions.AttachmentCollectionPage;
 import com.microsoft.graph.requests.extensions.GraphServiceClient;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.jetty.plus.jndi.Link;
 
 import javax.validation.constraints.NotBlank;
 import java.util.LinkedList;
@@ -146,6 +142,19 @@ public class O365MailProducer extends ProduceOnlyProducerImp
   {
     try
     {
+
+      /*
+       * FIXME Figure out how to actually get a valid token!  Either as
+       *  an application that can access all mailboxes for all AD users
+       *  or as a user that can access their own mailbox, but without a
+       *  prompt being displayed.
+       */
+//      IAuthenticationResult iAuthResult = getAccessToken(application, account);
+//
+//      log.info("Access token:     " + iAuthResult.accessToken());
+//      log.info("Id token:         " + iAuthResult.idToken());
+//      log.info("Account username: " + iAuthResult.account().username());
+
       IGraphServiceClient graphClient = GraphServiceClient.builder().authenticationProvider(request -> request.addHeader("Authorization", "Bearer " + accessToken)).buildClient();
 
       Message outlookMessage = new Message();
