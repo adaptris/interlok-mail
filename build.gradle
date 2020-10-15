@@ -115,6 +115,9 @@ dependencies {
   compile ("com.adaptris:interlok-common:$interlokCoreVersion") { changing= true}
   compile ("com.sun.mail:jakarta.mail:1.6.5")
 
+  compile group: "com.microsoft.azure", name: "msal4j", version: "1.6.2"
+  compile group: "com.microsoft.graph", name: "microsoft-graph", version: "2.3.1"
+
   annotationProcessor ("com.adaptris:interlok-core-apt:$interlokCoreVersion") {changing= true}
   umlDoclet("nl.talsmasoftware:umldoclet:1.1.4")
 
