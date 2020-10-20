@@ -27,12 +27,10 @@ import com.adaptris.core.AdaptrisPollingConsumer;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MultiPayloadAdaptrisMessage;
 import com.adaptris.core.util.DestinationHelper;
-import com.microsoft.aad.msal4j.IAccount;
+import com.microsoft.aad.msal4j.ClientCredentialFactory;
+import com.microsoft.aad.msal4j.ClientCredentialParameters;
+import com.microsoft.aad.msal4j.ConfidentialClientApplication;
 import com.microsoft.aad.msal4j.IAuthenticationResult;
-import com.microsoft.aad.msal4j.MsalException;
-import com.microsoft.aad.msal4j.PublicClientApplication;
-import com.microsoft.aad.msal4j.SilentParameters;
-import com.microsoft.aad.msal4j.UserNamePasswordParameters;
 import com.microsoft.graph.models.extensions.Attachment;
 import com.microsoft.graph.models.extensions.FileAttachment;
 import com.microsoft.graph.models.extensions.IGraphServiceClient;
@@ -45,11 +43,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.constraints.NotBlank;
 import java.util.Base64;
-import java.util.Set;
+import java.util.Collections;
 
 /**
  * Implementation of an email consumer that is geared towards Microsoft
@@ -60,16 +57,15 @@ import java.util.Set;
 @XStreamAlias("office-365-mail-consumer")
 @AdapterComponent
 @ComponentProfile(summary = "Pickup email from a Microsoft Office 365 account using the Microsoft Graph API", tag = "consumer,email,o365,microsoft,office,outlook,365")
-@DisplayOrder(order = { "clientId", "tenantId", "clientSecret", "scope", "username", "password" })
+@DisplayOrder(order = { "applicationId", "tenantId", "clientSecret", "username" })
 public class O365MailConsumer extends AdaptrisPollingConsumer
 {
-  private static final String DEFAULT_TENANT = "common";
-  private static final String[] DEFAULT_SCOPES = { "Mail.Read", "Mail.ReadBasic", "Mail.ReadWrite", "Mail.Read.All", "Mail.ReadBasic.All" };
+  private static final String SCOPE = "https://graph.microsoft.com/.default";
 
   @Getter
   @Setter
   @NotBlank
-  private String clientId;
+  private String applicationId;
 
   @Getter
   @Setter
@@ -83,25 +79,8 @@ public class O365MailConsumer extends AdaptrisPollingConsumer
 
   @Getter
   @Setter
-  @AdvancedConfig(rare = true)
-//  @InputFieldDefault(Arrays.stream(DEFAULT_SCOPES).reduce((a, b) -> a + "," + b))
-  private Set<String> scopes;
-
-  @Getter
-  @Setter
   @NotBlank
   private String username;
-
-  @Getter
-  @Setter
-  @NotBlank
-  private String password;
-
-  @Getter
-  @Setter
-  @NotBlank
-  // FIXME remove before release!
-  private String accessToken;
 
   @Getter
   @Setter
@@ -110,17 +89,17 @@ public class O365MailConsumer extends AdaptrisPollingConsumer
   @InputFieldDefault("false")
   private Boolean delete;
 
-  private transient PublicClientApplication application;
-  private transient IAccount account;
+  private transient ConfidentialClientApplication confidentialClientApplication;
 
   @Override
   protected void prepareConsumer() throws CoreException
   {
     try
     {
-      application = PublicClientApplication.builder(clientId).authority(tenant()).build();
-      Set<IAccount> accountsInCache = application.getAccounts().join();
-      account = getAccountByUsername(accountsInCache);
+      confidentialClientApplication = ConfidentialClientApplication.builder(applicationId,
+          ClientCredentialFactory.createFromSecret(clientSecret))
+          .authority(tenant())
+          .build();
     }
     catch (Exception e)
     {
@@ -132,25 +111,16 @@ public class O365MailConsumer extends AdaptrisPollingConsumer
   @Override
   protected int processMessages()
   {
+    log.debug("Polling for mail in Office365 as user " + username);
+
     int count = 0;
     try
     {
+      IAuthenticationResult iAuthResult = confidentialClientApplication.acquireToken(ClientCredentialParameters.builder(Collections.singleton(SCOPE)).build()).join();
+      log.trace("Access token: " + iAuthResult.accessToken());
+      IGraphServiceClient graphClient = GraphServiceClient.builder().authenticationProvider(request -> request.addHeader("Authorization", "Bearer " + iAuthResult.accessToken())).buildClient();
 
-      /*
-       * FIXME Figure out how to actually get a valid token!  Either as
-       *  an application that can access all mailboxes for all AD users
-       *  or as a user that can access their own mailbox, but without a
-       *  prompt being displayed.
-       */
-//      IAuthenticationResult iAuthResult = getAccessToken(application, account);
-//
-//      log.info("Access token:     " + iAuthResult.accessToken());
-//      log.info("Id token:         " + iAuthResult.idToken());
-//      log.info("Account username: " + iAuthResult.account().username());
-
-      IGraphServiceClient graphClient = GraphServiceClient.builder().authenticationProvider(request -> request.addHeader("Authorization", "Bearer " + accessToken)).buildClient();
-
-      // TODO Allow the user to choose the folder and filter themselves
+      // TODO Allow the end user to choose the folder and filter themselves
       IMessageCollectionPage messages = graphClient.users(username).mailFolders("inbox").messages().buildRequest().filter("isRead eq false").get();
 
       // TODO handle multiple pages...
@@ -233,65 +203,9 @@ public class O365MailConsumer extends AdaptrisPollingConsumer
     return DestinationHelper.threadName(retrieveAdaptrisMessageListener(), null);
   }
 
-  /**
-   * Helper function to return an account from a given set of accounts based on the given username,
-   * or return null if no accounts in the set match
-   */
-  private IAccount getAccountByUsername(Set<IAccount> accounts)
-  {
-    if (accounts.isEmpty())
-    {
-      log.debug("No accounts in cache");
-    }
-    else
-    {
-      log.debug("Total accounts in cache: " + accounts.size());
-      for (IAccount account : accounts)
-      {
-        if (account.username().equals(username))
-        {
-          return account;
-        }
-      }
-    }
-    return null;
-  }
-
-  private IAuthenticationResult getAccessToken(PublicClientApplication pca, IAccount account) throws Exception
-  {
-    IAuthenticationResult result;
-    try
-    {
-      SilentParameters silentParameters = SilentParameters.builder(scopes()).account(account).build();
-      // Try to acquire token silently. This will fail on the first acquireTokenUsernamePassword() call
-      // because the token cache does not have any data for the user you are trying to acquire a token for
-      result = pca.acquireTokenSilently(silentParameters).join();
-    }
-    catch (Exception ex)
-    {
-      if (ex.getCause() instanceof MsalException)
-      {
-        UserNamePasswordParameters parameters = UserNamePasswordParameters.builder(scopes(), username, password.toCharArray()).build();
-        // Try to acquire a token via username/password.
-        result = pca.acquireToken(parameters).join();
-      }
-      else
-      {
-        // Handle other exceptions accordingly
-        throw ex;
-      }
-    }
-    return result;
-  }
-
   private String tenant()
   {
-    return String.format("https://login.microsoftonline.com/%s", StringUtils.defaultString(tenantId, DEFAULT_TENANT));
-  }
-
-  private Set<String> scopes()
-  {
-    return scopes != null ? scopes : Set.of(DEFAULT_SCOPES);
+    return String.format("https://login.microsoftonline.com/%s", tenantId);
   }
 
   private boolean delete()
