@@ -166,7 +166,7 @@ public class O365MailProducer extends ProduceOnlyProducerImp
         }
       }
 
-      graphClient.users(user).sendMail(outlookMessage, save()).buildRequest();//.post();
+      graphClient.users(user).sendMail(outlookMessage, save()).buildRequest().post();
     }
     catch (Exception e)
     {

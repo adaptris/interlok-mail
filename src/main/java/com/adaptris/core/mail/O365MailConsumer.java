@@ -126,7 +126,7 @@ public class O365MailConsumer extends AdaptrisPollingConsumer
       // TODO handle multiple pages...
       for (Message outlookMessage : messages.getCurrentPage())
       {
-        log.debug("Found {} messages on page", messages.getCurrentPage().size());
+        log.debug("Found {} messages", messages.getCurrentPage().size());
 
         String id = outlookMessage.id;
         AdaptrisMessage adaptrisMessage = getMessageFactory().newMessage(outlookMessage.body.content);
@@ -141,12 +141,16 @@ public class O365MailConsumer extends AdaptrisPollingConsumer
         adaptrisMessage.addMetadata("From", outlookMessage.from.emailAddress.address);
         adaptrisMessage.addMetadata("CC", String.join(",", outlookMessage.ccRecipients.stream().map(r -> r.emailAddress.address).toArray(String[]::new)));
 
+        log.debug("Processing email from {}: {}", outlookMessage.from.emailAddress.address, outlookMessage.subject);
+
         if (adaptrisMessage instanceof MultiPayloadAdaptrisMessage && outlookMessage.hasAttachments)
         {
           MultiPayloadAdaptrisMessage multiPayloadAdaptrisMessage = (MultiPayloadAdaptrisMessage)adaptrisMessage;
           IAttachmentCollectionPage attachments = graphClient.users(username).messages(id).attachments().buildRequest().get();
           for (Attachment attachment : attachments.getCurrentPage())
           {
+            log.debug("Message has {} attachments", attachments.getCurrentPage().size());
+
             if (attachment instanceof FileAttachment)
             {
               byte[] bytes = Base64.getDecoder().decode(((FileAttachment)attachment).contentBytes);
