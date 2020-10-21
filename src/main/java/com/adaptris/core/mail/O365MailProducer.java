@@ -44,7 +44,7 @@ import java.util.List;
 @XStreamAlias("office-365-mail-producer")
 @AdapterComponent
 @ComponentProfile(summary = "Send email using a Microsoft Office 365 account using the Microsoft Graph API", tag = "producer,email,o365,microsoft,office,outlook,365")
-@DisplayOrder(order = { "applicationId", "tenantId", "clientSecret", "username" })
+@DisplayOrder(order = { "applicationId", "tenantId", "clientSecret", "username", "subject", "toRecipients", "ccRecipients", "bccRecipients", "save" })
 public class O365MailProducer extends ProduceOnlyProducerImp
 {
   private static final String SCOPE = "https://graph.microsoft.com/.default";
@@ -78,19 +78,19 @@ public class O365MailProducer extends ProduceOnlyProducerImp
   @Getter
   @Setter
   @NotBlank
-  @InputFieldHint(expression = true)
+  @InputFieldHint(friendly = "Comma separated list of email addresses", expression = true)
   private String toRecipients;
 
   @Getter
   @Setter
   @AdvancedConfig
-  @InputFieldHint(expression = true)
+  @InputFieldHint(friendly = "Comma separated list of email addresses", expression = true)
   private String ccRecipients;
 
   @Getter
   @Setter
   @AdvancedConfig
-  @InputFieldHint(expression = true)
+  @InputFieldHint(friendly = "Comma separated list of email addresses", expression = true)
   private String bccRecipients;
 
   @Getter

@@ -57,7 +57,7 @@ import java.util.Collections;
 @XStreamAlias("office-365-mail-consumer")
 @AdapterComponent
 @ComponentProfile(summary = "Pickup email from a Microsoft Office 365 account using the Microsoft Graph API", tag = "consumer,email,o365,microsoft,office,outlook,365")
-@DisplayOrder(order = { "applicationId", "tenantId", "clientSecret", "username" })
+@DisplayOrder(order = { "applicationId", "tenantId", "clientSecret", "username", "delete" })
 public class O365MailConsumer extends AdaptrisPollingConsumer
 {
   private static final String SCOPE = "https://graph.microsoft.com/.default";
