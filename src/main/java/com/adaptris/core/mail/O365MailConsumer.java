@@ -38,13 +38,18 @@ import com.microsoft.graph.models.extensions.InternetMessageHeader;
 import com.microsoft.graph.models.extensions.Message;
 import com.microsoft.graph.requests.extensions.GraphServiceClient;
 import com.microsoft.graph.requests.extensions.IAttachmentCollectionPage;
+import com.microsoft.graph.requests.extensions.IAttachmentRequest;
 import com.microsoft.graph.requests.extensions.IMessageCollectionPage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.BooleanUtils;
 
+import javax.mail.BodyPart;
+import javax.mail.internet.MimeMultipart;
+import javax.mail.util.ByteArrayDataSource;
 import javax.validation.constraints.NotBlank;
+import java.io.ByteArrayInputStream;
 import java.util.Base64;
 import java.util.Collections;
 
@@ -124,10 +129,9 @@ public class O365MailConsumer extends AdaptrisPollingConsumer
       IMessageCollectionPage messages = graphClient.users(username).mailFolders("inbox").messages().buildRequest().filter("isRead eq false").get();
 
       // TODO handle multiple pages...
+      log.debug("Found {} messages", messages.getCurrentPage().size());
       for (Message outlookMessage : messages.getCurrentPage())
       {
-        log.debug("Found {} messages", messages.getCurrentPage().size());
-
         String id = outlookMessage.id;
         AdaptrisMessage adaptrisMessage = getMessageFactory().newMessage(outlookMessage.body.content);
 
@@ -147,14 +151,26 @@ public class O365MailConsumer extends AdaptrisPollingConsumer
         {
           MultiPayloadAdaptrisMessage multiPayloadAdaptrisMessage = (MultiPayloadAdaptrisMessage)adaptrisMessage;
           IAttachmentCollectionPage attachments = graphClient.users(username).messages(id).attachments().buildRequest().get();
-          for (Attachment attachment : attachments.getCurrentPage())
+          log.debug("Message has {} attachments", attachments.getCurrentPage().size());
+          for (Attachment reference : attachments.getCurrentPage())
           {
-            log.debug("Message has {} attachments", attachments.getCurrentPage().size());
-
+            log.debug("Attachment {} is of type {} with size {}", reference.name, reference.oDataType, reference.size);
+            IAttachmentRequest request = graphClient.users(username).messages(id).attachments(reference.id).buildRequest();//new QueryOption("$value", ""));
+            log.debug("URL: {}", request.getRequestUrl());
+            Attachment attachment = request.get();
             if (attachment instanceof FileAttachment)
             {
-              byte[] bytes = Base64.getDecoder().decode(((FileAttachment)attachment).contentBytes);
-              multiPayloadAdaptrisMessage.addPayload(attachment.name, bytes);
+              FileAttachment file = (FileAttachment)attachment;
+              log.debug("File {} :: {} :: {}", file.name, file.contentType, file.size);
+              if (file.contentType.startsWith("multipart"))
+              {
+                MimeMultipart mimeMultipart = new MimeMultipart(new ByteArrayDataSource(file.contentBytes, file.contentType));
+                parseMimeMultiPart(multiPayloadAdaptrisMessage, mimeMultipart);
+              }
+              else
+              {
+                addAttachmentToAdaptrisMessage(multiPayloadAdaptrisMessage, file.name, file.contentBytes);
+              }
             }
           }
           multiPayloadAdaptrisMessage.switchPayload(id);
@@ -215,6 +231,59 @@ public class O365MailConsumer extends AdaptrisPollingConsumer
   private boolean delete()
   {
     return BooleanUtils.toBooleanDefaultIfNull(delete, false);
+  }
+
+  private void addAttachmentToAdaptrisMessage(MultiPayloadAdaptrisMessage message, String name, byte[] attachment)
+  {
+    try
+    {
+      /*
+       * The Graph API documentation says that contentBytes
+       * is Base64 encoded, but that doesn't always appear to
+       * be the case
+       */
+      attachment = Base64.getDecoder().decode(attachment);
+    }
+    catch (Exception e)
+    {
+      // do nothing; content wasn't base64 encoded
+    }
+    message.addPayload(name, attachment);
+  }
+
+  private void parseMimeMultiPart(MultiPayloadAdaptrisMessage message, MimeMultipart mimeMultipart) throws Exception
+  {
+    for (int i = 0; i < mimeMultipart.getCount(); i++)
+    {
+      BodyPart bodyPart = mimeMultipart.getBodyPart(i);
+      String name = bodyPart.getFileName();
+      Object content = bodyPart.getContent();
+      if (content instanceof MimeMultipart)
+      {
+        parseMimeMultiPart(message, (MimeMultipart)content);
+      }
+      else if (name == null)
+      {
+        // do nothing; this is the email body
+      }
+      else
+      {
+        byte[] bytes = null;
+        if (content instanceof ByteArrayInputStream)
+        {
+          bytes = ((ByteArrayInputStream)content).readAllBytes();
+        }
+        else if (content instanceof String)
+        {
+          bytes = ((String)content).getBytes();
+        }
+        else
+        {
+          log.warn("Unsupported MIME part {}", bodyPart.getContentType());
+        }
+        addAttachmentToAdaptrisMessage(message, name, bytes);
+      }
+    }
   }
 }
 
