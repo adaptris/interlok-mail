@@ -86,7 +86,7 @@ public class O365MailConsumerTest extends ExampleConsumerCase
     }
     catch (InterruptedIOException | InterruptedException e)
     {
-      // Ignore these as they're occasionally thrown by the Graph SDK teh connection is closed while it's still processing
+      // Ignore these as they're occasionally thrown by the Graph SDK when the connection is closed while it's still processing
     }
     finally
     {
