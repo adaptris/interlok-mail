@@ -32,7 +32,7 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
-import com.adaptris.annotation.Removal;
+import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisPollingConsumer;
 import com.adaptris.core.ConsumeDestination;
@@ -114,7 +114,7 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
   @Setter
   @Deprecated
   @Valid
-  @Removal(version = "4.0.0", message = "Use 'mailbox-url' instead")
+  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use 'mailbox-url' instead", groups = Deprecated.class)
   private ConsumeDestination destination;
 
   /**
