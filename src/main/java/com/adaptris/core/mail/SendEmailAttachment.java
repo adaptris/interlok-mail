@@ -35,7 +35,7 @@ import lombok.Setter;
 @ComponentProfile(summary = "Send an email", tag = "email,smtp,mail",
     recommended = {NullConnection.class})
 @DisplayOrder(order = {"to", "from", "subject", "body", "ccList", "bccList", "smtpUrl", "username",
-    "password", "contentType", "contentEncoding"})
+    "password", "contentType", "contentEncoding", "attachmentContentType", "attachmentContentEncoding"})
 @NoArgsConstructor
 public class SendEmailAttachment extends MailProducer {
 
@@ -44,7 +44,7 @@ public class SendEmailAttachment extends MailProducer {
   /**
    * The Content-Type of the email that will be sent.
    * <p>
-   * The Content-Type may be any arbitary string such as application/edi-x12, however if no
+   * The Content-Type may be any arbitrary string such as application/edi-x12, however if no
    * appropriate {@code DataContentHandler} is installed, then the results can be undefined. It
    * defaults to {@code text/plain} if not specified.
    * </p>
@@ -58,7 +58,7 @@ public class SendEmailAttachment extends MailProducer {
   /**
    * The Content-Type of the email attachment.
    * <p>
-   * The Content-Type may be any arbitary string such as application/edi-x12, however if no
+   * The Content-Type may be any arbitrary string such as application/edi-x12, however if no
    * appropriate {@code DataContentHandler} is installed, then the results can be undefined. It
    * defaults to {@code application/octet-stream} if not specified.
    * </p>
@@ -116,7 +116,7 @@ public class SendEmailAttachment extends MailProducer {
   /**
    * What is going to be the body of your message since the payload will be an attachment?
    * <p>
-   * The template if specified will be assumed to be plain text
+   * The template if specified will be assumed to be plain text.
    * </p>
    */
   @Getter
