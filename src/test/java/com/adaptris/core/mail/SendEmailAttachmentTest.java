@@ -114,7 +114,7 @@ public class SendEmailAttachmentTest extends MailProducerExample {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
       StandaloneProducer producer = createProducerForTests(gm);
       SendEmailAttachment mailer = (SendEmailAttachment) producer.getProducer();
-      mailer.setContentType("%message{contentType}");
+      mailer.setAttachmentContentType("%message{contentType}");
       msg.addMetadata("contentType", EmailConstants.TEXT_PLAIN);
       ServiceCase.execute(producer, msg);
 
