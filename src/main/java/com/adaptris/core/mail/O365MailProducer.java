@@ -23,6 +23,7 @@ import com.microsoft.graph.models.extensions.ItemBody;
 import com.microsoft.graph.models.extensions.Message;
 import com.microsoft.graph.models.extensions.Recipient;
 import com.microsoft.graph.models.generated.BodyType;
+import com.microsoft.graph.requests.extensions.AttachmentCollectionPage;
 import com.microsoft.graph.requests.extensions.GraphServiceClient;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Getter;
@@ -151,6 +152,10 @@ public class O365MailProducer extends ProduceOnlyProducerImp
         MultiPayloadAdaptrisMessage multiPayloadAdaptrisMessage = (MultiPayloadAdaptrisMessage)adaptrisMessage;
         String id = multiPayloadAdaptrisMessage.getCurrentPayloadId();
         List<Attachment> attachments = new LinkedList<>();
+
+        // TODO find out how to actually attach stuff...
+        //outlookMessage.attachments = new AttachmentCollectionPage();
+
         for (String name : multiPayloadAdaptrisMessage.getPayloadIDs())
         {
           if (name.equals(id))
@@ -162,7 +167,10 @@ public class O365MailProducer extends ProduceOnlyProducerImp
           attachment.contentType = "application/octet-stream";//"text/plain";
           attachment.contentBytes = multiPayloadAdaptrisMessage.getPayload(name);
           attachments.add(attachment);
-          outlookMessage.attachments.getCurrentPage().add(attachment);
+          if (outlookMessage.attachments != null)
+          {
+            outlookMessage.attachments.getCurrentPage().add(attachment);
+          }
         }
       }
 
