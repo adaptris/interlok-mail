@@ -193,9 +193,9 @@ public class O365MailProducer extends ProduceOnlyProducerImp
             attachment.contentType = "application/octet-stream";
             attachment.contentBytes = Base64.getEncoder().encode(multiPayloadAdaptrisMessage.getPayload(name));
             graphClient.users(user).messages(draftMessage.id).attachments().buildRequest().post(attachment);
-            graphClient.users(user).messages(draftMessage.id).send().buildRequest().post();
+
           }
-          else
+/*          else
           {
             AttachmentItem attachment = new AttachmentItem();
             attachment.attachmentType = AttachmentType.FILE;
@@ -225,8 +225,9 @@ public class O365MailProducer extends ProduceOnlyProducerImp
                 // do nothing
               }
             });
-          }
+          }*/
         }
+        graphClient.users(user).messages(draftMessage.id).send().buildRequest().post();
       }
       else
       {
