@@ -24,7 +24,7 @@ import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
-import com.adaptris.annotation.Removal;
+import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -79,7 +79,7 @@ import lombok.NoArgsConstructor;
 @DisplayOrder(order = {"to", "from", "subject", "ccList", "bccList", "smtpUrl", "username",
     "password"})
 @Deprecated
-@Removal(version = "4.0.0", message = "Use send-email or send-email-attachment instead")
+@ConfigDeprecated(removalVersion = "4.0.0", message = "Use send-email or send-email-attachment instead", groups = Deprecated.class)
 @NoArgsConstructor
 public class DefaultSmtpProducer extends MailProducer {
 

@@ -23,7 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldHint;
-import com.adaptris.annotation.Removal;
+import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -174,7 +174,7 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
   @Setter
   @Deprecated
   @Valid
-  @Removal(version = "4.0.0", message = "Use 'to' instead")
+  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use 'to' instead", groups = Deprecated.class)
   private ProduceDestination destination;
 
   /**

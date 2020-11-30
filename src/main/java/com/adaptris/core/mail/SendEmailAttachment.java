@@ -35,7 +35,7 @@ import lombok.Setter;
 @ComponentProfile(summary = "Send an email", tag = "email,smtp,mail",
     recommended = {NullConnection.class})
 @DisplayOrder(order = {"to", "from", "subject", "body", "ccList", "bccList", "smtpUrl", "username",
-    "password", "contentType", "contentEncoding"})
+    "password", "contentType", "contentEncoding", "attachmentContentType", "attachmentContentEncoding"})
 @NoArgsConstructor
 public class SendEmailAttachment extends MailProducer {
 
@@ -44,7 +44,21 @@ public class SendEmailAttachment extends MailProducer {
   /**
    * The Content-Type of the email that will be sent.
    * <p>
-   * The Content-Type may be any arbitary string such as application/edi-x12, however if no
+   * The Content-Type may be any arbitrary string such as application/edi-x12, however if no
+   * appropriate {@code DataContentHandler} is installed, then the results can be undefined. It
+   * defaults to {@code text/plain} if not specified.
+   * </p>
+   */
+  @InputFieldDefault(value = EmailConstants.TEXT_PLAIN)
+  @Getter
+  @Setter
+  @InputFieldHint(expression = true)
+  private String contentType = EmailConstants.TEXT_PLAIN;
+
+  /**
+   * The Content-Type of the email attachment.
+   * <p>
+   * The Content-Type may be any arbitrary string such as application/edi-x12, however if no
    * appropriate {@code DataContentHandler} is installed, then the results can be undefined. It
    * defaults to {@code application/octet-stream} if not specified.
    * </p>
@@ -53,7 +67,8 @@ public class SendEmailAttachment extends MailProducer {
   @Getter
   @Setter
   @InputFieldHint(expression = true)
-  private String contentType = DEFAULT_CONTENT_TYPE;
+  private String attachmentContentType = DEFAULT_CONTENT_TYPE;
+
   /**
    * The encoding of the email that will be sent.
    * <p>
@@ -71,6 +86,22 @@ public class SendEmailAttachment extends MailProducer {
   private String contentEncoding = null;
 
   /**
+   * The encoding of the email attachment.
+   * <p>
+   * Available Content-Encoding schemes that are supported are the same as those specified in
+   * RFC2045 or those supported by jakarta mail. They include {@code base64, quoted-printable, 7bit,
+   * 8bit and binary}. The default is {@code base64} if not otherwise specified to avoid encoding
+   * issues.
+   * </p>
+   */
+  @AdvancedConfig
+  @InputFieldDefault(value = "base64")
+  @InputFieldHint(expression = true)
+  @Getter
+  @Setter
+  private String attachmentContentEncoding = null;
+
+  /**
    * If specified, then this will be used as the filename for the attachment
    * <p>
    * Defaults to the message unique id if not explicitly specified.
@@ -85,7 +116,7 @@ public class SendEmailAttachment extends MailProducer {
   /**
    * What is going to be the body of your message since the payload will be an attachment?
    * <p>
-   * The template if specified will be assumed to be plain text
+   * The template if specified will be assumed to be plain text.
    * </p>
    */
   @Getter
@@ -98,12 +129,14 @@ public class SendEmailAttachment extends MailProducer {
     try {
       SmtpClient smtp = getClient(msg, toAddresses);
       if (getBody() != null) {
-        smtp.setMessage(msg.resolve(getBody().extract(msg), true).getBytes(StandardCharsets.UTF_8));
+        smtp.setEncoding(resolve(msg, getContentEncoding(), "base64"));
+        String messageContentType = resolve(msg, getContentType(), EmailConstants.TEXT_PLAIN);
+        smtp.setMessage(msg.resolve(getBody().extract(msg), true).getBytes(StandardCharsets.UTF_8), messageContentType);
       }
       String filename = resolve(msg, getFilename(), msg.getUniqueId());
-      String contentType = resolve(msg, getContentType(), DEFAULT_CONTENT_TYPE);
-      String contentEncoding = resolve(msg, getContentEncoding(), "base64");
-      smtp.addAttachment(encode(msg), filename, contentType, contentEncoding);
+      String attachmentType = resolve(msg, getAttachmentContentType(), DEFAULT_CONTENT_TYPE);
+      String attachmentEncoding = resolve(msg, getAttachmentContentEncoding(), "base64");
+      smtp.addAttachment(encode(msg), filename, attachmentType, attachmentEncoding);
       smtp.send();
     } catch (Exception e) {
       throw ExceptionHelper.wrapProduceException(e);
