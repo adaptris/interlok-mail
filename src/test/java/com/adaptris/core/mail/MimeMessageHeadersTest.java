@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,64 +16,58 @@
 
 package com.adaptris.core.mail;
 
-import static org.junit.Assert.*;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import javax.mail.internet.ContentType;
-
 import org.junit.Test;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.ServiceCase;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.metadata.NoOpMetadataFilter;
 import com.adaptris.core.stubs.DefectiveMessageFactory;
+import com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase;
 
-public class MimeMessageHeadersTest extends ServiceCase {
+public class MimeMessageHeadersTest extends ExampleServiceCase {
 
-  private static final String EXAMPLE_MSG="Received: from 152620-EDGE01.mex07a.mlsrvr.com (192.168.1.193) by\r\n" + 
-      " 152333-HUB01.mex07a.mlsrvr.com (192.168.1.195) with Microsoft SMTP Server\r\n" + 
-      " (TLS) id 8.1.311.2; Thu, 6 Nov 2008 13:03:44 -0600\r\n" + 
-      "Received: from gate23.gate.sat.mlsrvr.com (64.49.219.7) by\r\n" + 
-      " 152620-EDGE01.mex07a.mlsrvr.com (192.168.1.193) with Microsoft SMTP Server\r\n" + 
-      " (TLS) id 8.1.311.2; Thu, 6 Nov 2008 13:03:41 -0600\r\n" + 
-      "From: \"hello@example.com\" <hello@example.com>\r\n" + 
-      "To: email integrations <email@example.com.com>\r\n" + 
-      "Date: Thu, 6 Nov 2008 13:02:53 -0600\r\n" + 
-      "Subject: Hello World\r\n" + 
-      "Message-ID: <110141896.1225998173422.JavaMail.hello@world>\r\n" + 
-      "Reply-To: \"hello@example.com\" <hello@example.com>\r\n" + 
-      "Accept-Language: en-GB, en-US\r\n" + 
-      "Content-Type: multipart/alternative;\r\n" + 
-      "  boundary=\"_000_1101418961225998173422JavaMailob10userob10aa3prd_\"\r\n" + 
-      "MIME-Version: 1.0\r\n" + 
-      "\r\n" + 
-      "--_000_1101418961225998173422JavaMailob10userob10aa3prd_\r\n" + 
-      "Content-Type: text/plain; charset=\"us-ascii\"\r\n" + 
-      "Content-Transfer-Encoding: quoted-printable\r\n" + 
-      "\r\n" + 
-      "Hello World\r\n" + 
-      "\r\n" + 
-      "\r\n" + 
-      "--_000_1101418961225998173422JavaMailob10userob10aa3prd_\r\n" + 
-      "Content-Type: text/html; charset=\"us-ascii\"\r\n" + 
-      "Content-Transfer-Encoding: quoted-printable\r\n" + 
-      "\r\n" + 
-      "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\">\r\n" + 
-      "<html>\r\n" + 
-      "\r\n" + 
-      "  <body>\r\n" + 
-      "    <p>Hello World</p>\r\n" + 
-      "  </body>\r\n" + 
-      "</html>\r\n" + 
-      "\r\n" + 
-      "--_000_1101418961225998173422JavaMailob10userob10aa3prd_--\r\n" + 
+  private static final String EXAMPLE_MSG="Received: from 152620-EDGE01.mex07a.mlsrvr.com (192.168.1.193) by\r\n" +
+      " 152333-HUB01.mex07a.mlsrvr.com (192.168.1.195) with Microsoft SMTP Server\r\n" +
+      " (TLS) id 8.1.311.2; Thu, 6 Nov 2008 13:03:44 -0600\r\n" +
+      "Received: from gate23.gate.sat.mlsrvr.com (64.49.219.7) by\r\n" +
+      " 152620-EDGE01.mex07a.mlsrvr.com (192.168.1.193) with Microsoft SMTP Server\r\n" +
+      " (TLS) id 8.1.311.2; Thu, 6 Nov 2008 13:03:41 -0600\r\n" +
+      "From: \"hello@example.com\" <hello@example.com>\r\n" +
+      "To: email integrations <email@example.com.com>\r\n" +
+      "Date: Thu, 6 Nov 2008 13:02:53 -0600\r\n" +
+      "Subject: Hello World\r\n" +
+      "Message-ID: <110141896.1225998173422.JavaMail.hello@world>\r\n" +
+      "Reply-To: \"hello@example.com\" <hello@example.com>\r\n" +
+      "Accept-Language: en-GB, en-US\r\n" +
+      "Content-Type: multipart/alternative;\r\n" +
+      "  boundary=\"_000_1101418961225998173422JavaMailob10userob10aa3prd_\"\r\n" +
+      "MIME-Version: 1.0\r\n" +
+      "\r\n" +
+      "--_000_1101418961225998173422JavaMailob10userob10aa3prd_\r\n" +
+      "Content-Type: text/plain; charset=\"us-ascii\"\r\n" +
+      "Content-Transfer-Encoding: quoted-printable\r\n" +
+      "\r\n" +
+      "Hello World\r\n" +
+      "\r\n" +
+      "\r\n" +
+      "--_000_1101418961225998173422JavaMailob10userob10aa3prd_\r\n" +
+      "Content-Type: text/html; charset=\"us-ascii\"\r\n" +
+      "Content-Transfer-Encoding: quoted-printable\r\n" +
+      "\r\n" +
+      "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\">\r\n" +
+      "<html>\r\n" +
+      "\r\n" +
+      "  <body>\r\n" +
+      "    <p>Hello World</p>\r\n" +
+      "  </body>\r\n" +
+      "</html>\r\n" +
+      "\r\n" +
+      "--_000_1101418961225998173422JavaMailob10userob10aa3prd_--\r\n" +
       "";
-  
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
+
 
   @Test
   public void testService() throws Exception {

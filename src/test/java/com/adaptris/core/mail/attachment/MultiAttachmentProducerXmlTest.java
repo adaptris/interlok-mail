@@ -40,11 +40,6 @@ public class MultiAttachmentProducerXmlTest extends MailProducerExample {
   }
 
   @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-
-  @Override
   protected String getExampleCommentHeader(Object obj) {
     return super.getExampleCommentHeader(obj)
         + "<!-- The example document for this would be \n"
