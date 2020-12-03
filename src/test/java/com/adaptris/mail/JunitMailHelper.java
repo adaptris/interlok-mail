@@ -21,6 +21,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 import java.io.InputStream;
 import java.util.Date;
+import java.util.Optional;
 import java.util.Properties;
 import javax.mail.Address;
 import javax.mail.Message;
@@ -178,36 +179,36 @@ public class JunitMailHelper {
   }
 
   private static void releasePorts(GreenMail gm) {
-    if (gm.getPop3() != null) {
-      PortManager.release(gm.getPop3().getPort());
-    }
-    if (gm.getPop3s() != null) {
-      PortManager.release(gm.getPop3s().getPort());
-    }
-    if (gm.getImap() != null) {
-      PortManager.release(gm.getImap().getPort());
-    }
-    if (gm.getImaps() != null) {
-      PortManager.release(gm.getImaps().getPort());
-    }
-    if (gm.getSmtp() != null) {
-      PortManager.release(gm.getSmtp().getPort());
-    }
-    if (gm.getSmtps() != null) {
-      PortManager.release(gm.getSmtps().getPort());
-    }
+    Optional.ofNullable(gm.getPop3()).ifPresent((e) -> PortManager.release(e.getPort()));
+    Optional.ofNullable(gm.getPop3s()).ifPresent((e) -> PortManager.release(e.getPort()));
+    Optional.ofNullable(gm.getImap()).ifPresent((e) -> PortManager.release(e.getPort()));
+    Optional.ofNullable(gm.getImaps()).ifPresent((e) -> PortManager.release(e.getPort()));
+    Optional.ofNullable(gm.getSmtp()).ifPresent((e) -> PortManager.release(e.getPort()));
+    Optional.ofNullable(gm.getSmtps()).ifPresent((e) -> PortManager.release(e.getPort()));
   }
 
   private static ServerSetup[] createServerSetups() {
     int basePort = 12500;
     return new ServerSetup[] {
-        new ServerSetup(PortManager.nextUnusedPort(basePort), null, ServerSetup.PROTOCOL_SMTP),
-        new ServerSetup(PortManager.nextUnusedPort(basePort), null, ServerSetup.PROTOCOL_SMTPS),
-        new ServerSetup(PortManager.nextUnusedPort(basePort), null, ServerSetup.PROTOCOL_POP3),
-        new ServerSetup(PortManager.nextUnusedPort(basePort), null, ServerSetup.PROTOCOL_POP3S),
-        new ServerSetup(PortManager.nextUnusedPort(basePort), null, ServerSetup.PROTOCOL_IMAP),
-        new ServerSetup(PortManager.nextUnusedPort(basePort), null, ServerSetup.PROTOCOL_IMAPS)
+        configure(
+            new ServerSetup(PortManager.nextUnusedPort(basePort), null, ServerSetup.PROTOCOL_SMTP)),
+        configure(new ServerSetup(PortManager.nextUnusedPort(basePort), null,
+            ServerSetup.PROTOCOL_SMTPS)),
+        configure(
+            new ServerSetup(PortManager.nextUnusedPort(basePort), null, ServerSetup.PROTOCOL_POP3)),
+        configure(new ServerSetup(PortManager.nextUnusedPort(basePort), null,
+            ServerSetup.PROTOCOL_POP3S)),
+        configure(
+            new ServerSetup(PortManager.nextUnusedPort(basePort), null, ServerSetup.PROTOCOL_IMAP)),
+        configure(new ServerSetup(PortManager.nextUnusedPort(basePort), null,
+            ServerSetup.PROTOCOL_IMAPS))
     };
+  }
+
+  private static ServerSetup configure(ServerSetup s) {
+    // make it 5 seconds not 1.
+    s.setServerStartupTimeout(5000L);
+    return s;
   }
 
 }
