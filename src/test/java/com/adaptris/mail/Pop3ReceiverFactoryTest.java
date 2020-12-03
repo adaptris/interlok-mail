@@ -22,11 +22,6 @@ import com.icegreen.greenmail.util.GreenMail;
 public class Pop3ReceiverFactoryTest extends Pop3FactoryCase {
 
   @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-
-  @Override
   Pop3ReceiverFactory create() {
     return new Pop3ReceiverFactory();
   }

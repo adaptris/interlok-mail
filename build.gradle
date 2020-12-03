@@ -68,6 +68,22 @@ ext.buildInfo = { ->
 }
 
 
+def propertyTemplate(dir, filename) {
+  def file = new File(dir, filename + "." + hostname())
+  if (file.exists()) {
+    return file.getName()
+  }
+  return filename
+}
+
+ext.hostname = { ->
+  if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+    return System.getenv("COMPUTERNAME")
+  }
+  return System.getenv("HOSTNAME")
+}
+
+
 ext.verboseTestLogging = { ->
   return verboseTests.equals("true")
 }
@@ -183,20 +199,29 @@ task offlinePackageList(type: Copy) {
   into offlineJavadocPackageDir
 }
 
-task copyUnitTestProperties(type: Copy) {
-    delete file('src/test/resources/unit-tests.properties')
-    from file('src/test/resources/unit-tests.properties.template')
-    into ('src/test/resources/')
-    rename { String fileName ->
-      fileName.replace('unit-tests.properties.template', 'unit-tests.properties')
-    }
-    filter(ReplaceTokens, tokens: [JAVA_HOME: System.getProperty("java.home").replaceAll("\\\\", "/")])
-    filter(ReplaceTokens, tokens: [BASE_DIR: project.rootDir.getCanonicalPath().replaceAll("\\\\", "/")])
-    filter(ReplaceTokens, tokens: [BUILD_DIR: project.buildDir.getCanonicalPath().replaceAll("\\\\", "/")])
+ext.testResourcesDir = { ->
+  return "${project.projectDir}/src/test/resources".replaceAll("\\\\", "/")
 }
 
-task deleteUnitTestProperties(type: Delete) {
-    delete file('src/test/resources/unit-tests.properties')
+task generateUnitTestProperties {
+  doLast {
+    ant.property(file: project.projectDir.getCanonicalPath() + "/" + "build.properties")
+    ant.property(file:  testResourcesDir() + "/" + propertyTemplate(testResourcesDir(), "unit-tests.properties.template"))
+    ant.echoproperties(destfile:  testResourcesDir() + '/unit-tests.properties.resolved', prefix: "junit.")
+    ant.replace(file:  testResourcesDir() + '/unit-tests.properties.resolved', token:"junit.", value: "")
+  }
+}
+
+task copyUnitTestProperties(type: Copy, dependsOn: generateUnitTestProperties) {
+  delete file( testResourcesDir() + '/unit-tests.properties')
+  from file( testResourcesDir() + "/unit-tests.properties.resolved")
+  into (testResourcesDir())
+  rename { String fileName ->
+    fileName.replace("unit-tests.properties.resolved", 'unit-tests.properties')
+  }
+  filter(ReplaceTokens, tokens: [JAVA_HOME: System.getProperty("java.home").replaceAll("\\\\", "/")])
+  filter(ReplaceTokens, tokens: [BASE_DIR: project.projectDir.getCanonicalPath().replaceAll("\\\\", "/")])
+  filter(ReplaceTokens, tokens: [BUILD_DIR: project.buildDir.getCanonicalPath().replaceAll("\\\\", "/")])
 }
 
 javadoc {
@@ -320,7 +345,7 @@ task lgtmCompile(type: JavaCompile, dependsOn: delombok) {
 }
 
 task deleteGeneratedFiles(type: Delete) {
-  delete delombokTargetDir
+  delete file(testResourcesDir() + "/unit-tests.properties"), file(testResourcesDir() + "/unit-tests.properties.resolved"), delombokTargetDir
 }
 
 test {
@@ -367,4 +392,4 @@ spotbugsTest.enabled = false
 javadoc.dependsOn offlinePackageList,umlJavadoc
 check.dependsOn jacocoTestReport
 processTestResources.dependsOn copyUnitTestProperties
-clean.dependsOn deleteUnitTestProperties,deleteGeneratedFiles
+clean.dependsOn deleteGeneratedFiles

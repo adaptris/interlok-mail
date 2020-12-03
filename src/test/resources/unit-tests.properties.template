@@ -1,6 +1,6 @@
-ConsumerCase.baseDir=@BUILD_DIR@/examples/consumers
-ServiceCase.baseDir=@BUILD_DIR@/examples/services
-ProducerCase.baseDir=@BUILD_DIR@/examples/producers
-WorkflowCase.baseDir=@BUILD_DIR@/examples/workflows
-mail.email.with.cd=@BASE_DIR@/src/test/resources/mail/email-with-content-disposition.txt
-mail.email.without.cd=@BASE_DIR@/src/test/resources/mail/email-without-content-disposition.txt
+junit.ConsumerCase.baseDir=@BUILD_DIR@/examples/consumers
+junit.ServiceCase.baseDir=@BUILD_DIR@/examples/services
+junit.ProducerCase.baseDir=@BUILD_DIR@/examples/producers
+junit.WorkflowCase.baseDir=@BUILD_DIR@/examples/workflows
+junit.mail.email.with.cd=@BASE_DIR@/src/test/resources/mail/email-with-content-disposition.txt
+junit.mail.email.without.cd=@BASE_DIR@/src/test/resources/mail/email-without-content-disposition.txt
