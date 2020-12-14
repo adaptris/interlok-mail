@@ -317,6 +317,8 @@ publishing {
         properties.appendNode("target", "3.9.0+")
         properties.appendNode("tags", "email,pop3,pop3s,imap,imaps")
         properties.appendNode("license", "false")
+        properties.appendNode("repository", "https://github.com/adaptris/interlok-mail")
+        properties.appendNode("readme", "https://github.com/adaptris/interlok-mail/raw/develop/README.md")
       }
     }
   }
