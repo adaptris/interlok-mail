@@ -313,7 +313,7 @@ publishing {
         asNode().appendNode("name", componentName)
         asNode().appendNode("description", "Integration with mail servers using javamail and apache mail libraries")
         def properties = asNode().appendNode("properties")
-        properties.appendNode("url", "https://interlok.adaptris.net/interlok-docs/cookbook-email.html")
+        properties.appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/pages/cookbook/cookbook-email")
         properties.appendNode("target", "3.9.0+")
         properties.appendNode("tags", "email,pop3,pop3s,imap,imaps")
         properties.appendNode("license", "false")
