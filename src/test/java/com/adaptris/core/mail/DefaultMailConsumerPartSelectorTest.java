@@ -19,7 +19,6 @@ package com.adaptris.core.mail;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.Poller;
@@ -34,11 +33,6 @@ import com.adaptris.util.text.mime.SelectByHeader;
 import com.adaptris.util.text.mime.SelectByPosition;
 
 public class DefaultMailConsumerPartSelectorTest extends MailConsumerExample {
-
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Override
   protected String createBaseFileName(Object object) {

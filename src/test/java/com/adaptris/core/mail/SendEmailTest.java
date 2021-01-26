@@ -1,17 +1,15 @@
 /*
  * Copyright 2015 Adaptris Ltd.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
  */
 
 package com.adaptris.core.mail;
@@ -31,20 +29,15 @@ import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.NullConnection;
-import com.adaptris.core.ServiceCase;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.metadata.RegexMetadataFilter;
+import com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase;
 import com.adaptris.mail.JunitMailHelper;
 import com.adaptris.util.KeyValuePair;
 import com.icegreen.greenmail.smtp.SmtpServer;
 import com.icegreen.greenmail.util.GreenMail;
 
 public class SendEmailTest extends MailProducerExample {
-
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Override
   protected Object retrieveObjectForSampleConfig() {
@@ -56,159 +49,136 @@ public class SendEmailTest extends MailProducerExample {
   public void testProduce() throws Exception {
     Assume.assumeTrue(testsEnabled());
 
-    GreenMail gm = JunitMailHelper.startServer();
-    try {
-      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
-      ServiceCase.execute(createProducerForTests(gm), msg);
-      gm.waitForIncomingEmail(1);
-      MimeMessage[] msgs = gm.getReceivedMessages();
-      assertEquals(1, msgs.length);
-      JunitMailHelper.assertFrom(msgs[0], DEFAULT_SENDER);
-      JunitMailHelper.assertTo(msgs[0], DEFAULT_RECEIVER);
-    }
-    finally {
-      JunitMailHelper.stopServer(gm);
-    }
+    GreenMail gm = mailServer();
+    AdaptrisMessage msg =
+        AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
+    ExampleServiceCase.execute(createProducerForTests(gm), msg);
+    gm.waitForIncomingEmail(1);
+    MimeMessage[] msgs = gm.getReceivedMessages();
+    assertEquals(1, msgs.length);
+    JunitMailHelper.assertFrom(msgs[0], DEFAULT_SENDER);
+    JunitMailHelper.assertTo(msgs[0], DEFAULT_RECEIVER);
   }
 
   @Test
   public void testProduceCC() throws Exception {
     Assume.assumeTrue(testsEnabled());
-    GreenMail gm = JunitMailHelper.startServer();
-    try {
-      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
-      StandaloneProducer producer = createProducerForTests(gm);
-      MailProducer mailer = (MailProducer) producer.getProducer();
-      mailer.setCcList("CarbonCopy@CarbonCopy.com");
-      ServiceCase.execute(producer, msg);
-      gm.waitForIncomingEmail(1);
-      MimeMessage[] msgs = gm.getReceivedMessages();
-      assertEquals(2, msgs.length);
-      for (MimeMessage mime : msgs) {
-        JunitMailHelper.assertFrom(mime, DEFAULT_SENDER);
-        JunitMailHelper.assertTo(mime, DEFAULT_RECEIVER);
-        JunitMailHelper.assertCC(mime, "CarbonCopy@CarbonCopy.com");
-      }
-    }
-    finally {
-      JunitMailHelper.stopServer(gm);
+    GreenMail gm = mailServer();
+    AdaptrisMessage msg =
+        AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
+    StandaloneProducer producer = createProducerForTests(gm);
+    MailProducer mailer = (MailProducer) producer.getProducer();
+    mailer.setCcList("CarbonCopy@CarbonCopy.com");
+    ExampleServiceCase.execute(producer, msg);
+    gm.waitForIncomingEmail(1);
+    MimeMessage[] msgs = gm.getReceivedMessages();
+    assertEquals(2, msgs.length);
+    for (MimeMessage mime : msgs) {
+      JunitMailHelper.assertFrom(mime, DEFAULT_SENDER);
+      JunitMailHelper.assertTo(mime, DEFAULT_RECEIVER);
+      JunitMailHelper.assertCC(mime, "CarbonCopy@CarbonCopy.com");
     }
   }
 
   @Test
   public void testProduceNoAddresseeButResolveCC() throws Exception {
     Assume.assumeTrue(testsEnabled());
-    GreenMail gm = JunitMailHelper.startServer();
-    try {
-      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
-      msg.addMetadata("some-cc-address", "CarbonCopy@CarbonCopy.com");
-      StandaloneProducer producer = createProducerForTests(gm);
-      MailProducer mailer = (MailProducer) producer.getProducer();
-      mailer.setTo(null);
-      mailer.setCcList("%message{some-cc-address}");
-      ServiceCase.execute(producer, msg);
-      gm.waitForIncomingEmail(1);
-      MimeMessage[] msgs = gm.getReceivedMessages();
-      assertEquals(1, msgs.length);
-      for (MimeMessage mime : msgs) {
-        JunitMailHelper.assertFrom(mime, DEFAULT_SENDER);
-        JunitMailHelper.assertRecipientNull(mime);
-        JunitMailHelper.assertCC(mime, "CarbonCopy@CarbonCopy.com");
-      }
-    }
-    finally {
-      JunitMailHelper.stopServer(gm);
+    GreenMail gm = mailServer();
+    AdaptrisMessage msg =
+        AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
+    msg.addMetadata("some-cc-address", "CarbonCopy@CarbonCopy.com");
+    StandaloneProducer producer = createProducerForTests(gm);
+    MailProducer mailer = (MailProducer) producer.getProducer();
+    mailer.setTo(null);
+    mailer.setCcList("%message{some-cc-address}");
+    ExampleServiceCase.execute(producer, msg);
+    gm.waitForIncomingEmail(1);
+    MimeMessage[] msgs = gm.getReceivedMessages();
+    assertEquals(1, msgs.length);
+    for (MimeMessage mime : msgs) {
+      JunitMailHelper.assertFrom(mime, DEFAULT_SENDER);
+      JunitMailHelper.assertRecipientNull(mime);
+      JunitMailHelper.assertCC(mime, "CarbonCopy@CarbonCopy.com");
     }
   }
 
   @Test
   public void testProduceBCC() throws Exception {
     Assume.assumeTrue(testsEnabled());
-    GreenMail gm = JunitMailHelper.startServer();
-    try {
-      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
-      StandaloneProducer producer = createProducerForTests(gm);
-      MailProducer mailer = (MailProducer) producer.getProducer();
-      mailer.setBccList("BlindCarbonCopy@BlindCarbonCopy.com");
-      ServiceCase.execute(producer, msg);
-      gm.waitForIncomingEmail(1);
-      MimeMessage[] msgs = gm.getReceivedMessages();
-      assertEquals(2, msgs.length);
-      for (MimeMessage mime : msgs) {
-        JunitMailHelper.assertFrom(mime, DEFAULT_SENDER);
-        JunitMailHelper.assertTo(mime, DEFAULT_RECEIVER);
-        // We never *see* the BCC so we can't check it.
-      }
+    GreenMail gm = mailServer();
+    AdaptrisMessage msg =
+        AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
+    StandaloneProducer producer = createProducerForTests(gm);
+    MailProducer mailer = (MailProducer) producer.getProducer();
+    mailer.setBccList("BlindCarbonCopy@BlindCarbonCopy.com");
+    ExampleServiceCase.execute(producer, msg);
+    gm.waitForIncomingEmail(1);
+    MimeMessage[] msgs = gm.getReceivedMessages();
+    assertEquals(2, msgs.length);
+    for (MimeMessage mime : msgs) {
+      JunitMailHelper.assertFrom(mime, DEFAULT_SENDER);
+      JunitMailHelper.assertTo(mime, DEFAULT_RECEIVER);
+      // We never *see* the BCC so we can't check it.
     }
-    finally {
-      JunitMailHelper.stopServer(gm);
-    }
+
   }
 
   @Test
   public void testProduceNoAddresseeButResolveBCC() throws Exception {
     Assume.assumeTrue(testsEnabled());
-    GreenMail gm = JunitMailHelper.startServer();
-    try {
-      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
-      msg.addMetadata("a-bcc-address", "BlindCarbonCopy@BlindCarbonCopy.com");
-      StandaloneProducer producer = createProducerForTests(gm);
-      MailProducer mailer = (MailProducer) producer.getProducer();
-      mailer.setTo(null);
-      mailer.setBccList("%message{a-bcc-address}");
-      ServiceCase.execute(producer, msg);
-      gm.waitForIncomingEmail(1);
-      MimeMessage[] msgs = gm.getReceivedMessages();
-      assertEquals(1, msgs.length);
-      for (MimeMessage mime : msgs) {
-        JunitMailHelper.assertFrom(mime, DEFAULT_SENDER);
-        JunitMailHelper.assertRecipientNull(mime);
-        // We never *see* the BCC so we can't check it.
-      }
-    }
-    finally {
-      JunitMailHelper.stopServer(gm);
+    GreenMail gm = mailServer();
+    AdaptrisMessage msg =
+        AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
+    msg.addMetadata("a-bcc-address", "BlindCarbonCopy@BlindCarbonCopy.com");
+    StandaloneProducer producer = createProducerForTests(gm);
+    MailProducer mailer = (MailProducer) producer.getProducer();
+    mailer.setTo(null);
+    mailer.setBccList("%message{a-bcc-address}");
+    ExampleServiceCase.execute(producer, msg);
+    gm.waitForIncomingEmail(1);
+    MimeMessage[] msgs = gm.getReceivedMessages();
+    assertEquals(1, msgs.length);
+    for (MimeMessage mime : msgs) {
+      JunitMailHelper.assertFrom(mime, DEFAULT_SENDER);
+      JunitMailHelper.assertRecipientNull(mime);
+      // We never *see* the BCC so we can't check it.
     }
   }
 
   @Test
   public void testProduceWithHeaders() throws Exception {
     Assume.assumeTrue(testsEnabled());
-    GreenMail gm = JunitMailHelper.startServer();
-    try {
-      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
-      msg.addMetadata("X-Email-Producer", "ABCDEFG");
-      StandaloneProducer producer = createProducerForTests(gm);
-      MailProducer mailer = (MailProducer) producer.getProducer();
-      mailer.setFrom(null);
-      mailer.getSessionProperties().addKeyValuePair(new KeyValuePair("a", "b"));
-      RegexMetadataFilter filter = new RegexMetadataFilter();
-      filter.addIncludePattern("X-Email.*");
-      mailer.setMetadataFilter(filter);
-      ServiceCase.execute(producer, msg);
+    GreenMail gm = mailServer();
+    AdaptrisMessage msg =
+        AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
+    msg.addMetadata("X-Email-Producer", "ABCDEFG");
+    StandaloneProducer producer = createProducerForTests(gm);
+    MailProducer mailer = (MailProducer) producer.getProducer();
+    mailer.setFrom(null);
+    mailer.getSessionProperties().addKeyValuePair(new KeyValuePair("a", "b"));
+    RegexMetadataFilter filter = new RegexMetadataFilter();
+    filter.addIncludePattern("X-Email.*");
+    mailer.setMetadataFilter(filter);
+    ExampleServiceCase.execute(producer, msg);
 
-      gm.waitForIncomingEmail(1);
-      MimeMessage[] msgs = gm.getReceivedMessages();
-      assertEquals(1, msgs.length);
-      MimeMessage mailmsg = msgs[0];
-      JunitMailHelper.assertTo(mailmsg, DEFAULT_RECEIVER);
-      Enumeration<Header> headers = mailmsg.getAllHeaders();
-      boolean matched = false;
-      while (headers.hasMoreElements()) {
-        Header header = headers.nextElement();
-        if (header.getName().equals("X-Email-Producer")) {
-          if (header.getValue().equals("ABCDEFG")) {
-            matched = true;
-            break;
-          }
+    gm.waitForIncomingEmail(1);
+    MimeMessage[] msgs = gm.getReceivedMessages();
+    assertEquals(1, msgs.length);
+    MimeMessage mailmsg = msgs[0];
+    JunitMailHelper.assertTo(mailmsg, DEFAULT_RECEIVER);
+    Enumeration<Header> headers = mailmsg.getAllHeaders();
+    boolean matched = false;
+    while (headers.hasMoreElements()) {
+      Header header = headers.nextElement();
+      if (header.getName().equals("X-Email-Producer")) {
+        if (header.getValue().equals("ABCDEFG")) {
+          matched = true;
+          break;
         }
       }
-      if (!matched) {
-        fail("Additional Metadata Headers were not produced");
-      }
     }
-    finally {
-      JunitMailHelper.stopServer(gm);
+    if (!matched) {
+      fail("Additional Metadata Headers were not produced");
     }
   }
 
@@ -220,7 +190,8 @@ public class SendEmailTest extends MailProducerExample {
     List<StandaloneProducer> result = new ArrayList<>();
     SendEmail smtp = new SendEmail();
     smtp.setTo("user@domain");
-    smtp.getSessionProperties().addKeyValuePair(new KeyValuePair("mail.smtp.starttls.enable", "true"));
+    smtp.getSessionProperties()
+        .addKeyValuePair(new KeyValuePair("mail.smtp.starttls.enable", "true"));
     smtp.setSubject("Configured subject");
     smtp.setSmtpUrl("smtp://localhost:25");
     smtp.setCcList("user@domain, user@domain");
@@ -231,7 +202,8 @@ public class SendEmailTest extends MailProducerExample {
 
     SendEmail smtps = new SendEmail();
     smtps.setTo("user@domain");
-    smtps.getSessionProperties().addKeyValuePair(new KeyValuePair("mail.smtp.starttls.enable", "true"));
+    smtps.getSessionProperties()
+        .addKeyValuePair(new KeyValuePair("mail.smtp.starttls.enable", "true"));
     smtps.setSubject("Configured subject");
     smtps.setSmtpUrl("smtps://username%40gmail.com:mypassword;@smtp.gmail.com:465");
     smtps.setCcList("user@domain, user@domain");

@@ -16,6 +16,8 @@
 
 package com.adaptris.core.mail;
 
+import static com.adaptris.mail.JunitMailHelper.DEFAULT_RECEIVER;
+import static com.adaptris.mail.JunitMailHelper.startServer;
 import static com.adaptris.mail.JunitMailHelper.testsEnabled;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -35,7 +37,10 @@ import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import org.junit.AfterClass;
 import org.junit.Assume;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessageProducer;
@@ -84,43 +89,51 @@ public abstract class MailConsumerCase extends MailConsumerExample {
     }
   }
 
+  private static GreenMail gm;
+
+  @BeforeClass
+  public static void setupGreenmail() throws Exception {
+    gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
+  }
+
+  @AfterClass
+  public static void tearDownGreenmail() throws Exception {
+    JunitMailHelper.stopServer(gm);
+  }
+
+  @Before
+  public void before() throws Exception {
+    Assume.assumeTrue(testsEnabled());
+    gm.purgeEmailFromAllMailboxes();
+  }
+
+  protected static GreenMail mailServer() {
+    return gm;
+  }
+
   @Test
   public void testAttemptConnectOnInit() throws Exception {
-    Assume.assumeTrue(testsEnabled());
-    GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    try {
-      MailConsumerImp mailConsumer = createConsumerForTests(gm);
-      assertNull(mailConsumer.getAttemptConnectOnInit());
-      assertTrue(mailConsumer.attemptConnectOnInit());
+    MailConsumerImp mailConsumer = createConsumerForTests(gm);
+    assertNull(mailConsumer.getAttemptConnectOnInit());
+    assertTrue(mailConsumer.attemptConnectOnInit());
 
-      mailConsumer.setAttemptConnectOnInit(Boolean.FALSE);
-      assertEquals(Boolean.FALSE, mailConsumer.getAttemptConnectOnInit());
-      assertFalse(mailConsumer.attemptConnectOnInit());
+    mailConsumer.setAttemptConnectOnInit(Boolean.FALSE);
+    assertEquals(Boolean.FALSE, mailConsumer.getAttemptConnectOnInit());
+    assertFalse(mailConsumer.attemptConnectOnInit());
 
-      mailConsumer.setAttemptConnectOnInit(null);
-      assertNull(mailConsumer.getAttemptConnectOnInit());
-      assertTrue(mailConsumer.attemptConnectOnInit());
-    }
-    finally {
-      JunitMailHelper.stopServer(gm);
-    }
+    mailConsumer.setAttemptConnectOnInit(null);
+    assertNull(mailConsumer.getAttemptConnectOnInit());
+    assertTrue(mailConsumer.attemptConnectOnInit());
   }
 
   @Test
   public void testInit_AttemptConnectOnInitTrue() throws Exception {
-    Assume.assumeTrue(testsEnabled());
-    GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    try {
       MailConsumerImp mailConsumer = createConsumerForTests(gm);
       MockMessageProducer mockProducer = new MockMessageProducer();
       mailConsumer.setAttemptConnectOnInit(Boolean.TRUE);
       Adapter a = createAdapter(mailConsumer, mockProducer);
       a.requestInit();
       a.requestClose();
-    }
-    finally {
-      JunitMailHelper.stopServer(gm);
-    }
   }
 
   @Test
@@ -131,7 +144,8 @@ public abstract class MailConsumerCase extends MailConsumerExample {
   @Test
   public void testInit_AttemptConnectOnInitFalse() throws Exception {
     Assume.assumeTrue(testsEnabled());
-    GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
+    GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER,
+        DEFAULT_POP3_PASSWORD);
     try {
       // It is stopped, shouldn't matter if we init, because we shouldn't try the connection
       MailConsumerImp mailConsumer = createConsumerForTests(gm);
@@ -141,8 +155,7 @@ public abstract class MailConsumerCase extends MailConsumerExample {
       Adapter a = createAdapter(mailConsumer, mockProducer);
       a.requestInit();
       a.requestClose();
-    }
-    finally {
+    } finally {
     }
   }
 

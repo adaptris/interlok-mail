@@ -17,7 +17,7 @@
 package com.adaptris.core.mail.attachment;
 
 import static com.adaptris.core.mail.attachment.MimeMailCreatorTest.create;
-import static com.adaptris.core.services.mime.MimeJunitHelper.PAYLOAD_2;
+import static com.adaptris.interlok.junit.scaffolding.util.MimeJunitHelper.PAYLOAD_2;
 import org.junit.Before;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.mail.MailProducerExample;
@@ -33,10 +33,6 @@ public class MultiAttachmentProducerMimeTest extends MailProducerExample {
     producer = new MultiAttachmentSmtpProducer();
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Override
   protected Object retrieveObjectForSampleConfig() {

@@ -72,7 +72,8 @@ public class MailContent {
   private static String calculateHash(byte[] b) {
     String result = null;
     try {
-      MessageDigest md = MessageDigest.getInstance("MD5");
+      // since this is informational, a weak algorithm is neither here nor there.
+      MessageDigest md = MessageDigest.getInstance("MD5"); //lgtm [java/weak-cryptographic-algorithm]
       md.update(b);
       byte[] hash = md.digest();
       result = java.util.Base64.getEncoder().encodeToString(hash);

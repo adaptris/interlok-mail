@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,23 +16,18 @@
 
 package com.adaptris.core.mail.attachment;
 
-import static org.junit.Assert.*;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import java.security.MessageDigest;
 import java.util.List;
-
 import org.junit.Test;
-
 import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.BaseCase;
+import com.adaptris.interlok.junit.scaffolding.BaseCase;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.text.mime.MimeConstants;
 
-/**
- * @author lchan
- * @author $Author: lchan $
- */
 public class XmlMailCreatorTest extends BaseCase {
 
   private static final String LF = System.lineSeparator();
@@ -44,11 +39,6 @@ public class XmlMailCreatorTest extends BaseCase {
       + "<attachment encoding=\"base64\" filename=\"attachment1.txt\">dp/HSJfonUsSMM7QRBSRfg==</attachment>" + LF
       + "<!-- This is PENRY MD5 Base64 -->" + LF
       + "<attachment encoding=\"base64\" filename=\"attachment2.txt\">OdjozpCZB9PbCCLZlKregQ==</attachment>" + LF + "</document>";
-
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testSetNamespaceContext_XmlBodyHandler() {

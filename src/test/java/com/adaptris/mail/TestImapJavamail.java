@@ -22,11 +22,6 @@ import com.icegreen.greenmail.util.GreenMail;
 public class TestImapJavamail extends MailReceiverCase {
 
   @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-
-  @Override
   protected MailReceiver createClient(GreenMail gm) throws Exception {
     ImapServer server = gm.getImap();
     String pop3Url = server.getProtocol() + "://localhost:" + server.getPort() + "/INBOX";

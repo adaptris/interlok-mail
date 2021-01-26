@@ -1,17 +1,15 @@
 /*
  * Copyright 2015 Adaptris Ltd.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
  */
 
 package com.adaptris.core.mail;
@@ -29,10 +27,10 @@ import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.NullConnection;
-import com.adaptris.core.ServiceCase;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.common.ConstantDataInputParameter;
 import com.adaptris.core.metadata.RegexMetadataFilter;
+import com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase;
 import com.adaptris.mail.JunitMailHelper;
 import com.adaptris.mail.MessageParser;
 import com.adaptris.util.KeyValuePair;
@@ -40,11 +38,6 @@ import com.icegreen.greenmail.smtp.SmtpServer;
 import com.icegreen.greenmail.util.GreenMail;
 
 public class SendEmailAttachmentTest extends MailProducerExample {
-
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Override
   protected Object retrieveObjectForSampleConfig() {
@@ -56,107 +49,91 @@ public class SendEmailAttachmentTest extends MailProducerExample {
   @Test
   public void testProduceAsAttachment() throws Exception {
     Assume.assumeTrue(testsEnabled());
-    GreenMail gm = JunitMailHelper.startServer();
-    try {
-      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
-      StandaloneProducer producer = createProducerForTests(gm);
-      SendEmailAttachment mailer = (SendEmailAttachment) producer.getProducer();
-      mailer.setContentType(EmailConstants.TEXT_PLAIN);
-      ServiceCase.execute(producer, msg);
+    GreenMail gm = mailServer();
+    AdaptrisMessage msg =
+        AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
+    StandaloneProducer producer = createProducerForTests(gm);
+    SendEmailAttachment mailer = (SendEmailAttachment) producer.getProducer();
+    mailer.setContentType(EmailConstants.TEXT_PLAIN);
+    ExampleServiceCase.execute(producer, msg);
 
-      gm.waitForIncomingEmail(1);
-      MimeMessage[] msgs = gm.getReceivedMessages();
-      assertEquals(1, msgs.length);
-      MimeMessage mailmsg = msgs[0];
-      JunitMailHelper.assertFrom(mailmsg, DEFAULT_SENDER);
-      JunitMailHelper.assertTo(mailmsg, DEFAULT_RECEIVER);
-      MessageParser mp = new MessageParser(mailmsg);
-      assertTrue(mp.hasAttachments());
-    }
-    finally {
-      JunitMailHelper.stopServer(gm);
-    }
+    gm.waitForIncomingEmail(1);
+    MimeMessage[] msgs = gm.getReceivedMessages();
+    assertEquals(1, msgs.length);
+    MimeMessage mailmsg = msgs[0];
+    JunitMailHelper.assertFrom(mailmsg, DEFAULT_SENDER);
+    JunitMailHelper.assertTo(mailmsg, DEFAULT_RECEIVER);
+    MessageParser mp = new MessageParser(mailmsg);
+    assertTrue(mp.hasAttachments());
   }
 
   @Test
   public void testProduceAsAttachmentWithFilename() throws Exception {
     Assume.assumeTrue(testsEnabled());
-    GreenMail gm = JunitMailHelper.startServer();
-    try {
-      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
-      StandaloneProducer producer = createProducerForTests(gm);
-      SendEmailAttachment mailer = (SendEmailAttachment) producer.getProducer();
-      mailer.setContentType("text/xml");
-      mailer.setFilename("%message{filename}");
-      msg.addMetadata("filename", "filename.txt");
-      ServiceCase.execute(producer, msg);
+    GreenMail gm = mailServer();
+    AdaptrisMessage msg =
+        AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
+    StandaloneProducer producer = createProducerForTests(gm);
+    SendEmailAttachment mailer = (SendEmailAttachment) producer.getProducer();
+    mailer.setContentType("text/xml");
+    mailer.setFilename("%message{filename}");
+    msg.addMetadata("filename", "filename.txt");
+    ExampleServiceCase.execute(producer, msg);
 
-      gm.waitForIncomingEmail(1);
-      MimeMessage[] msgs = gm.getReceivedMessages();
-      assertEquals(1, msgs.length);
-      MimeMessage mailmsg = msgs[0];
-      JunitMailHelper.assertFrom(mailmsg, DEFAULT_SENDER);
-      JunitMailHelper.assertTo(mailmsg, DEFAULT_RECEIVER);
-      MessageParser mp = new MessageParser(mailmsg);
-      assertTrue(mp.hasAttachments());
-      assertEquals("filename.txt", mp.nextAttachment().getFilename());
-    }
-    finally {
-      JunitMailHelper.stopServer(gm);
-    }
+    gm.waitForIncomingEmail(1);
+    MimeMessage[] msgs = gm.getReceivedMessages();
+    assertEquals(1, msgs.length);
+    MimeMessage mailmsg = msgs[0];
+    JunitMailHelper.assertFrom(mailmsg, DEFAULT_SENDER);
+    JunitMailHelper.assertTo(mailmsg, DEFAULT_RECEIVER);
+    MessageParser mp = new MessageParser(mailmsg);
+    assertTrue(mp.hasAttachments());
+    assertEquals("filename.txt", mp.nextAttachment().getFilename());
   }
 
   @Test
   public void testProduceAsAttachmentWithMetadataAttachmentContentType() throws Exception {
     Assume.assumeTrue(testsEnabled());
-    GreenMail gm = JunitMailHelper.startServer();
-    try {
-      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
-      StandaloneProducer producer = createProducerForTests(gm);
-      SendEmailAttachment mailer = (SendEmailAttachment) producer.getProducer();
-      mailer.setAttachmentContentType("%message{contentType}");
-      msg.addMetadata("contentType", EmailConstants.TEXT_PLAIN);
-      ServiceCase.execute(producer, msg);
+    GreenMail gm = mailServer();
+    AdaptrisMessage msg =
+        AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
+    StandaloneProducer producer = createProducerForTests(gm);
+    SendEmailAttachment mailer = (SendEmailAttachment) producer.getProducer();
+    mailer.setAttachmentContentType("%message{contentType}");
+    msg.addMetadata("contentType", EmailConstants.TEXT_PLAIN);
+    ExampleServiceCase.execute(producer, msg);
 
-      gm.waitForIncomingEmail(1);
-      MimeMessage[] msgs = gm.getReceivedMessages();
-      assertEquals(1, msgs.length);
-      MimeMessage mailmsg = msgs[0];
-      JunitMailHelper.assertFrom(mailmsg, DEFAULT_SENDER);
-      JunitMailHelper.assertTo(mailmsg, DEFAULT_RECEIVER);
-      MessageParser mp = new MessageParser(mailmsg);
-      assertTrue(mp.hasAttachments());
-      assertEquals(EmailConstants.TEXT_PLAIN, mp.nextAttachment().getContentType());
-    }
-    finally {
-      JunitMailHelper.stopServer(gm);
-    }
+    gm.waitForIncomingEmail(1);
+    MimeMessage[] msgs = gm.getReceivedMessages();
+    assertEquals(1, msgs.length);
+    MimeMessage mailmsg = msgs[0];
+    JunitMailHelper.assertFrom(mailmsg, DEFAULT_SENDER);
+    JunitMailHelper.assertTo(mailmsg, DEFAULT_RECEIVER);
+    MessageParser mp = new MessageParser(mailmsg);
+    assertTrue(mp.hasAttachments());
+    assertEquals(EmailConstants.TEXT_PLAIN, mp.nextAttachment().getContentType());
   }
 
   @Test
   public void testProduceAsAttachmentWithTemplate() throws Exception {
     Assume.assumeTrue(testsEnabled());
-    GreenMail gm = JunitMailHelper.startServer();
-    try {
-      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
-      StandaloneProducer producer = createProducerForTests(gm);
-      SendEmailAttachment mailer = (SendEmailAttachment) producer.getProducer();
-      mailer.setBody(new ConstantDataInputParameter("This is the body"));
-      ServiceCase.execute(producer, msg);
+    GreenMail gm = mailServer();
+    AdaptrisMessage msg =
+        AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
+    StandaloneProducer producer = createProducerForTests(gm);
+    SendEmailAttachment mailer = (SendEmailAttachment) producer.getProducer();
+    mailer.setBody(new ConstantDataInputParameter("This is the body"));
+    ExampleServiceCase.execute(producer, msg);
 
-      gm.waitForIncomingEmail(1);
-      MimeMessage[] msgs = gm.getReceivedMessages();
-      assertEquals(1, msgs.length);
-      MimeMessage mailmsg = msgs[0];
-      JunitMailHelper.assertFrom(mailmsg, DEFAULT_SENDER);
-      JunitMailHelper.assertTo(mailmsg, DEFAULT_RECEIVER);
-      MessageParser mp = new MessageParser(mailmsg);
-      assertTrue(mp.hasAttachments());
-      assertEquals("This is the body", new String(mp.getMessage()));
-    }
-    finally {
-      JunitMailHelper.stopServer(gm);
-    }
+    gm.waitForIncomingEmail(1);
+    MimeMessage[] msgs = gm.getReceivedMessages();
+    assertEquals(1, msgs.length);
+    MimeMessage mailmsg = msgs[0];
+    JunitMailHelper.assertFrom(mailmsg, DEFAULT_SENDER);
+    JunitMailHelper.assertTo(mailmsg, DEFAULT_RECEIVER);
+    MessageParser mp = new MessageParser(mailmsg);
+    assertTrue(mp.hasAttachments());
+    assertEquals("This is the body", new String(mp.getMessage()));
   }
 
   /**
@@ -167,7 +144,8 @@ public class SendEmailAttachmentTest extends MailProducerExample {
     List<StandaloneProducer> result = new ArrayList<>();
     SendEmailAttachment smtp = new SendEmailAttachment();
     smtp.setTo("user@domain");
-    smtp.getSessionProperties().addKeyValuePair(new KeyValuePair("mail.smtp.starttls.enable", "true"));
+    smtp.getSessionProperties()
+        .addKeyValuePair(new KeyValuePair("mail.smtp.starttls.enable", "true"));
     smtp.setSubject("Configured subject");
     smtp.setSmtpUrl("smtp://localhost:25");
     smtp.setCcList("user@domain, user@domain");
@@ -178,7 +156,8 @@ public class SendEmailAttachmentTest extends MailProducerExample {
 
     SendEmailAttachment smtps = new SendEmailAttachment();
     smtps.setTo("user@domain");
-    smtps.getSessionProperties().addKeyValuePair(new KeyValuePair("mail.smtp.starttls.enable", "true"));
+    smtps.getSessionProperties()
+        .addKeyValuePair(new KeyValuePair("mail.smtp.starttls.enable", "true"));
     smtps.setSubject("Configured subject");
     smtps.setSmtpUrl("smtps://username%40gmail.com:mypassword;@smtp.gmail.com:465");
     smtps.setCcList("user@domain, user@domain");

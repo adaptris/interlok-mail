@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,7 +23,6 @@ import static com.adaptris.mail.JunitMailHelper.DEFAULT_SUBJECT;
 import static com.adaptris.mail.JunitMailHelper.assertFrom;
 import static com.adaptris.mail.JunitMailHelper.assertTo;
 import static com.adaptris.mail.JunitMailHelper.startServer;
-import static com.adaptris.mail.JunitMailHelper.stopServer;
 import static com.adaptris.mail.JunitMailHelper.testsEnabled;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.junit.Assert.assertEquals;
@@ -32,11 +31,14 @@ import javax.mail.Header;
 import javax.mail.URLName;
 import javax.mail.internet.MimeMessage;
 import org.apache.commons.io.IOUtils;
+import org.junit.AfterClass;
 import org.junit.Assume;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.adaptris.core.BaseCase;
+import com.adaptris.interlok.junit.scaffolding.BaseCase;
 import com.adaptris.security.exc.PasswordException;
 import com.adaptris.security.password.Password;
 import com.icegreen.greenmail.util.GreenMail;
@@ -66,22 +68,35 @@ public abstract class MailReceiverCase extends BaseCase {
 
   abstract MailReceiver createClient(GreenMail gm) throws Exception;
 
+  private static GreenMail greenmail;
+
+  @BeforeClass
+  public static void setupGreenmail() throws Exception {
+    greenmail = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
+  }
+
+  @AfterClass
+  public static void tearDownGreenmail() throws Exception {
+    JunitMailHelper.stopServer(greenmail);
+  }
+
+  @Before
+  public void before() throws Exception {
+    Assume.assumeTrue(testsEnabled());
+    greenmail.purgeEmailFromAllMailboxes();
+  }
+
+  protected static GreenMail mailServer() {
+    return greenmail;
+  }
+
   @Test
   public void testConnect() throws Exception {
-    Assume.assumeTrue(testsEnabled());
-    GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
+    MailReceiver mbox = createClient(greenmail);
     try {
-      MailReceiver mbox = createClient(gm);
-      try {
-        mbox.connect();
-      }
-      finally {
-        IOUtils.closeQuietly(mbox);
-      }
-
-    }
-    finally {
-      stopServer(gm);
+      mbox.connect();
+    } finally {
+      IOUtils.closeQuietly(mbox);
     }
   }
 
@@ -95,21 +110,19 @@ public abstract class MailReceiverCase extends BaseCase {
 
   @Test
   public void testFilterNoMatch_WithDelete() throws Exception {
-    Assume.assumeTrue(testsEnabled());
     String name = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
-    GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
+    ServerSetup smtpServerSetup = new ServerSetup(greenmail.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
     sendMessage("anotherAddress@anotherDomain.com", DEFAULT_RECEIVER, smtpServerSetup);
     sendMessage("anotherAddress@anotherDomain.com", DEFAULT_RECEIVER, smtpServerSetup);
     sendMessage("anotherAddress@anotherDomain.com", DEFAULT_RECEIVER, smtpServerSetup);
     sendMessage("anotherAddress@anotherDomain.com", DEFAULT_RECEIVER, smtpServerSetup);
     sendMessage("anotherAddress@anotherDomain.com", DEFAULT_RECEIVER, smtpServerSetup);
-    MailReceiver mbox = createClient(gm);
+    MailReceiver mbox = createClient(greenmail);
     mbox.purge(true);
     mbox.setRegularExpressionCompiler(JAVA_UTIL);
     mbox.setSubjectFilter(".*ZZZZZZ.*");
-    MailReceiver mboxChecker = createClient(gm);
+    MailReceiver mboxChecker = createClient(greenmail);
     try {
       mbox.connect();
       assertEquals(0, mbox.getMessages().size());
@@ -120,28 +133,25 @@ public abstract class MailReceiverCase extends BaseCase {
     finally {
       IOUtils.closeQuietly(mbox);
       IOUtils.closeQuietly(mboxChecker);
-      stopServer(gm);
       Thread.currentThread().setName(name);
     }
   }
 
   @Test
   public void testFilterMatch_WithDelete() throws Exception {
-    Assume.assumeTrue(testsEnabled());
     String name = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
-    GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
+    ServerSetup smtpServerSetup = new ServerSetup(greenmail.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
     sendMessage("anotherAddress@anotherDomain.com", DEFAULT_RECEIVER, smtpServerSetup);
     sendMessage("anotherAddress@anotherDomain.com", DEFAULT_RECEIVER, smtpServerSetup);
     sendMessage("anotherAddress@anotherDomain.com", DEFAULT_RECEIVER, smtpServerSetup);
     sendMessage("anotherAddress@anotherDomain.com", DEFAULT_RECEIVER, smtpServerSetup);
     sendMessage("anotherAddress@anotherDomain.com", DEFAULT_RECEIVER, smtpServerSetup);
-    MailReceiver mbox = createClient(gm);
+    MailReceiver mbox = createClient(greenmail);
     mbox.purge(true);
     mbox.setRegularExpressionCompiler(JAVA_UTIL);
     mbox.setSubjectFilter(".*Junit.*");
-    MailReceiver mboxChecker = createClient(gm);
+    MailReceiver mboxChecker = createClient(greenmail);
     try {
       log.warn(getName() + " connecting");
       mbox.connect();
@@ -160,20 +170,16 @@ public abstract class MailReceiverCase extends BaseCase {
     finally {
       IOUtils.closeQuietly(mbox);
       IOUtils.closeQuietly(mboxChecker);
-      stopServer(gm);
       Thread.currentThread().setName(name);
     }
   }
 
   @Test
   public void testJavaUtil_FromFilter() throws Exception {
-    Assume.assumeTrue(testsEnabled());
-
-    GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
+    ServerSetup smtpServerSetup = new ServerSetup(greenmail.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
     sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
     sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
-    MailReceiver mbox = createClient(gm);
+    MailReceiver mbox = createClient(greenmail);
     mbox.setRegularExpressionCompiler(JAVA_UTIL);
     mbox.setFromFilter(DEFAULT_SENDER);
 
@@ -189,18 +195,15 @@ public abstract class MailReceiverCase extends BaseCase {
     }
     finally {
       IOUtils.closeQuietly(mbox);
-      stopServer(gm);
     }
   }
 
   @Test
   public void testJavaUtil_ToFilter() throws Exception {
-    Assume.assumeTrue(testsEnabled());
-    GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
+    ServerSetup smtpServerSetup = new ServerSetup(greenmail.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
     sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
     sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
-    MailReceiver mbox = createClient(gm);
+    MailReceiver mbox = createClient(greenmail);
     mbox.setRegularExpressionCompiler(JAVA_UTIL);
     mbox.setRecipientFilter(".*" + DEFAULT_RECEIVER + ".*");
 
@@ -216,18 +219,15 @@ public abstract class MailReceiverCase extends BaseCase {
     }
     finally {
       IOUtils.closeQuietly(mbox);
-      stopServer(gm);
     }
   }
 
   @Test
   public void testJavaUtil_ToFilterNoMatch() throws Exception {
-    Assume.assumeTrue(testsEnabled());
-    GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
+    ServerSetup smtpServerSetup = new ServerSetup(greenmail.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
     sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
     sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
-    MailReceiver mbox = createClient(gm);
+    MailReceiver mbox = createClient(greenmail);
     mbox.setRegularExpressionCompiler(JAVA_UTIL);
     mbox.setRecipientFilter("ABCDEFG");
 
@@ -237,18 +237,15 @@ public abstract class MailReceiverCase extends BaseCase {
     }
     finally {
       IOUtils.closeQuietly(mbox);
-      stopServer(gm);
     }
   }
 
   @Test
   public void testJavaUtil_CustomFilter() throws Exception {
-    Assume.assumeTrue(testsEnabled());
-    GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
+    ServerSetup smtpServerSetup = new ServerSetup(greenmail.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
     sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
     sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
-    MailReceiver mbox = createClient(gm);
+    MailReceiver mbox = createClient(greenmail);
     mbox.setRegularExpressionCompiler(JAVA_UTIL);
     mbox.addCustomFilter("From", ".*" + DEFAULT_SENDER + ".*");
     try {
@@ -263,19 +260,15 @@ public abstract class MailReceiverCase extends BaseCase {
     }
     finally {
       IOUtils.closeQuietly(mbox);
-      stopServer(gm);
     }
   }
 
   @Test
   public void testJavaUtil_SubjectFilter() throws Exception {
-    Assume.assumeTrue(testsEnabled());
-
-    GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
+    ServerSetup smtpServerSetup = new ServerSetup(greenmail.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
     sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
     sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
-    MailReceiver mbox = createClient(gm);
+    MailReceiver mbox = createClient(greenmail);
     mbox.setRegularExpressionCompiler(JAVA_UTIL);
     mbox.setSubjectFilter(".*Junit.*");
     try {
@@ -290,23 +283,19 @@ public abstract class MailReceiverCase extends BaseCase {
     }
     finally {
       IOUtils.closeQuietly(mbox);
-      stopServer(gm);
     }
   }
 
   @Test
   public void testJavaUtil_FromSubjectFilter_NullSubject() throws Exception {
-    Assume.assumeTrue(testsEnabled());
-
-    GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
+    ServerSetup smtpServerSetup = new ServerSetup(greenmail.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
     sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, null, smtpServerSetup);
-    MailReceiver mbox = createClient(gm);
+    MailReceiver mbox = createClient(greenmail);
     mbox.setRegularExpressionCompiler(JAVA_UTIL);
     mbox.setFromFilter(DEFAULT_SENDER);
     mbox.setSubjectFilter(".*Junit*");
 
-    MailReceiver checker = createClient(gm);
+    MailReceiver checker = createClient(greenmail);
     checker.setFromFilter(DEFAULT_SENDER);
     try {
       mbox.connect();
@@ -317,19 +306,15 @@ public abstract class MailReceiverCase extends BaseCase {
     finally {
       IOUtils.closeQuietly(mbox);
       IOUtils.closeQuietly(checker);
-      stopServer(gm);
     }
   }
 
   @Test
   public void testJavaUtil_FromSubjectFilter_WithDelete() throws Exception {
-    Assume.assumeTrue(testsEnabled());
-
-    GreenMail gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    ServerSetup smtpServerSetup = new ServerSetup(gm.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
+    ServerSetup smtpServerSetup = new ServerSetup(greenmail.getSmtp().getPort(), null, ServerSetup.PROTOCOL_SMTP);
     sendMessage(DEFAULT_SENDER, DEFAULT_RECEIVER, smtpServerSetup);
     sendMessage(DEFAULT_SENDER, "anotherAddress@anotherDomain.com", smtpServerSetup);
-    MailReceiver mbox = createClient(gm);
+    MailReceiver mbox = createClient(greenmail);
     mbox.setRegularExpressionCompiler(JAVA_UTIL);
     mbox.setFromFilter(DEFAULT_SENDER);
     mbox.setSubjectFilter(".*Junit.*");
@@ -350,7 +335,6 @@ public abstract class MailReceiverCase extends BaseCase {
     }
     finally {
       IOUtils.closeQuietly(mbox);
-      stopServer(gm);
     }
   }
 

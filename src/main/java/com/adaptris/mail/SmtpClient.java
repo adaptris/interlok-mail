@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,7 +20,6 @@ import javax.mail.Transport;
 import javax.mail.URLName;
 import javax.mail.event.TransportEvent;
 import javax.mail.event.TransportListener;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +45,7 @@ import org.slf4j.LoggerFactory;
 public final class SmtpClient extends MailSenderImp implements TransportListener {
 
   private URLName smtpUrl;
-  private transient Logger logR = LoggerFactory.getLogger(this.getClass());
+  private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   /** Constructor */
   private SmtpClient() {
@@ -100,14 +99,10 @@ public final class SmtpClient extends MailSenderImp implements TransportListener
   @Override
   public void send() throws MailException {
     buildContent();
-    
+
     try {
       Transport tr = session.getTransport(smtpUrl);
-
-      if (logR.isTraceEnabled()) {
-        logR.trace("Attempting to send " + message.getMessageID() + " using SMTP "
-            + smtpUrl);
-      }
+      log.trace("Attempting to send {} using SMTP {}", message.getMessageID(), smtpUrl);
       if (smtpUrl.getUsername() != null) {
         tr.connect(smtpUrl.getHost(), smtpUrl.getPort(), smtpUrl.getUsername(),
             smtpUrl.getPassword());
@@ -129,7 +124,7 @@ public final class SmtpClient extends MailSenderImp implements TransportListener
    */
   @Override
   public void messageDelivered(TransportEvent e) {
-    logR.debug("Message was successfully delivered");
+    log.debug("Message was successfully delivered");
   }
 
   /**
@@ -137,7 +132,7 @@ public final class SmtpClient extends MailSenderImp implements TransportListener
    */
   @Override
   public void messageNotDelivered(TransportEvent e) {
-    logR.error("Message was NOT successfully delivered");
+    log.error("Message was NOT successfully delivered");
   }
 
   /**
@@ -145,6 +140,6 @@ public final class SmtpClient extends MailSenderImp implements TransportListener
    */
   @Override
   public void messagePartiallyDelivered(TransportEvent e) {
-    logR.warn("Message was partially delivered");
+    log.warn("Message was partially delivered");
   }
 }

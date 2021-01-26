@@ -6,14 +6,14 @@ plugins {
   id 'maven'
   id 'maven-publish'
   id  "jacoco"
-  id 'com.github.spotbugs' version '4.5.1'
-  id 'org.owasp.dependencycheck' version '6.0.3'
+  id 'com.github.spotbugs' version '4.6.0'
+  id 'org.owasp.dependencycheck' version '6.0.5'
   id "io.freefair.lombok" version "5.3.0"
 }
 
 ext {
-  interlokCoreVersion = project.hasProperty('interlokCoreVersion') ? project.getProperty('interlokCoreVersion') : '3.11-SNAPSHOT'
-  releaseVersion = project.hasProperty('releaseVersion') ? project.getProperty('releaseVersion') : '3.11-SNAPSHOT'
+  interlokCoreVersion = project.hasProperty('interlokCoreVersion') ? project.getProperty('interlokCoreVersion') : '3.12-SNAPSHOT'
+  releaseVersion = project.hasProperty('releaseVersion') ? project.getProperty('releaseVersion') : '3.12-SNAPSHOT'
   nexusBaseUrl = project.hasProperty('nexusBaseUrl') ? project.getProperty('nexusBaseUrl') : 'https://nexus.adaptris.net/nexus'
   mavenPublishUrl = project.hasProperty('mavenPublishUrl') ? project.getProperty('mavenPublishUrl') : nexusBaseUrl + '/content/repositories/snapshots'
   javadocsBaseUrl = nexusBaseUrl + "/content/sites/javadocs/com/adaptris"
@@ -68,11 +68,28 @@ ext.buildInfo = { ->
 }
 
 
+def propertyTemplate(dir, filename) {
+  def file = new File(dir, filename + "." + hostname())
+  if (file.exists()) {
+    return file.getName()
+  }
+  return filename
+}
+
+ext.hostname = { ->
+  if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+    return System.getenv("COMPUTERNAME")
+  }
+  return System.getenv("HOSTNAME")
+}
+
+
 ext.verboseTestLogging = { ->
   return verboseTests.equals("true")
 }
 
-sourceCompatibility = 1.8
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 group   = 'com.adaptris'
 version = releaseVersion
 def versionDir = "$buildDir/version"
@@ -126,9 +143,9 @@ dependencies {
     changing= true
     exclude group: "org.apache.logging.log4j"
   }
-  testCompile ("org.mockito:mockito-core:3.6.0")
-  testCompile ("org.mockito:mockito-inline:3.6.0")
-  testCompile ("com.icegreen:greenmail:1.6.0")
+  testCompile ("org.mockito:mockito-core:3.7.0")
+  testCompile ("org.mockito:mockito-inline:3.7.0")
+  testCompile ("com.icegreen:greenmail:1.6.1")
 
   javadoc("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true}
   offlineJavadocPackages ("com.adaptris:interlok-core:$interlokCoreVersion:javadoc@jar") { changing= true}
@@ -182,20 +199,29 @@ task offlinePackageList(type: Copy) {
   into offlineJavadocPackageDir
 }
 
-task copyUnitTestProperties(type: Copy) {
-    delete file('src/test/resources/unit-tests.properties')
-    from file('src/test/resources/unit-tests.properties.template')
-    into ('src/test/resources/')
-    rename { String fileName ->
-      fileName.replace('unit-tests.properties.template', 'unit-tests.properties')
-    }
-    filter(ReplaceTokens, tokens: [JAVA_HOME: System.getProperty("java.home").replaceAll("\\\\", "/")])
-    filter(ReplaceTokens, tokens: [BASE_DIR: project.rootDir.getCanonicalPath().replaceAll("\\\\", "/")])
-    filter(ReplaceTokens, tokens: [BUILD_DIR: project.buildDir.getCanonicalPath().replaceAll("\\\\", "/")])
+ext.testResourcesDir = { ->
+  return "${project.projectDir}/src/test/resources".replaceAll("\\\\", "/")
 }
 
-task deleteUnitTestProperties(type: Delete) {
-    delete file('src/test/resources/unit-tests.properties')
+task generateUnitTestProperties {
+  doLast {
+    ant.property(file: project.projectDir.getCanonicalPath() + "/" + "build.properties")
+    ant.property(file:  testResourcesDir() + "/" + propertyTemplate(testResourcesDir(), "unit-tests.properties.template"))
+    ant.echoproperties(destfile:  testResourcesDir() + '/unit-tests.properties.resolved', prefix: "junit.")
+    ant.replace(file:  testResourcesDir() + '/unit-tests.properties.resolved', token:"junit.", value: "")
+  }
+}
+
+task copyUnitTestProperties(type: Copy, dependsOn: generateUnitTestProperties) {
+  delete file( testResourcesDir() + '/unit-tests.properties')
+  from file( testResourcesDir() + "/unit-tests.properties.resolved")
+  into (testResourcesDir())
+  rename { String fileName ->
+    fileName.replace("unit-tests.properties.resolved", 'unit-tests.properties')
+  }
+  filter(ReplaceTokens, tokens: [JAVA_HOME: System.getProperty("java.home").replaceAll("\\\\", "/")])
+  filter(ReplaceTokens, tokens: [BASE_DIR: project.projectDir.getCanonicalPath().replaceAll("\\\\", "/")])
+  filter(ReplaceTokens, tokens: [BUILD_DIR: project.buildDir.getCanonicalPath().replaceAll("\\\\", "/")])
 }
 
 javadoc {
@@ -286,11 +312,13 @@ publishing {
       pom.withXml {
         asNode().appendNode("name", componentName)
         asNode().appendNode("description", "Integration with mail servers using javamail and apache mail libraries")
+        asNode().appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/pages/cookbook/cookbook-email")
         def properties = asNode().appendNode("properties")
-        properties.appendNode("url", "https://interlok.adaptris.net/interlok-docs/cookbook-email.html")
         properties.appendNode("target", "3.9.0+")
         properties.appendNode("tags", "email,pop3,pop3s,imap,imaps")
         properties.appendNode("license", "false")
+        properties.appendNode("repository", "https://github.com/adaptris/interlok-mail")
+        properties.appendNode("readme", "https://github.com/adaptris/interlok-mail/raw/develop/README.md")
       }
     }
   }
@@ -319,7 +347,7 @@ task lgtmCompile(type: JavaCompile, dependsOn: delombok) {
 }
 
 task deleteGeneratedFiles(type: Delete) {
-  delete delombokTargetDir
+  delete file(testResourcesDir() + "/unit-tests.properties"), file(testResourcesDir() + "/unit-tests.properties.resolved"), delombokTargetDir
 }
 
 test {
@@ -366,4 +394,4 @@ spotbugsTest.enabled = false
 javadoc.dependsOn offlinePackageList,umlJavadoc
 check.dependsOn jacocoTestReport
 processTestResources.dependsOn copyUnitTestProperties
-clean.dependsOn deleteUnitTestProperties,deleteGeneratedFiles
+clean.dependsOn deleteGeneratedFiles

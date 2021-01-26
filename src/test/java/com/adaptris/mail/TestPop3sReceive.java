@@ -18,20 +18,13 @@ package com.adaptris.mail;
 
 import javax.mail.URLName;
 import javax.net.ssl.SSLContext;
-
 import org.apache.commons.net.pop3.POP3Client;
 import org.apache.commons.net.util.SSLContextUtils;
-
 import com.adaptris.security.util.AlwaysTrustManager;
 import com.icegreen.greenmail.pop3.Pop3Server;
 import com.icegreen.greenmail.util.GreenMail;
 
 public class TestPop3sReceive extends Pop3ReceiverCase {
-
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Override
   protected MailReceiver createClient(GreenMail gm) throws Exception {
