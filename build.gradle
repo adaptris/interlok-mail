@@ -26,7 +26,7 @@ ext {
   interlokCommonJavadocs= project.hasProperty('interlokJavadocs') ? project.getProperty('interlokJavadocs') : javadocsBaseUrl + "/interlok-common/" + interlokCoreVersion
   verboseTests= project.findProperty('verboseTests') ?: "false"
   componentName='Interlok Mail/Javamail'
-  componentName="Integration with mail servers using javamail and apache mail libraries"
+  componentDesc="Integration with mail servers using javamail and apache mail libraries"
   organizationName = "Adaptris Ltd"
   organizationUrl = "http://interlok.adaptris.net"
   slf4jVersion = '1.7.30'
