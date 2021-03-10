@@ -19,11 +19,12 @@ package com.adaptris.core.mail.attachment;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.w3c.dom.Document;
+
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
@@ -42,7 +43,6 @@ public class XmlMailCreator implements MailContentCreator {
 
   private AttachmentHandler attachmentHandler;
   private BodyHandler bodyHandler;
-  private transient Logger logR = LoggerFactory.getLogger(this.getClass());
   @AdvancedConfig
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 
@@ -58,7 +58,7 @@ public class XmlMailCreator implements MailContentCreator {
     if (attachmentHandler == null) {
       throw new MailException("No way of selecting the Attachments");
     }
-    List<MailAttachment> result = new ArrayList<MailAttachment>();
+    List<MailAttachment> result = new ArrayList<>();
     try (InputStream in = msg.getInputStream()) {
       Document d = documentBuilder().parse(in);
       result = attachmentHandler.resolve(d);
