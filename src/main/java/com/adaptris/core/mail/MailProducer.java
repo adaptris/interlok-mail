@@ -237,11 +237,7 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
 
   @Override
   public String endpoint(AdaptrisMessage msg) throws ProduceException {
-    if (getTo() != null) {
-      return msg.resolveObject(getTo()).toString();
-    } else {
-      return null;
-    }
+    return msg.resolve(getTo());
   }
 
 }
