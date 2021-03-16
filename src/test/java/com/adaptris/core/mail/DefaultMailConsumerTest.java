@@ -14,17 +14,8 @@
 
 package com.adaptris.core.mail;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import java.io.FileInputStream;
-import java.util.List;
-import java.util.Properties;
-import javax.mail.Session;
-import javax.mail.internet.MimeMessage;
-import org.junit.Test;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.metadata.NoOpMetadataFilter;
@@ -36,6 +27,16 @@ import com.adaptris.mail.Pop3ReceiverFactory;
 import com.adaptris.mail.Pop3sReceiverFactory;
 import com.adaptris.util.text.mime.NullPartSelector;
 import com.adaptris.util.text.mime.SelectByPosition;
+import org.junit.Test;
+
+import javax.mail.Session;
+import javax.mail.internet.MimeMessage;
+import java.io.FileInputStream;
+import java.util.List;
+import java.util.Properties;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 public class DefaultMailConsumerTest extends MailConsumerCase {
 
@@ -48,7 +49,7 @@ public class DefaultMailConsumerTest extends MailConsumerCase {
     sendMessage(mailServer());
     MockMessageListener mockListener = new MockMessageListener();
     MailConsumerImp imp = createConsumerForTests(mailServer());
-    imp.getDestination().setFilterExpression("*");
+    imp.setFilterExpression("*");
     StandaloneConsumer c = new StandaloneConsumer(imp);
     c.registerAdaptrisMessageListener(mockListener);
     LifecycleHelper.initAndStart(c);
@@ -66,7 +67,7 @@ public class DefaultMailConsumerTest extends MailConsumerCase {
     MockMessageListener mockListener = new MockMessageListener();
     DefaultMailConsumer imp = (DefaultMailConsumer) createConsumerForTests(mailServer());
     imp.setRegularExpressionStyle(REGEX_STYLE);
-    imp.getDestination().setFilterExpression("SUBJECT=.*");
+    imp.setFilterExpression("SUBJECT=.*");
     imp.setHeaderHandler(new MetadataMailHeaders().withHeaderFilter(new NoOpMetadataFilter()));
 
     StandaloneConsumer c = new StandaloneConsumer(imp);
@@ -100,8 +101,7 @@ public class DefaultMailConsumerTest extends MailConsumerCase {
     try {
       MockMessageProducer mockProducer = new MockMessageProducer();
       MailConsumerImp consumer = createConsumerForTests(mailServer(), new Pop3ReceiverFactory());
-      consumer.setDestination(new ConfiguredConsumeDestination(
-          "imap://localhost:" + mailServer().getPop3().getPort() + "/INBOX"));
+      consumer.setMailboxUrl("imap://localhost:" + mailServer().getPop3().getPort() + "/INBOX");
       a = createAdapter(consumer, mockProducer);
       a.requestStart();
     } finally {

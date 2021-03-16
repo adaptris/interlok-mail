@@ -14,23 +14,8 @@
 
 package com.adaptris.core.mail;
 
-import static com.adaptris.mail.JunitMailHelper.DEFAULT_RECEIVER;
-import static com.adaptris.mail.JunitMailHelper.DEFAULT_SENDER;
-import static com.adaptris.mail.JunitMailHelper.testsEnabled;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import javax.mail.Header;
-import javax.mail.internet.MimeMessage;
-import org.junit.Assume;
-import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.NullConnection;
 import com.adaptris.core.ServiceCase;
 import com.adaptris.core.StandaloneProducer;
@@ -40,6 +25,22 @@ import com.adaptris.mail.MessageParser;
 import com.adaptris.util.KeyValuePair;
 import com.icegreen.greenmail.smtp.SmtpServer;
 import com.icegreen.greenmail.util.GreenMail;
+import org.junit.Assume;
+import org.junit.Test;
+
+import javax.mail.Header;
+import javax.mail.internet.MimeMessage;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+
+import static com.adaptris.mail.JunitMailHelper.DEFAULT_RECEIVER;
+import static com.adaptris.mail.JunitMailHelper.DEFAULT_SENDER;
+import static com.adaptris.mail.JunitMailHelper.testsEnabled;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @SuppressWarnings("deprecation")
 public class DefaultMailProducerTest extends MailProducerExample {
@@ -155,7 +156,7 @@ public class DefaultMailProducerTest extends MailProducerExample {
     msg.addMetadata("some-cc-address", "CarbonCopy@CarbonCopy.com");
     StandaloneProducer producer = createProducerForTests(gm);
     MailProducer mailer = (MailProducer) producer.getProducer();
-    mailer.setDestination(null);
+    mailer.setTo(null);
     mailer.setCcList("%message{some-cc-address}");
     ServiceCase.execute(producer, msg);
     gm.waitForIncomingEmail(1);
@@ -196,7 +197,7 @@ public class DefaultMailProducerTest extends MailProducerExample {
     msg.addMetadata("a-bcc-address", "BlindCarbonCopy@BlindCarbonCopy.com");
     StandaloneProducer producer = createProducerForTests(gm);
     MailProducer mailer = (MailProducer) producer.getProducer();
-    mailer.setDestination(null);
+    mailer.setTo(null);
     mailer.setBccList("%message{a-bcc-address}");
     ServiceCase.execute(producer, msg);
     gm.waitForIncomingEmail(1);
@@ -419,7 +420,7 @@ public class DefaultMailProducerTest extends MailProducerExample {
     smtp.setSubject("Junit Test for com.adaptris.core.mail");
     smtp.setFrom(JunitMailHelper.DEFAULT_SENDER);
     smtp.setContentType("plain/text");
-    smtp.setDestination(new ConfiguredProduceDestination(JunitMailHelper.DEFAULT_RECEIVER));
+    smtp.setTo(JunitMailHelper.DEFAULT_RECEIVER);
     return new StandaloneProducer(new NullConnection(), smtp);
   }
 

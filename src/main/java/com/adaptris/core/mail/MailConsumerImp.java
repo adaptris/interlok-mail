@@ -16,30 +16,14 @@
 
 package com.adaptris.core.mail;
 
-import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.split;
-import java.io.Closeable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.mail.internet.MimeMessage;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
-import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisPollingConsumer;
-import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;
-import com.adaptris.core.util.DestinationHelper;
-import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.interlok.resolver.ExternalResolver;
 import com.adaptris.mail.JavamailReceiverFactory;
 import com.adaptris.mail.MailException;
@@ -48,6 +32,21 @@ import com.adaptris.mail.MailReceiverFactory;
 import com.adaptris.mail.MatchProxyFactory;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.mail.internet.MimeMessage;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.io.Closeable;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.split;
 
 /**
  * Email implementation of the AdaptrisMessageConsumer interface.
@@ -107,23 +106,12 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
   private MailHeaderHandler headerHandler;
 
   /**
-   * The consume destination contains the MailboxURL that we poll.
-   *
-   */
-  @Getter
-  @Setter
-  @Deprecated
-  @Valid
-  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use 'mailbox-url' instead", groups = Deprecated.class)
-  private ConsumeDestination destination;
-
-  /**
    * The Mailbox specified as a URL.
    *
    */
   @Getter
   @Setter
-  // Needs to be @NotBlank when destination is removed.
+  @NotBlank
   private String mailboxUrl;
 
   /**
@@ -138,7 +126,6 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
 
 
   protected transient MailReceiver mbox;
-  private transient boolean destinationWarningLogged;
 
   public MailConsumerImp() {
     setRegularExpressionStyle(MatchProxyFactory.DEFAULT_REGEXP_STYLE);
@@ -149,10 +136,6 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
 
   @Override
   protected void prepareConsumer() throws CoreException {
-    DestinationHelper.logWarningIfNotNull(destinationWarningLogged,
-        () -> destinationWarningLogged = true, getDestination(),
-        "{} uses destination, use path + methods instead", LoggingHelper.friendlyName(this));
-    DestinationHelper.mustHaveEither(getMailboxUrl(), getDestination());
   }
 
   @Override
@@ -379,15 +362,15 @@ public abstract class MailConsumerImp extends AdaptrisPollingConsumer{
 
   @Override
   protected String newThreadName() {
-    return DestinationHelper.threadName(retrieveAdaptrisMessageListener(), getDestination());
+    return retrieveAdaptrisMessageListener().friendlyName();
   }
 
   protected String mailboxUrl() {
-    return DestinationHelper.consumeDestination(getMailboxUrl(), getDestination());
+    return getMailboxUrl();
   }
 
   protected String filterExpression() {
-    return DestinationHelper.filterExpression(getFilterExpression(), getDestination());
+    return getFilterExpression();
   }
 
 }
