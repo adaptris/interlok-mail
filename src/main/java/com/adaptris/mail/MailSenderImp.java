@@ -350,4 +350,13 @@ public abstract class MailSenderImp implements MailSender {
       throw new MailException("Session not started");
     }
   }
+  // Purely for unit testing.
+  void setMessage(MimeMessage message) {
+    this.message = message;
+  }
+
+  //Purely for unit testing.
+  void setSession(Session session) {
+    this.session = session;
+  }
 }
