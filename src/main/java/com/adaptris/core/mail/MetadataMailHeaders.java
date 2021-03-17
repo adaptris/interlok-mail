@@ -76,7 +76,7 @@ public class MetadataMailHeaders implements MailHeaderHandler {
   @Override
   public void handle(MimeMessage mime, AdaptrisMessage msg) throws MessagingException {
     Set<MetadataElement> metadata = new HashSet<MetadataElement>();
-    Enumeration headers = mime.getAllHeaders();
+    Enumeration<Header> headers = mime.getAllHeaders();
     String pfx = StringUtils.defaultIfBlank(getPrefix(), "");
     while (headers.hasMoreElements()) {
       Header h = (Header) headers.nextElement();

@@ -183,22 +183,6 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
     registerEncoderMessageFactory();
   }
 
-  /**
-   * @deprecated since 3.10.0, slated for removal in 3.11.0, use message resolver instead.
-   */
-  @Deprecated
-  private String getSubject(AdaptrisMessage msg) {
-    return msg.containsKey(EmailConstants.EMAIL_SUBJECT) ? msg.getMetadataValue(EmailConstants.EMAIL_SUBJECT) : msg.resolve(getSubject());
-  }
-
-  /**
-   * @deprecated since 3.10.0, slated for removal in 3.11.0, use message resolver instead.
-   */
-  @Deprecated
-  private String getCC(AdaptrisMessage msg) {
-    return msg.containsKey(EmailConstants.EMAIL_CC_LIST) ? msg.getMetadataValue(EmailConstants.EMAIL_CC_LIST) : msg.resolve(getCcList());
-  }
-
   protected SmtpClient getClient(AdaptrisMessage msg, String toAddresses)
       throws MailException, PasswordException {
     SmtpClient smtp = getClient(msg);
@@ -216,8 +200,8 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
       smtp.addSessionProperty(kp.getKey(), kp.getValue());
     }
     smtp.startSession();
-    smtp.setSubject(getSubject(msg));
-    String ccList = getCC(msg);
+    smtp.setSubject(msg.resolve(getSubject()));
+    String ccList = msg.resolve(getCcList());
     if (ccList != null) {
       smtp.addCarbonCopy(ccList);
     }

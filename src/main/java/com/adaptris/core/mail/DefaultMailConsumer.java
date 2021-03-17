@@ -36,7 +36,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Default Email implementation of the AdaptrisMessageConsumer interface.
  * <p>
  * Each Mime part of the incoming email message will become a separate AdaptrisMessage; attachments are processed separately from
- * the mail body itelf.
+ * the mail body itself.
  * </p>
  *
  *

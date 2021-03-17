@@ -158,15 +158,16 @@ public class XmlAttachmentHandler implements AttachmentHandler {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     n.normalize();
     String s = n.getTextContent();
-    ByteArrayInputStream in = new ByteArrayInputStream(s.getBytes());
-    InputStream encodedIn = in;
-    if (getEncodingXpath() != null) {
-      String encoding = x.selectSingleTextItem(n, getEncodingXpath());
-      logR.trace("Found encoding type [{}] from XPath [{}]", encoding, getEncodingXpath());
-      encodedIn = MimeUtility.decode(in, encoding);
+    try (ByteArrayInputStream in = new ByteArrayInputStream(s.getBytes())) {
+      InputStream encodedIn = in;
+      if (getEncodingXpath() != null) {
+        String encoding = x.selectSingleTextItem(n, getEncodingXpath());
+        logR.trace("Found encoding type [{}] from XPath [{}]", encoding, getEncodingXpath());
+        encodedIn = MimeUtility.decode(in, encoding);
+      }
+      StreamUtil.copyStream(encodedIn, out);
+      out.flush();
     }
-    StreamUtil.copyStream(encodedIn, out);
-    out.flush();
     return out.toByteArray();
   }
 
