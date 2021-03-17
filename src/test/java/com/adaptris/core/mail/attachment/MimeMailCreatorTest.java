@@ -57,14 +57,14 @@ public class MimeMailCreatorTest extends BaseCase {
   public void testBodyCreation() throws Exception {
     MimeMailCreator mmc = new MimeMailCreator();
     try {
-      MailContent mc = mmc.createBody(create());
+      mmc.createBody(create());
     }
     catch (MailException expected) {
 
     }
     try {
       mmc.setBodySelector(new SelectByPosition(99));
-      MailContent mc = mmc.createBody(create());
+      mmc.createBody(create());
     }
     catch (MailException expected) {
 
@@ -80,7 +80,7 @@ public class MimeMailCreatorTest extends BaseCase {
   public void testAttachmentCreation() throws Exception {
     MimeMailCreator mmc = new MimeMailCreator();
     try {
-      List<MailAttachment> list = mmc.createAttachments(create());
+      mmc.createAttachments(create());
     }
     catch (MailException expected) {
 

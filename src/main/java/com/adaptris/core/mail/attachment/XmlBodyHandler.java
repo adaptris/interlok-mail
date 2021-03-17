@@ -118,8 +118,7 @@ public class XmlBodyHandler implements BodyHandler {
       String encoding = x.selectSingleTextItem(n, getEncodingXpath());
       encodedIn = MimeUtility.decode(in, encoding);
     }
-    StreamUtil.copyStream(encodedIn, out);
-    out.flush();
+    StreamUtil.copyAndClose(encodedIn, out);
     return out.toByteArray();
   }
 

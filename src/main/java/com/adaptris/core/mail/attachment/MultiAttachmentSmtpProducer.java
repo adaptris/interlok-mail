@@ -16,6 +16,11 @@
 
 package com.adaptris.core.mail.attachment;
 
+import java.util.List;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -26,17 +31,12 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.NullConnection;
 import com.adaptris.core.ProduceException;
-import com.adaptris.core.mail.EmailConstants;
 import com.adaptris.core.mail.MailProducer;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.mail.MailException;
 import com.adaptris.mail.SmtpClient;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.util.List;
 
 /**
  * Implementation of the AdaptrisMessageProducer interface for handling email.
@@ -71,8 +71,6 @@ import java.util.List;
  * @config multi-attachment-smtp-producer
  *
  * @see MailProducer
- * @see EmailConstants#EMAIL_SUBJECT
- * @see EmailConstants#EMAIL_CC_LIST
  * @see MailContentCreator
  */
 @XStreamAlias("multi-attachment-smtp-producer")
