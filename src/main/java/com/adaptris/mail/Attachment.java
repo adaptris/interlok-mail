@@ -18,8 +18,6 @@ package com.adaptris.mail;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Attachment class.
@@ -33,7 +31,6 @@ public final class Attachment {
   private String filename;
   private String contentType;
   private String encoding;
-  private transient Logger logR = LoggerFactory.getLogger(this.getClass());
 
   private Attachment() {
   }

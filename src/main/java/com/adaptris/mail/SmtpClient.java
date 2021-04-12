@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.mail;
 
@@ -20,8 +20,11 @@ import javax.mail.Transport;
 import javax.mail.URLName;
 import javax.mail.event.TransportEvent;
 import javax.mail.event.TransportListener;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.adaptris.core.mail.URLNameHelper;
 
 /**
  * The Adaptris SMTP client.
@@ -102,7 +105,7 @@ public final class SmtpClient extends MailSenderImp implements TransportListener
 
     try {
       Transport tr = session.getTransport(smtpUrl);
-      log.trace("Attempting to send {} using SMTP {}", message.getMessageID(), smtpUrl);
+      log.trace("Attempting to send {} using SMTP {}", message.getMessageID(), URLNameHelper.toSafeString(smtpUrl));
       if (smtpUrl.getUsername() != null) {
         tr.connect(smtpUrl.getHost(), smtpUrl.getPort(), smtpUrl.getUsername(),
             smtpUrl.getPassword());

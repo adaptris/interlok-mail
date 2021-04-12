@@ -16,10 +16,6 @@
 
 package com.adaptris.core.mail;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.Poller;
 import com.adaptris.core.QuartzCronPoller;
@@ -31,6 +27,10 @@ import com.adaptris.util.text.mime.PartSelector;
 import com.adaptris.util.text.mime.SelectByContentId;
 import com.adaptris.util.text.mime.SelectByHeader;
 import com.adaptris.util.text.mime.SelectByPosition;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class DefaultMailConsumerPartSelectorTest extends MailConsumerExample {
 
@@ -44,8 +44,8 @@ public class DefaultMailConsumerPartSelectorTest extends MailConsumerExample {
   private StandaloneConsumer createConfigExample(Poller pollerImp, PartSelector partSelector) {
     DefaultMailConsumer pop3 = new DefaultMailConsumer();
     pop3.setPartSelector(partSelector);
-    pop3.setDestination(new ConfiguredConsumeDestination("pop3://username:password@server:110/INBOX", "FROM=optionalFilter,"
-        + "SUBJECT=optionalFilter," + "RECIPIENT=optionalFilter"));
+    pop3.setMailboxUrl("pop3://username:password@server:110/INBOX");
+    pop3.setFilterExpression("FROM=optionalFilter,SUBJECT=optionalFilter,RECIPIENT=optionalFilter");
     JavamailReceiverFactory fac = new JavamailReceiverFactory();
     fac.getSessionProperties().addKeyValuePair(new KeyValuePair("mail.smtp.starttls.enable", "true"));
     fac.getSessionProperties().addKeyValuePair(new KeyValuePair("mail.pop3.starttls.enable", "true"));

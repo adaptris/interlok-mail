@@ -79,7 +79,7 @@ public abstract class Pop3FactoryCase extends BaseCase {
     Pop3Server server = getServer(greenmail);
     String pop3UrlString = "imap://localhost:" + server.getPort() + "/INBOX";
     URLName pop3Url = createURLName(pop3UrlString, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    MailReceiver client = fac.createClient(pop3Url);
+    fac.createClient(pop3Url);
   }
 
   @Test

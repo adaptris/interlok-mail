@@ -16,37 +16,10 @@
 
 package com.adaptris.core.mail;
 
-import static com.adaptris.mail.JunitMailHelper.DEFAULT_RECEIVER;
-import static com.adaptris.mail.JunitMailHelper.startServer;
-import static com.adaptris.mail.JunitMailHelper.testsEnabled;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Properties;
-import java.util.concurrent.TimeUnit;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.InternetHeaders;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-import org.junit.AfterClass;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessageProducer;
 import com.adaptris.core.Channel;
 import com.adaptris.core.ChannelList;
-import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.NullConnection;
 import com.adaptris.core.Poller;
@@ -68,6 +41,34 @@ import com.adaptris.util.TimeInterval;
 import com.icegreen.greenmail.pop3.Pop3Server;
 import com.icegreen.greenmail.user.GreenMailUser;
 import com.icegreen.greenmail.util.GreenMail;
+import org.junit.AfterClass;
+import org.junit.Assume;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.InternetHeaders;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Properties;
+import java.util.concurrent.TimeUnit;
+
+import static com.adaptris.mail.JunitMailHelper.DEFAULT_RECEIVER;
+import static com.adaptris.mail.JunitMailHelper.startServer;
+import static com.adaptris.mail.JunitMailHelper.testsEnabled;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public abstract class MailConsumerCase extends MailConsumerExample {
 
@@ -193,8 +194,8 @@ public abstract class MailConsumerCase extends MailConsumerExample {
     consumer.setPoller(new FixedIntervalPoller(new TimeInterval(300L, TimeUnit.MILLISECONDS)));
     consumer.setReacquireLockBetweenMessages(true);
     consumer.setRegularExpressionStyle(REGEX_STYLE);
-    ConfiguredConsumeDestination dest = new ConfiguredConsumeDestination(pop3Url, "SUBJECT=.*Junit Test.*");
-    consumer.setDestination(dest);
+    consumer.setMailboxUrl(pop3Url);
+    consumer.setFilterExpression("SUBJECT=.*Junit Test.*");
     consumer.setUsername(DEFAULT_POP3_USER);
     consumer.setPassword(DEFAULT_ENCODED_POP3_PASSWORD);
     return consumer;

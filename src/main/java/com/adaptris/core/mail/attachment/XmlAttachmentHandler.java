@@ -165,8 +165,7 @@ public class XmlAttachmentHandler implements AttachmentHandler {
       logR.trace("Found encoding type [{}] from XPath [{}]", encoding, getEncodingXpath());
       encodedIn = MimeUtility.decode(in, encoding);
     }
-    StreamUtil.copyStream(encodedIn, out);
-    out.flush();
+    StreamUtil.copyAndClose(encodedIn, out);
     return out.toByteArray();
   }
 

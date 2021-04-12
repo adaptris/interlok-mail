@@ -16,27 +16,18 @@
 
 package com.adaptris.core.mail;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import org.apache.commons.lang3.StringUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldHint;
-import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataCollection;
 import com.adaptris.core.MetadataElement;
-import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ProduceOnlyProducerImp;
 import com.adaptris.core.metadata.MetadataFilter;
 import com.adaptris.core.metadata.RemoveAllMetadataFilter;
 import com.adaptris.core.util.Args;
-import com.adaptris.core.util.DestinationHelper;
-import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.interlok.resolver.ExternalResolver;
 import com.adaptris.mail.MailException;
 import com.adaptris.mail.SmtpClient;
@@ -46,6 +37,11 @@ import com.adaptris.util.KeyValuePairSet;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  * Abstract implementation of the AdaptrisMessageProducer interface for handling Email.
@@ -66,8 +62,6 @@ import lombok.Setter;
  * headers.
  * </p>
  *
- * @see CoreConstants#EMAIL_SUBJECT
- * @see CoreConstants#EMAIL_CC_LIST
  */
 public abstract class MailProducer extends ProduceOnlyProducerImp {
 
@@ -167,26 +161,14 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
   private String username;
 
   /**
-   * The destination is a comma separated list of {@code TO} addresses.
-   *
-   */
-  @Getter
-  @Setter
-  @Deprecated
-  @Valid
-  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use 'to' instead", groups = Deprecated.class)
-  private ProduceDestination destination;
-
-  /**
    * Comma separated list of email addresses to send to.
    */
   @InputFieldHint(expression = true)
   @Getter
   @Setter
-  // Needs to be @NotBlank when destination is removed.
+  @NotBlank
   private String to;
 
-  private transient boolean destWarning;
   public MailProducer() {
     sessionProperties = new KeyValuePairSet();
     setMetadataFilter(new RemoveAllMetadataFilter());
@@ -195,28 +177,10 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
   @Override
   public void prepare() throws CoreException {
     Args.notNull(getSmtpUrl(), "smtpUrl");
-    DestinationHelper.logWarningIfNotNull(destWarning, () -> destWarning = true, getDestination(),
-        "{} uses destination, use 'to' instead", LoggingHelper.friendlyName(this));
     // To is optional if you want to just use bcc !.
     // DestinationHelper.mustHaveEither(getPath(), getDestination());
 
     registerEncoderMessageFactory();
-  }
-
-  /**
-   * @deprecated since 3.10.0, slated for removal in 3.11.0, use message resolver instead.
-   */
-  @Deprecated
-  private String getSubject(AdaptrisMessage msg) {
-    return msg.containsKey(EmailConstants.EMAIL_SUBJECT) ? msg.getMetadataValue(EmailConstants.EMAIL_SUBJECT) : msg.resolve(getSubject());
-  }
-
-  /**
-   * @deprecated since 3.10.0, slated for removal in 3.11.0, use message resolver instead.
-   */
-  @Deprecated
-  private String getCC(AdaptrisMessage msg) {
-    return msg.containsKey(EmailConstants.EMAIL_CC_LIST) ? msg.getMetadataValue(EmailConstants.EMAIL_CC_LIST) : msg.resolve(getCcList());
   }
 
   protected SmtpClient getClient(AdaptrisMessage msg, String toAddresses)
@@ -236,8 +200,8 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
       smtp.addSessionProperty(kp.getKey(), kp.getValue());
     }
     smtp.startSession();
-    smtp.setSubject(getSubject(msg));
-    String ccList = getCC(msg);
+    smtp.setSubject(msg.resolve(getSubject()));
+    String ccList = msg.resolve(getCcList());
     if (ccList != null) {
       smtp.addCarbonCopy(ccList);
     }
@@ -257,7 +221,7 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
 
   @Override
   public String endpoint(AdaptrisMessage msg) throws ProduceException {
-    return DestinationHelper.resolveProduceDestination(getTo(), getDestination(), msg);
+    return msg.resolve(getTo());
   }
 
 }

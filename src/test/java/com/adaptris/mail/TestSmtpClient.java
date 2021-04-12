@@ -58,9 +58,9 @@ public class TestSmtpClient {
   public void testConstructors() throws Exception {
     SmtpServer server = greenmail.getSmtp();
     String smtpUrl = server.getProtocol() + "://localhost:" + server.getPort();
-    SmtpClient client = new SmtpClient(smtpUrl);
-    client = new SmtpClient(new URLName(smtpUrl));
-    client = new SmtpClient("localhost", server.getPort(), "", "");
+    new SmtpClient(smtpUrl);
+    new SmtpClient(new URLName(smtpUrl));
+    new SmtpClient("localhost", server.getPort(), "", "");
   }
 
   @Test
