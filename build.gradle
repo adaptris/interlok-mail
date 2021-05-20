@@ -151,7 +151,7 @@ dependencies {
   }
   testCompile ("org.mockito:mockito-core:$mockitoVersion")
   testCompile ("org.mockito:mockito-inline:$mockitoVersion")
-  testCompile ("com.icegreen:greenmail:1.6.3")
+  testCompile ("com.icegreen:greenmail:1.6.4")
 
   javadoc("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true}
   offlineJavadocPackages ("com.adaptris:interlok-core:$interlokCoreVersion:javadoc@jar") { changing= true}
