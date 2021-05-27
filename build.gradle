@@ -9,6 +9,7 @@ plugins {
   id 'com.github.spotbugs' version '4.7.1'
   id 'org.owasp.dependencycheck' version '6.1.6'
   id "io.freefair.lombok" version "5.3.3.3"
+  id "org.gradle.test-retry" version "1.2.1"
 }
 
 ext {
@@ -33,7 +34,8 @@ ext {
   mockitoVersion = '3.10.0'
 }
 
-ext.hasGraphViz = { ->
+ext.buildDetails = [
+  hasGraphViz: { ->
 //  def app = "dot"
 //  if (Os.isFamily(Os.FAMILY_WINDOWS)) {
 //    app = app + ".exe"
@@ -42,7 +44,37 @@ ext.hasGraphViz = { ->
 //    java.nio.file.Paths.get("${it}").resolve(app).toFile().exists()
 //  }
   return false
-}
+  },
+  hostname: { ->
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+      return System.getenv("COMPUTERNAME")
+    }
+    return System.getenv("HOSTNAME")
+  },
+  gitBranchNameOrTimestamp: { branchName ->
+    if (branchName.equals("HEAD") || branchName.equals("develop") || branchName.startsWith("release")) {
+      return new Date().format('HH:mm:ss z');
+    }
+    return branchName;
+  },
+  buildInfo: { ->
+   new ByteArrayOutputStream().withStream { os ->
+      exec {
+        executable = "git"
+        args = ["rev-parse", "--abbrev-ref", "HEAD"]
+        standardOutput = os
+      }
+      def branchName = os.toString().replaceAll("\r", "").replaceAll("\n", "").trim();
+      return buildDetails.gitBranchNameOrTimestamp(branchName);
+    }
+  },
+  verboseTestLogging: { ->
+    return verboseTests.equals("true")
+  },
+  is_ci_pipeline: { ->
+    return System.getenv().containsKey("CI");
+  }
+]
 
 if (JavaVersion.current().isJava8Compatible()) {
   allprojects {
@@ -51,44 +83,13 @@ if (JavaVersion.current().isJava8Compatible()) {
     }
   }
 }
-ext.gitBranchNameOrTimestamp = { branchName ->
-  if (branchName.equals("HEAD") || branchName.equals("develop") || branchName.startsWith("release")) {
-    return new Date().format('HH:mm:ss z');
-  }
-  return branchName;
-}
-
-ext.buildInfo = { ->
-   new ByteArrayOutputStream().withStream { os ->
-      exec {
-        executable = "git"
-        args = ["rev-parse", "--abbrev-ref", "HEAD"]
-        standardOutput = os
-      }
-      def branchName = os.toString().replaceAll("\r", "").replaceAll("\n", "").trim();
-      return gitBranchNameOrTimestamp(branchName);
-    }
-}
-
 
 def propertyTemplate(dir, filename) {
-  def file = new File(dir, filename + "." + hostname())
+  def file = new File(dir, filename + "." + buildDetails.hostname())
   if (file.exists()) {
     return file.getName()
   }
   return filename
-}
-
-ext.hostname = { ->
-  if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-    return System.getenv("COMPUTERNAME")
-  }
-  return System.getenv("HOSTNAME")
-}
-
-
-ext.verboseTestLogging = { ->
-  return verboseTests.equals("true")
 }
 
 sourceCompatibility = JavaVersion.VERSION_11
@@ -188,7 +189,7 @@ task generateVersion {
       entry(key: 'artifactId', value: project.name)
       entry(key: 'build.version', value: releaseVersion)
       entry(key: 'build.date', value: new Date().format('yyyy-MM-dd'))
-      entry(key: 'build.info', value: buildInfo())
+      entry(key: 'build.info', value: buildDetails.buildInfo())
     }
   }
 }
@@ -234,7 +235,7 @@ task copyUnitTestProperties(type: Copy, dependsOn: generateUnitTestProperties) {
 
 javadoc {
   onlyIf {
-    !hasGraphViz()
+    !buildDetails.hasGraphViz()
   }
   configure(options) {
     options.linksOffline(interlokJavadocs, offlineJavadocPackageDir.getCanonicalPath() + "/interlok-core-$interlokCoreVersion-javadoc.jar")
@@ -273,7 +274,7 @@ task umlJavadoc(type: Javadoc) {
   description 'Build javadocs using plantuml + graphviz + umldoclet, if dot is available'
 
   onlyIf {
-    hasGraphViz()
+    buildDetails.hasGraphViz()
   }
   source = sourceSets.main.extensions.delombokTask
   classpath = project.sourceSets.main.compileClasspath
@@ -361,9 +362,15 @@ task deleteGeneratedFiles(type: Delete) {
 }
 
 test {
+  if (buildDetails.is_ci_pipeline()) {
+    retry {
+      maxRetries = 3
+      maxFailures = 20
+    }
+  }
   // listen to events in the test execution lifecycle
   beforeSuite { descriptor ->
-     if (verboseTestLogging()) {
+     if (buildDetails.verboseTestLogging()) {
       logger.lifecycle("Running: " + descriptor)
      }
   }
