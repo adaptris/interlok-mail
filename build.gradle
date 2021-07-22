@@ -76,14 +76,6 @@ ext.buildDetails = [
   }
 ]
 
-if (JavaVersion.current().isJava8Compatible()) {
-  allprojects {
-    tasks.withType(Javadoc) {
-      options.addStringOption('Xdoclint:none', '-quiet')
-    }
-  }
-}
-
 def propertyTemplate(dir, filename) {
   def file = new File(dir, filename + "." + buildDetails.hostname())
   if (file.exists()) {
@@ -101,8 +93,18 @@ generateLombokConfig.enabled = false
 
 // Disable gradle module generation since we probably don't want
 // xxx.module files in your repository.
-tasks.withType(GenerateModuleMetadata) {
-  enabled = false
+allprojects {
+  tasks.withType(Jar) {
+    metaInf {
+      from ("$rootDir") {
+        include 'LICENSE*'
+        include 'NOTICE*'
+      }
+    }
+  }
+  tasks.withType(GenerateModuleMetadata) {
+    enabled = false
+  }
 }
 
 repositories {
