@@ -31,7 +31,7 @@ ext {
   organizationName = "Adaptris Ltd"
   organizationUrl = "http://interlok.adaptris.net"
   slf4jVersion = '1.7.32'
-  mockitoVersion = '3.11.2'
+  mockitoVersion = '3.12.4'
 }
 
 ext.buildDetails = [
@@ -161,7 +161,7 @@ dependencies {
   testImplementation ("org.mockito:mockito-core:$mockitoVersion")
   testImplementation ("org.mockito:mockito-inline:$mockitoVersion")
 
-  testImplementation ("com.icegreen:greenmail:1.6.4")
+  testImplementation ("com.icegreen:greenmail:1.6.5")
 
   javadoc("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true}
   offlineJavadocPackages ("com.adaptris:interlok-core:$interlokCoreVersion:javadoc@jar") { changing= true}
