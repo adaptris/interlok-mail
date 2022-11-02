@@ -5,15 +5,15 @@ plugins {
   id 'java-library'
   id 'maven-publish'
   id 'jacoco'
-  id 'com.github.spotbugs' version '5.0.7'
-  id 'org.owasp.dependencycheck' version '7.1.0.1'
-  id "io.freefair.lombok" version "6.4.3"
-  id "org.gradle.test-retry" version "1.4.0"
+  id 'com.github.spotbugs' version '5.0.12'
+  id 'org.owasp.dependencycheck' version '7.2.1'
+  id "io.freefair.lombok" version "6.5.1"
+  id "org.gradle.test-retry" version "1.4.1"
 }
 
 ext {
-  interlokCoreVersion = project.findProperty('interlokCoreVersion') ?: '4.5-SNAPSHOT'
-  releaseVersion = project.findProperty('releaseVersion') ?: '4.5-SNAPSHOT'
+  interlokCoreVersion = project.findProperty('interlokCoreVersion') ?: '4.6-SNAPSHOT'
+  releaseVersion = project.findProperty('releaseVersion') ?: '4.6-SNAPSHOT'
   nexusBaseUrl = project.findProperty('nexusBaseUrl') ?: 'https://nexus.adaptris.net/nexus'
   mavenPublishUrl = project.findProperty('mavenPublishUrl') ?: nexusBaseUrl + '/content/repositories/snapshots'
   javadocsBaseUrl = nexusBaseUrl + "/content/sites/javadocs/com/adaptris"
@@ -30,8 +30,8 @@ ext {
   componentDesc="Integration with mail servers using javamail and apache mail libraries"
   organizationName = "Adaptris Ltd"
   organizationUrl = "http://interlok.adaptris.net"
-  slf4jVersion = '1.7.36'
-  mockitoVersion = '4.5.1'
+  slf4jVersion = '2.0.3'
+  mockitoVersion = '4.8.0'
 }
 
 ext.buildDetails = [
@@ -161,7 +161,7 @@ dependencies {
   testImplementation ("org.mockito:mockito-core:$mockitoVersion")
   testImplementation ("org.mockito:mockito-inline:$mockitoVersion")
 
-  testImplementation ("com.icegreen:greenmail:1.6.9")
+  testImplementation ("com.icegreen:greenmail:1.6.11")
 
   javadoc("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true}
   offlineJavadocPackages ("com.adaptris:interlok-core:$interlokCoreVersion:javadoc@jar") { changing= true}
