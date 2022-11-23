@@ -30,7 +30,7 @@ ext {
   componentDesc="Integration with mail servers using javamail and apache mail libraries"
   organizationName = "Adaptris Ltd"
   organizationUrl = "http://interlok.adaptris.net"
-  slf4jVersion = '2.0.3'
+  slf4jVersion = '2.0.4'
   mockitoVersion = '4.9.0'
 }
 
