@@ -1,5 +1,12 @@
 # interlok-mail
-[![GitHub tag](https://img.shields.io/github/tag/adaptris/interlok-mail.svg)](https://github.com/adaptris/interlok-mail/tags) ![license](https://img.shields.io/github/license/adaptris/interlok-mail.svg) [![Actions Status](https://github.com/adaptris/interlok-mail/workflows/Java%20CI/badge.svg)](https://github.com/adaptris/interlok-mail/actions) [![codecov](https://codecov.io/gh/adaptris/interlok-mail/branch/develop/graph/badge.svg)](https://codecov.io/gh/adaptris/interlok-mail) [![Total alerts](https://img.shields.io/lgtm/alerts/g/adaptris/interlok-mail.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/adaptris/interlok-mail/alerts/) [![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/adaptris/interlok-mail.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/adaptris/interlok-mail/context:java)
+
+[![GitHub tag](https://img.shields.io/github/tag/adaptris/interlok-mail.svg)](https://github.com/adaptris/interlok-mail/tags)
+[![license](https://img.shields.io/github/license/adaptris/interlok-mail.svg)](https://github.com/adaptris/interlok-mail/blob/develop/LICENSE)
+[![Actions Status](https://github.com/adaptris/interlok-mail/actions/workflows/gradle-publish.yml/badge.svg)](https://github.com/adaptris/interlok-mail/actions)
+[![codecov](https://codecov.io/gh/adaptris/interlok-mail/branch/develop/graph/badge.svg)](https://codecov.io/gh/adaptris/interlok-mail)
+[![CodeQL](https://github.com/adaptris/interlok-mail/workflows/CodeQL/badge.svg)](https://github.com/adaptris/interlok-mail/security/code-scanning)
+[![Known Vulnerabilities](https://snyk.io/test/github/adaptris/interlok-mail/badge.svg?targetFile=build.gradle)](https://snyk.io/test/github/adaptris/interlok-mail?targetFile=build.gradle)
+[![Closed PRs](https://img.shields.io/github/issues-pr-closed/adaptris/interlok-mail)](https://github.com/adaptris/interlok-mail/pulls?q=is%3Apr+is%3Aclosed)
 
 As part of the 3.9.0 release, we decided to move email support into its own package.
 
