@@ -17,15 +17,16 @@ package com.adaptris.core.mail;
 import static com.adaptris.mail.JunitMailHelper.DEFAULT_RECEIVER;
 import static com.adaptris.mail.JunitMailHelper.DEFAULT_SENDER;
 import static com.adaptris.mail.JunitMailHelper.testsEnabled;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import javax.mail.Header;
 import javax.mail.internet.MimeMessage;
-import org.junit.Assume;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.NullConnection;
@@ -47,7 +48,7 @@ public class SendEmailTest extends MailProducerExample {
 
   @Test
   public void testProduce() throws Exception {
-    Assume.assumeTrue(testsEnabled());
+    assumeTrue(testsEnabled());
 
     GreenMail gm = mailServer();
     AdaptrisMessage msg =
@@ -62,7 +63,7 @@ public class SendEmailTest extends MailProducerExample {
 
   @Test
   public void testProduceCC() throws Exception {
-    Assume.assumeTrue(testsEnabled());
+    assumeTrue(testsEnabled());
     GreenMail gm = mailServer();
     AdaptrisMessage msg =
         AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
@@ -82,7 +83,7 @@ public class SendEmailTest extends MailProducerExample {
 
   @Test
   public void testProduceNoAddresseeButResolveCC() throws Exception {
-    Assume.assumeTrue(testsEnabled());
+    assumeTrue(testsEnabled());
     GreenMail gm = mailServer();
     AdaptrisMessage msg =
         AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
@@ -104,7 +105,7 @@ public class SendEmailTest extends MailProducerExample {
 
   @Test
   public void testProduceBCC() throws Exception {
-    Assume.assumeTrue(testsEnabled());
+    assumeTrue(testsEnabled());
     GreenMail gm = mailServer();
     AdaptrisMessage msg =
         AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
@@ -125,7 +126,7 @@ public class SendEmailTest extends MailProducerExample {
 
   @Test
   public void testProduceNoAddresseeButResolveBCC() throws Exception {
-    Assume.assumeTrue(testsEnabled());
+    assumeTrue(testsEnabled());
     GreenMail gm = mailServer();
     AdaptrisMessage msg =
         AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
@@ -147,7 +148,7 @@ public class SendEmailTest extends MailProducerExample {
 
   @Test
   public void testProduceWithHeaders() throws Exception {
-    Assume.assumeTrue(testsEnabled());
+    assumeTrue(testsEnabled());
     GreenMail gm = mailServer();
     AdaptrisMessage msg =
         AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);

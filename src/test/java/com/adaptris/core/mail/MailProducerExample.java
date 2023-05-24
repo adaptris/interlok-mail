@@ -17,9 +17,9 @@
 package com.adaptris.core.mail;
 
 import static com.adaptris.mail.JunitMailHelper.startServer;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import com.adaptris.interlok.junit.scaffolding.ExampleProducerCase;
 import com.adaptris.mail.JunitMailHelper;
 import com.icegreen.greenmail.util.GreenMail;
@@ -40,17 +40,17 @@ public abstract class MailProducerExample extends ExampleProducerCase {
 
   private static GreenMail gm;
 
-  @BeforeClass
+  @BeforeAll
   public static void setupGreenmail() throws Exception {
     gm = startServer();
   }
 
-  @AfterClass
+  @AfterAll
   public static void tearDownGreenmail() throws Exception {
     JunitMailHelper.stopServer(gm);
   }
 
-  @Before
+  @BeforeEach
   public void beforeMailTests() throws Exception {
     gm.purgeEmailFromAllMailboxes();
   }

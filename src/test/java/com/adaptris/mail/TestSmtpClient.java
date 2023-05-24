@@ -15,18 +15,20 @@
 package com.adaptris.mail;
 
 import static com.adaptris.mail.JunitMailHelper.testsEnabled;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+
 import javax.mail.URLName;
 import javax.mail.internet.MimeMessage;
-import org.junit.AfterClass;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import com.icegreen.greenmail.smtp.SmtpServer;
 import com.icegreen.greenmail.util.GreenMail;
 
@@ -38,19 +40,19 @@ public class TestSmtpClient {
 
   private static GreenMail greenmail;
 
-  @BeforeClass
+  @BeforeAll
   public static void setupGreenmail() throws Exception {
     greenmail = JunitMailHelper.startServer();
   }
 
-  @AfterClass
+  @AfterAll
   public static void tearDownGreenmail() throws Exception {
     JunitMailHelper.stopServer(greenmail);
   }
 
-  @Before
+  @BeforeEach
   public void before() throws Exception {
-    Assume.assumeTrue(testsEnabled());
+    assumeTrue(testsEnabled());
     greenmail.purgeEmailFromAllMailboxes();
   }
 
@@ -84,10 +86,12 @@ public class TestSmtpClient {
     assertNotNull(smtp.message);
   }
 
-  @Test(expected = MailException.class)
+  @Test
   public void testNewMessage_WithoutStartSession() throws Exception {
     SmtpClient smtp = createClient(greenmail);
-    smtp.newMessage();
+    assertThrows(MailException.class, ()->{
+      smtp.newMessage();
+    }, "Failed creating a new message, no session");
   }
 
   @Test
@@ -110,10 +114,12 @@ public class TestSmtpClient {
     assertNull(smtp.message.getHeader(DUMMY_KEY));
   }
 
-  @Test(expected = MailException.class)
+  @Test
   public void testAddTo_NoSession() throws Exception {
     SmtpClient smtp = createClient(greenmail);
-    smtp.addTo("abc@adaptris.com, bcd@adaptris.com, def@adaptris.com");
+    assertThrows(MailException.class, ()->{
+      smtp.addTo("abc@adaptris.com, bcd@adaptris.com, def@adaptris.com");
+    }, "Failed addTo, no session");
   }
 
   @Test
@@ -123,17 +129,21 @@ public class TestSmtpClient {
     smtp.addTo("abc@adaptris.com, bcd@adaptris.com, def@adaptris.com");
   }
 
-  @Test(expected = MailException.class)
+  @Test
   public void testAddTo_Invalid() throws Exception {
     SmtpClient smtp = createClient(greenmail);
     smtp.startSession();
-    smtp.addTo(INVALID_EMAIL_ADDR);
+    assertThrows(MailException.class, ()->{
+      smtp.addTo(INVALID_EMAIL_ADDR);
+    }, "Failed addTo, invalid email address");
   }
 
-  @Test(expected = MailException.class)
+  @Test
   public void testAddCc_NoSession() throws Exception {
     SmtpClient smtp = createClient(greenmail);
-    smtp.addCarbonCopy("abc@adaptris.com, bcd@adaptris.com, def@adaptris.com");
+    assertThrows(MailException.class, ()->{
+      smtp.addCarbonCopy("abc@adaptris.com, bcd@adaptris.com, def@adaptris.com");
+    }, "Failed addCc, no session");
   }
 
   @Test
@@ -143,17 +153,21 @@ public class TestSmtpClient {
     smtp.addCarbonCopy("abc@adaptris.com, bcd@adaptris.com, def@adaptris.com");
   }
 
-  @Test(expected = MailException.class)
+  @Test
   public void testAddCc_Invalid() throws Exception {
     SmtpClient smtp = createClient(greenmail);
     smtp.startSession();
-    smtp.addCarbonCopy(INVALID_EMAIL_ADDR);
+    assertThrows(MailException.class, ()->{
+      smtp.addCarbonCopy(INVALID_EMAIL_ADDR);
+    }, "Failed addCc, invalid email address");
   }
 
-  @Test(expected = MailException.class)
+  @Test
   public void testAddBcc_NoSession() throws Exception {
     SmtpClient smtp = createClient(greenmail);
-    smtp.addBlindCarbonCopy("abc@adaptris.com, bcd@adaptris.com, def@adaptris.com");
+    assertThrows(MailException.class, ()->{
+      smtp.addBlindCarbonCopy("abc@adaptris.com, bcd@adaptris.com, def@adaptris.com");
+    }, "Failed addBcc, no session");
   }
 
   @Test
@@ -163,17 +177,21 @@ public class TestSmtpClient {
     smtp.addBlindCarbonCopy("abc@adaptris.com, bcd@adaptris.com, def@adaptris.com");
   }
 
-  @Test(expected = MailException.class)
+  @Test
   public void testAddBcc_Invalid() throws Exception {
     SmtpClient smtp = createClient(greenmail);
     smtp.startSession();
-    smtp.addBlindCarbonCopy(INVALID_EMAIL_ADDR);
+    assertThrows(MailException.class, ()->{
+      smtp.addBlindCarbonCopy(INVALID_EMAIL_ADDR);
+    }, "Failed addBcc, invalid email address");
   }
 
-  @Test(expected = MailException.class)
+  @Test
   public void testSetFrom_NoSession() throws Exception {
     SmtpClient smtp = createClient(greenmail);
-    smtp.setFrom("abc@adaptris.com");
+    assertThrows(MailException.class, ()->{
+      smtp.setFrom("abc@adaptris.com");
+    }, "Failed setFrom, no session");
   }
 
   @Test
@@ -183,17 +201,21 @@ public class TestSmtpClient {
     smtp.setFrom("abc@adaptris.com");
   }
 
-  @Test(expected = MailException.class)
+  @Test
   public void testAddFrom_Invalid() throws Exception {
     SmtpClient smtp = createClient(greenmail);
     smtp.startSession();
-    smtp.setFrom(INVALID_EMAIL_ADDR);
+    assertThrows(MailException.class, ()->{
+      smtp.setFrom(INVALID_EMAIL_ADDR);
+    }, "Failed setFrom, invalid email address");
   }
 
-  @Test(expected = MailException.class)
+  @Test
   public void testSetSubject_NoSession() throws Exception {
     SmtpClient smtp = createClient(greenmail);
-    smtp.setSubject("abc@adaptris.com");
+    assertThrows(MailException.class, ()->{
+      smtp.setSubject("abc@adaptris.com");
+    }, "Failed setSubject, no session");
   }
 
   @Test
@@ -203,13 +225,15 @@ public class TestSmtpClient {
     smtp.setSubject("abc@adaptris.com");
   }
 
-  @Test(expected = MailException.class)
+  @Test
   public void testSend_WithoutStartSession() throws Exception {
-    SmtpClient smtp = createClient(greenmail);
-    smtp.setMessage(JunitMailHelper.DEFAULT_PAYLOAD.getBytes());
-    smtp.setSubject(JunitMailHelper.DEFAULT_SUBJECT);
-    smtp.addTo(JunitMailHelper.DEFAULT_RECEIVER);
-    smtp.send();
+    assertThrows(MailException.class, ()->{
+      SmtpClient smtp = createClient(greenmail);
+      smtp.setMessage(JunitMailHelper.DEFAULT_PAYLOAD.getBytes());
+      smtp.setSubject(JunitMailHelper.DEFAULT_SUBJECT);
+      smtp.addTo(JunitMailHelper.DEFAULT_RECEIVER);
+      smtp.send();
+    }, "Failed to send, no session");
   }
 
   @Test
@@ -226,13 +250,15 @@ public class TestSmtpClient {
     assertNotNull(msgs[0].getFrom());
   }
 
-  @Test(expected = MailException.class)
+  @Test
   public void testSend_NoRecipients() throws Exception {
     SmtpClient smtp = createClient(greenmail);
     smtp.startSession();
     smtp.setMessage(JunitMailHelper.DEFAULT_PAYLOAD.getBytes());
     smtp.setSubject(JunitMailHelper.DEFAULT_SUBJECT);
-    smtp.send();
+    assertThrows(MailException.class, ()->{
+      smtp.send();
+    }, "Failed to send, no recipients set");
   }
 
   private static SmtpClient createClient(GreenMail gm) throws Exception {
