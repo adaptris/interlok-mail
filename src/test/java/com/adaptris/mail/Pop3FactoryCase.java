@@ -20,14 +20,16 @@ import static com.adaptris.mail.JunitMailHelper.testsEnabled;
 import static com.adaptris.mail.MailReceiverCase.DEFAULT_POP3_PASSWORD;
 import static com.adaptris.mail.MailReceiverCase.DEFAULT_POP3_USER;
 import static com.adaptris.mail.MailReceiverCase.createURLName;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+
 import javax.mail.URLName;
 import org.apache.commons.io.IOUtils;
-import org.junit.AfterClass;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import com.adaptris.interlok.junit.scaffolding.BaseCase;
 import com.icegreen.greenmail.pop3.Pop3Server;
 import com.icegreen.greenmail.util.GreenMail;
@@ -43,19 +45,19 @@ public abstract class Pop3FactoryCase extends BaseCase {
 
   private static GreenMail greenmail;
 
-  @BeforeClass
+  @BeforeAll
   public static void setupGreenmail() throws Exception {
     greenmail = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
   }
 
-  @AfterClass
+  @AfterAll
   public static void tearDownGreenmail() throws Exception {
     JunitMailHelper.stopServer(greenmail);
   }
 
-  @Before
+  @BeforeEach
   public void before() throws Exception {
-    Assume.assumeTrue(testsEnabled());
+    assumeTrue(testsEnabled());
     greenmail.purgeEmailFromAllMailboxes();
   }
 
@@ -73,13 +75,15 @@ public abstract class Pop3FactoryCase extends BaseCase {
     assertNotNull(fac.createClient(pop3Url));
   }
 
-  @Test(expected = MailException.class)
+  @Test
   public void testCreate_NotSupported() throws Exception {
     Pop3ReceiverFactory fac = create();
     Pop3Server server = getServer(greenmail);
     String pop3UrlString = "imap://localhost:" + server.getPort() + "/INBOX";
     URLName pop3Url = createURLName(pop3UrlString, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
-    fac.createClient(pop3Url);
+    assertThrows(MailException.class, ()->{
+      fac.createClient(pop3Url);
+    }, "Failed to create, not supported");
   }
 
   @Test
@@ -102,7 +106,7 @@ public abstract class Pop3FactoryCase extends BaseCase {
     // It is consistently this test, but Greemail is "static" so there's only
     // one instance.
     // Force it to be skipped to avoid jenkins issues.
-    Assume.assumeTrue(false);
+    assumeTrue(false);
     Pop3ReceiverFactory fac = configure(create());
     Pop3Server server = getServer(greenmail);
     String pop3UrlString = server.getProtocol() + "://localhost:" + server.getPort() + "/INBOX";

@@ -27,7 +27,8 @@ import com.adaptris.mail.Pop3ReceiverFactory;
 import com.adaptris.mail.Pop3sReceiverFactory;
 import com.adaptris.util.text.mime.NullPartSelector;
 import com.adaptris.util.text.mime.SelectByPosition;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
@@ -35,8 +36,9 @@ import java.io.FileInputStream;
 import java.util.List;
 import java.util.Properties;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class DefaultMailConsumerTest extends MailConsumerCase {
 
@@ -91,23 +93,25 @@ public class DefaultMailConsumerTest extends MailConsumerCase {
     a.requestClose();
     // assertEquals(1, mockProducer.getMessages().size());
     AdaptrisMessage prdMsg = mockProducer.getMessages().get(0);
-    assertEquals("Consumed Payload", TEXT_PAYLOADS[0], prdMsg.getContent());
+    assertEquals(TEXT_PAYLOADS[0], prdMsg.getContent(), "Consumed Payload");
 
   }
+  
 
-  @Test(expected = CoreException.class)
+  @Test
   public void testConsume_CommonsNetPop3_ImapProtocol() throws Exception {
-    Adapter a = null;
-    try {
-      MockMessageProducer mockProducer = new MockMessageProducer();
-      MailConsumerImp consumer = createConsumerForTests(mailServer(), new Pop3ReceiverFactory());
-      consumer.setMailboxUrl("imap://localhost:" + mailServer().getPop3().getPort() + "/INBOX");
-      a = createAdapter(consumer, mockProducer);
-      a.requestStart();
-    } finally {
-      LifecycleHelper.stopAndClose(a);
-    }
-
+    assertThrows(CoreException.class, ()->{
+      Adapter a = null;
+      try {
+        MockMessageProducer mockProducer = new MockMessageProducer();
+        MailConsumerImp consumer = createConsumerForTests(mailServer(), new Pop3ReceiverFactory());
+        consumer.setMailboxUrl("imap://localhost:" + mailServer().getPop3().getPort() + "/INBOX");
+        a = createAdapter(consumer, mockProducer);
+        a.requestStart();
+      } finally {
+        LifecycleHelper.stopAndClose(a);
+      }
+    }, "Failure when requesting start");
   }
 
   @Test
@@ -123,7 +127,7 @@ public class DefaultMailConsumerTest extends MailConsumerCase {
     a.requestClose();
     // assertEquals(1, mockProducer.getMessages().size());
     AdaptrisMessage prdMsg = mockProducer.getMessages().get(0);
-    assertEquals("Consumed Payload", TEXT_PAYLOADS[0], prdMsg.getContent());
+    assertEquals(TEXT_PAYLOADS[0], prdMsg.getContent(), "Consumed Payload");
   }
 
   @Test
@@ -137,7 +141,7 @@ public class DefaultMailConsumerTest extends MailConsumerCase {
     waitForMessages(mockProducer, 1);
     a.requestClose();
     AdaptrisMessage prdMsg = mockProducer.getMessages().get(0);
-    assertEquals("Consumed Payload", TEXT_PAYLOADS[1], prdMsg.getContent());
+    assertEquals(TEXT_PAYLOADS[1], prdMsg.getContent(), "Consumed Payload");
   }
 
   @Test

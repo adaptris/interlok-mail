@@ -16,12 +16,12 @@
 
 package com.adaptris.core.mail.attachment;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.security.MessageDigest;
 import java.util.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.interlok.junit.scaffolding.BaseCase;
 import com.adaptris.util.KeyValuePair;
@@ -82,14 +82,14 @@ public class XmlMailCreatorTest extends BaseCase {
     assertEquals(2, attachments.size());
     MailAttachment a = attachments.get(0);
     log.trace(a);
-    assertTrue("Check digests", MessageDigest.isEqual(calculateHash("ADP-01"), a.getBytes()));
+    assertTrue(MessageDigest.isEqual(calculateHash("ADP-01"), a.getBytes()), "Check digests");
     assertEquals("attachment1.txt", a.getFilename());
     assertEquals(MimeConstants.ENCODING_BASE64, a.getContentTransferEncoding());
     a = attachments.get(1);
     log.trace(a);
-    assertTrue("Check digests", MessageDigest.isEqual(calculateHash("PENRY"), a.getBytes()));
-    assertEquals("attachment2.txt", a.getFilename());
-    assertEquals(MimeConstants.ENCODING_BASE64, a.getContentTransferEncoding());
+    assertTrue(MessageDigest.isEqual(calculateHash("PENRY"), a.getBytes()), "Check digests");
+    assertEquals(a.getFilename(), "attachment2.txt");
+    assertEquals(a.getContentTransferEncoding(), MimeConstants.ENCODING_BASE64);
   }
 
   @Test
@@ -101,14 +101,14 @@ public class XmlMailCreatorTest extends BaseCase {
     assertEquals(2, attachments.size());
     MailAttachment a = attachments.get(0);
     log.trace(a);
-    assertTrue("Check digests", MessageDigest.isEqual(calculateHash("ADP-01"), a.getBytes()));
-    assertEquals("attachment1.txt", a.getFilename());
-    assertEquals(MimeConstants.ENCODING_8BIT, a.getContentTransferEncoding());
+    assertTrue(MessageDigest.isEqual(calculateHash("ADP-01"), a.getBytes()), "Check digests");
+    assertEquals(a.getFilename(), "attachment1.txt");
+    assertEquals(a.getContentTransferEncoding(), MimeConstants.ENCODING_8BIT);
     a = attachments.get(1);
     log.trace(a);
-    assertTrue("Check digests", MessageDigest.isEqual(calculateHash("PENRY"), a.getBytes()));
-    assertEquals("attachment2.txt", a.getFilename());
-    assertEquals(MimeConstants.ENCODING_8BIT, a.getContentTransferEncoding());
+    assertTrue(MessageDigest.isEqual(calculateHash("PENRY"), a.getBytes()), "Check digests");
+    assertEquals(a.getFilename(), "attachment2.txt");
+    assertEquals(a.getContentTransferEncoding(), MimeConstants.ENCODING_8BIT);
   }
 
   private static byte[] calculateHash(String s) throws Exception {

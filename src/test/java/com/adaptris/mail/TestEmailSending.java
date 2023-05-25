@@ -20,34 +20,35 @@ import static com.adaptris.mail.JunitMailHelper.DEFAULT_SENDER;
 import static com.adaptris.mail.JunitMailHelper.XML_DOCUMENT;
 import static com.adaptris.mail.JunitMailHelper.createClient;
 import static com.adaptris.mail.JunitMailHelper.testsEnabled;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import javax.mail.internet.MimeMessage;
-import org.junit.AfterClass;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import com.icegreen.greenmail.util.GreenMail;
 
 public class TestEmailSending {
 
   private static GreenMail greenmail;
 
-  @BeforeClass
+  @BeforeAll
   public static void setupGreenmail() throws Exception {
     greenmail = JunitMailHelper.startServer();
   }
 
-  @AfterClass
+  @AfterAll
   public static void tearDownGreenmail() throws Exception {
     JunitMailHelper.stopServer(greenmail);
   }
 
-  @Before
+  @BeforeEach
   public void before() throws Exception {
-    Assume.assumeTrue(testsEnabled());
+    assumeTrue(testsEnabled());
     greenmail.purgeEmailFromAllMailboxes();
   }
 

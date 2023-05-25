@@ -16,10 +16,10 @@
 
 package com.adaptris.core.mail;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import javax.mail.internet.ContentType;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ServiceException;

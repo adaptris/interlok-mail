@@ -25,17 +25,18 @@ import static com.adaptris.mail.JunitMailHelper.assertTo;
 import static com.adaptris.mail.JunitMailHelper.startServer;
 import static com.adaptris.mail.JunitMailHelper.testsEnabled;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+
 import java.util.Enumeration;
 import javax.mail.Header;
 import javax.mail.URLName;
 import javax.mail.internet.MimeMessage;
 import org.apache.commons.io.IOUtils;
-import org.junit.AfterClass;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.adaptris.interlok.junit.scaffolding.BaseCase;
@@ -70,19 +71,19 @@ public abstract class MailReceiverCase extends BaseCase {
 
   private static GreenMail greenmail;
 
-  @BeforeClass
+  @BeforeAll
   public static void setupGreenmail() throws Exception {
     greenmail = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
   }
 
-  @AfterClass
+  @AfterAll
   public static void tearDownGreenmail() throws Exception {
     JunitMailHelper.stopServer(greenmail);
   }
 
-  @Before
+  @BeforeEach
   public void before() throws Exception {
-    Assume.assumeTrue(testsEnabled());
+    assumeTrue(testsEnabled());
     greenmail.purgeEmailFromAllMailboxes();
   }
 

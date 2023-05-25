@@ -17,13 +17,15 @@ package com.adaptris.core.mail;
 import static com.adaptris.mail.JunitMailHelper.DEFAULT_RECEIVER;
 import static com.adaptris.mail.JunitMailHelper.DEFAULT_SENDER;
 import static com.adaptris.mail.JunitMailHelper.testsEnabled;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 import javax.mail.internet.MimeMessage;
-import org.junit.Assume;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.NullConnection;
@@ -48,7 +50,7 @@ public class SendEmailAttachmentTest extends MailProducerExample {
 
   @Test
   public void testProduceAsAttachment() throws Exception {
-    Assume.assumeTrue(testsEnabled());
+    assumeTrue(testsEnabled());
     GreenMail gm = mailServer();
     AdaptrisMessage msg =
         AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
@@ -69,7 +71,7 @@ public class SendEmailAttachmentTest extends MailProducerExample {
 
   @Test
   public void testProduceAsAttachmentWithFilename() throws Exception {
-    Assume.assumeTrue(testsEnabled());
+    assumeTrue(testsEnabled());
     GreenMail gm = mailServer();
     AdaptrisMessage msg =
         AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
@@ -93,7 +95,7 @@ public class SendEmailAttachmentTest extends MailProducerExample {
 
   @Test
   public void testProduceAsAttachmentWithMetadataAttachmentContentType() throws Exception {
-    Assume.assumeTrue(testsEnabled());
+    assumeTrue(testsEnabled());
     GreenMail gm = mailServer();
     AdaptrisMessage msg =
         AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
@@ -116,7 +118,7 @@ public class SendEmailAttachmentTest extends MailProducerExample {
 
   @Test
   public void testProduceAsAttachmentWithTemplate() throws Exception {
-    Assume.assumeTrue(testsEnabled());
+    assumeTrue(testsEnabled());
     GreenMail gm = mailServer();
     AdaptrisMessage msg =
         AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);

@@ -19,9 +19,11 @@ package com.adaptris.mail;
 import static com.adaptris.mail.MailReceiverCase.DEFAULT_POP3_PASSWORD;
 import static com.adaptris.mail.MailReceiverCase.DEFAULT_POP3_USER;
 import static com.adaptris.mail.MailReceiverCase.createURLName;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import javax.mail.URLName;
 import org.apache.commons.io.IOUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import com.icegreen.greenmail.pop3.Pop3Server;
 import com.icegreen.greenmail.util.GreenMail;
 
@@ -40,7 +42,7 @@ public class Pop3sReceiverFactoryTest extends Pop3FactoryCase {
 
   // By default this will *fail* because we don't have a trusted certificate.
   @Override
-  @Test(expected = MailException.class)
+  @Test
   public void testCreate_Connect() throws Exception {
     Pop3sReceiverFactory fac = create();
     Pop3Server server = getServer(mailServer());
@@ -48,7 +50,9 @@ public class Pop3sReceiverFactoryTest extends Pop3FactoryCase {
     URLName pop3Url = createURLName(pop3UrlString, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
     MailReceiver client = fac.createClient(pop3Url);
     try {
-      client.connect();
+      assertThrows(MailException.class, ()->{
+        client.connect();
+      }, "Failed to connect, no trusted cert");
     }
     finally {
       IOUtils.closeQuietly(client);

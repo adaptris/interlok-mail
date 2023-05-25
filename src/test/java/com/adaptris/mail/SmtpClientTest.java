@@ -1,6 +1,6 @@
 package com.adaptris.mail;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
@@ -11,8 +11,8 @@ import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -24,7 +24,7 @@ public class SmtpClientTest {
   
   @Mock private Session mockSession;
   
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     MockitoAnnotations.openMocks(this);
     

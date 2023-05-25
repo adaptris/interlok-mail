@@ -16,7 +16,7 @@
 
 package com.adaptris.core.mail.attachment;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.mail.MailProducerExample;
 import com.adaptris.core.metadata.RegexMetadataFilter;
@@ -34,7 +34,7 @@ public class MultiAttachmentProducerXmlTest extends MailProducerExample {
 
   private MultiAttachmentSmtpProducer producer;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     producer = new MultiAttachmentSmtpProducer();
   }
