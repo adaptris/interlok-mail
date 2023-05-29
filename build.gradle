@@ -256,21 +256,15 @@ javadoc {
     taglets = ["com.adaptris.taglet.ConfigTaglet", "com.adaptris.taglet.LicenseTaglet"]
     options.addStringOption "tagletpath", configurations.javadoc.asPath
     options.addStringOption('Xdoclint:none', '-quiet')
-    options.addBooleanOption "-no-module-directories", true
     title= componentName
   }
 }
 
-test {
-  jvmArgs = ['--add-opens', 'java.base/java.lang=ALL-UNNAMED', '--add-opens', 'java.base/java.util=ALL-UNNAMED']
-  useJUnitPlatform()
-  }
-
 jacocoTestReport {
-    reports {
-        xml.required= true
-        html.required= true
-    }
+  reports {
+    xml.required= true
+    html.required= true
+  }
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
@@ -394,6 +388,9 @@ test {
       logger.lifecycle("Running: " + descriptor)
      }
   }
+  
+  jvmArgs = ['--add-opens', 'java.base/java.lang=ALL-UNNAMED', '--add-opens', 'java.base/java.util=ALL-UNNAMED']
+  useJUnitPlatform()
 }
 
 spotbugsMain {
@@ -426,6 +423,7 @@ dependencyCheck  {
 
 // disable spotbugsTests which checks our test code..
 spotbugsTest.enabled = false
+
 javadoc.dependsOn offlinePackageList,umlJavadoc
 check.dependsOn jacocoTestReport
 processTestResources.dependsOn copyUnitTestProperties
