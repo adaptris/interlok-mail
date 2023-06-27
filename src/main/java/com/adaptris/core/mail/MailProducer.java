@@ -97,6 +97,7 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
    */
   @Getter
   @Setter
+  @InputFieldHint(expression = true)
   private String from = null;
   /**
    * A comma separated list of email addresses to 'bcc'
