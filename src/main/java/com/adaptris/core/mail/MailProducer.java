@@ -211,7 +211,7 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
       smtp.addBlindCarbonCopy(msg.resolve(bccList));
     }
     if (getFrom() != null) {
-      smtp.setFrom(getFrom());
+      smtp.setFrom(msg.resolve(getFrom()));
     }
     MetadataCollection metadataSubset = getMetadataFilter().filter(msg);
     for (MetadataElement element : metadataSubset) {
