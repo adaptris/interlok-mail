@@ -35,15 +35,18 @@ ext {
 }
 
 ext.buildDetails = [
+  // If graphviz is installed via scoop, plantuml doesn't find it because it's not
+  // in its expected "location(s)" it searches for c:\*\graphviz**\dot.exe
+  // so windows we'd expect to have the GRAPHVIZ_DOT env defined 
+  // On Linux we should be able to find it via the path.
   hasGraphViz: { ->
-//  def app = "dot"
-//  if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-//    app = app + ".exe"
-//  }
-//  return System.getenv("PATH").split(File.pathSeparator).any{
-//    java.nio.file.Paths.get("${it}").resolve(app).toFile().exists()
-//  }
-  return false
+    def app = "dot"
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+      app = app + ".exe"
+    }
+    return System.getenv("GRAPHVIZ_DOT") !=null ||  System.getenv("PATH").split(File.pathSeparator).any{
+      java.nio.file.Paths.get("${it}").resolve(app).toFile().exists()
+    }
   },
   hostname: { ->
     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
