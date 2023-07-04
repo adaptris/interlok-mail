@@ -18,6 +18,7 @@ import static com.adaptris.mail.JunitMailHelper.DEFAULT_RECEIVER;
 import static com.adaptris.mail.JunitMailHelper.DEFAULT_SENDER;
 import static com.adaptris.mail.JunitMailHelper.testsEnabled;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
@@ -31,6 +32,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.NullConnection;
 import com.adaptris.core.StandaloneProducer;
+import com.adaptris.core.UnresolvedMetadataException;
 import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase;
 import com.adaptris.mail.JunitMailHelper;
@@ -59,6 +61,33 @@ public class SendEmailTest extends MailProducerExample {
     assertEquals(1, msgs.length);
     JunitMailHelper.assertFrom(msgs[0], DEFAULT_SENDER);
     JunitMailHelper.assertTo(msgs[0], DEFAULT_RECEIVER);
+  }
+  
+  @Test
+  public void testProduceFromExpression() throws Exception {
+    assumeTrue(testsEnabled());
+    GreenMail gm = mailServer();
+    AdaptrisMessage msg =
+    AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
+    StandaloneProducer producer = createProducerForTests(gm);
+    MailProducer mailer = (MailProducer) producer.getProducer();
+    msg.addMetadata("fromKey", "test@test.com");
+    mailer.setFrom(msg.resolve("%message{fromKey}"));
+    assertEquals(mailer.getFrom(), "test@test.com");
+  }
+  
+  @Test
+  public void testProduceFromExpressionMetadataKeyNotFound() throws Exception {
+    assumeTrue(testsEnabled());
+    GreenMail gm = mailServer();
+    AdaptrisMessage msg =
+    AdaptrisMessageFactory.getDefaultInstance().newMessage(JunitMailHelper.DEFAULT_PAYLOAD);
+    StandaloneProducer producer = createProducerForTests(gm);
+    MailProducer mailer = (MailProducer) producer.getProducer();
+    msg.addMetadata("fromKey", "test@test.com");
+    assertThrows(UnresolvedMetadataException.class, ()->{
+      mailer.setFrom(msg.resolve("%message{notFound}"));
+    }, "Could not resolve metadata key");
   }
 
   @Test
