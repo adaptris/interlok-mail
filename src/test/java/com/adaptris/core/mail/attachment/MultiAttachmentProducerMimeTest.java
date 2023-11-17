@@ -18,7 +18,7 @@ package com.adaptris.core.mail.attachment;
 
 import static com.adaptris.core.mail.attachment.MimeMailCreatorTest.create;
 import static com.adaptris.interlok.junit.scaffolding.util.MimeJunitHelper.PAYLOAD_2;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.mail.MailProducerExample;
 import com.adaptris.core.metadata.RegexMetadataFilter;
@@ -28,7 +28,7 @@ public class MultiAttachmentProducerMimeTest extends MailProducerExample {
 
   private MultiAttachmentSmtpProducer producer;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     producer = new MultiAttachmentSmtpProducer();
   }

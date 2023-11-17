@@ -41,11 +41,10 @@ import com.adaptris.util.TimeInterval;
 import com.icegreen.greenmail.pop3.Pop3Server;
 import com.icegreen.greenmail.user.GreenMailUser;
 import com.icegreen.greenmail.util.GreenMail;
-import org.junit.AfterClass;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -65,10 +64,11 @@ import java.util.concurrent.TimeUnit;
 import static com.adaptris.mail.JunitMailHelper.DEFAULT_RECEIVER;
 import static com.adaptris.mail.JunitMailHelper.startServer;
 import static com.adaptris.mail.JunitMailHelper.testsEnabled;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 public abstract class MailConsumerCase extends MailConsumerExample {
 
@@ -92,19 +92,19 @@ public abstract class MailConsumerCase extends MailConsumerExample {
 
   private static GreenMail gm;
 
-  @BeforeClass
+  @BeforeAll
   public static void setupGreenmail() throws Exception {
     gm = startServer(DEFAULT_RECEIVER, DEFAULT_POP3_USER, DEFAULT_POP3_PASSWORD);
   }
 
-  @AfterClass
+  @AfterAll
   public static void tearDownGreenmail() throws Exception {
     JunitMailHelper.stopServer(gm);
   }
 
-  @Before
+  @BeforeEach
   public void before() throws Exception {
-    Assume.assumeTrue(testsEnabled());
+    assumeTrue(testsEnabled());
     gm.purgeEmailFromAllMailboxes();
   }
 
@@ -144,7 +144,7 @@ public abstract class MailConsumerCase extends MailConsumerExample {
 
   @Test
   public void testInit_AttemptConnectOnInitFalse() throws Exception {
-    Assume.assumeTrue(testsEnabled());
+    assumeTrue(testsEnabled());
     GreenMail gm = JunitMailHelper.startServer(JunitMailHelper.DEFAULT_RECEIVER, DEFAULT_POP3_USER,
         DEFAULT_POP3_PASSWORD);
     try {

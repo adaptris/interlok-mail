@@ -16,9 +16,10 @@
 
 package com.adaptris.mail;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class MatchProxyFactoryTest extends MatchProxyFactory {
 
@@ -34,9 +35,11 @@ public class MatchProxyFactoryTest extends MatchProxyFactory {
     }
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testBuildInvalid() throws Exception {
-    create("hello", "world");
+    assertThrows(IllegalArgumentException.class, ()->{
+      create("hello", "world");
+    }, "Failed to build");
   }
 
 }

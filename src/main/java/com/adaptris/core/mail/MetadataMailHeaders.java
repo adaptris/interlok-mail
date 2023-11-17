@@ -82,7 +82,7 @@ public class MetadataMailHeaders implements MailHeaderHandler {
       Header h = (Header) headers.nextElement();
       metadata.add(new MetadataElement(pfx + h.getName(), h.getValue()));
     }
-    msg.setMetadata(filter().filter(metadata).toSet());
+    msg.addMetadata(filter().filter(metadata).toSet());
   }
 
   public String getPrefix() {
