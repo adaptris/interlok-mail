@@ -9,5 +9,15 @@
     <Class name="com.adaptris.core.transform.json.JsonSchemaService"/>
     <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS" />
   </Match>
+  <!-- We are using lombok.NonNull and not javax.Nonnull or spotbugs NonNull and the value is initalised in the constructor 
+  	   so this is not relevant -->
+  <Match>
+    <Class name="com.adaptris.core.mail.MailProducer"/>
+    <Bug pattern="NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" />
+  </Match>
+  <Match>
+    <Class name="com.adaptris.core.mail.MailProducer"/>
+    <Bug pattern="NP_STORE_INTO_NONNULL_FIELD" />
+  </Match>
 
 </FindBugsFilter>
