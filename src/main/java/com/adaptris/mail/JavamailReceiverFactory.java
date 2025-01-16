@@ -16,9 +16,9 @@
 
 package com.adaptris.mail;
 
-import javax.mail.URLName;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.mail.URLName;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.util.Args;

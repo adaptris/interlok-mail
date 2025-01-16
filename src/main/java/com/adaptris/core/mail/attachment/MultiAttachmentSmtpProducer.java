@@ -18,8 +18,8 @@ package com.adaptris.core.mail.attachment;
 
 import java.util.List;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
@@ -59,7 +59,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </ul>
  * <p>
  * It is possible to control the underlying behaviour of this producer through the use of various properties that will be passed to
- * the <code>javax.mail.Session</code> instance. You need to refer to the javamail documentation to see a list of the available
+ * the <code>jakarta.mail.Session</code> instance. You need to refer to the javamail documentation to see a list of the available
  * properties and meanings.
  * </p>
  * <p>

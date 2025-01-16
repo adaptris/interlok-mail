@@ -21,8 +21,8 @@ import static com.adaptris.interlok.junit.scaffolding.util.MimeJunitHelper.PAYLO
 import static com.adaptris.interlok.junit.scaffolding.util.MimeJunitHelper.PAYLOAD_3;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.List;
-import javax.mail.internet.InternetHeaders;
-import javax.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.InternetHeaders;
+import jakarta.mail.internet.MimeBodyPart;
 import org.junit.jupiter.api.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;

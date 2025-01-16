@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import javax.mail.URLName;
+import jakarta.mail.URLName;
 import javax.net.ssl.SSLContext;
 
 import org.apache.commons.lang3.BooleanUtils;

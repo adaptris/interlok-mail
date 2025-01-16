@@ -16,10 +16,10 @@
 
 package com.adaptris.mail;
 
-import javax.mail.Transport;
-import javax.mail.URLName;
-import javax.mail.event.TransportEvent;
-import javax.mail.event.TransportListener;
+import jakarta.mail.Transport;
+import jakarta.mail.URLName;
+import jakarta.mail.event.TransportEvent;
+import jakarta.mail.event.TransportListener;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
