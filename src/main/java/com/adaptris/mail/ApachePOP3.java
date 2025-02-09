@@ -18,7 +18,7 @@ package com.adaptris.mail;
 
 import java.io.IOException;
 
-import javax.mail.URLName;
+import jakarta.mail.URLName;
 
 import org.apache.commons.net.pop3.POP3Client;
 

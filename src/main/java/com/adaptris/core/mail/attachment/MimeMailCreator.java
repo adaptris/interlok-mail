@@ -22,9 +22,9 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.mail.internet.ContentDisposition;
-import javax.mail.internet.ContentType;
-import javax.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.ContentDisposition;
+import jakarta.mail.internet.ContentType;
+import jakarta.mail.internet.MimeBodyPart;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
