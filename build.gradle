@@ -8,7 +8,7 @@ plugins {
   id 'com.github.spotbugs' version '6.5.4'
   id 'org.owasp.dependencycheck' version '12.2.2'
   id "io.freefair.lombok" version "8.14.2"
-  id "org.gradle.test-retry" version "1.6.4"
+  id "org.gradle.test-retry" version "1.6.5"
 }
 
 ext {
