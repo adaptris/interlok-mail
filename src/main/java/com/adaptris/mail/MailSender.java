@@ -16,14 +16,14 @@
 
 package com.adaptris.mail;
 
-import javax.mail.internet.InternetAddress;
+import jakarta.mail.internet.InternetAddress;
 
 /**
  * An interface for an email sender client.
  *
  * <p>
- * The javax.mail MimeMessage and Session objects are used at least to hold message data although
- * the client implementation may not necessarily use javax.mail system, in which case a conversion
+ * The jakarta.mail MimeMessage and Session objects are used at least to hold message data although
+ * the client implementation may not necessarily use jakarta.mail system, in which case a conversion
  * will be required to store data in the MimeMessage object.
  * </p>
  * <p>
@@ -184,7 +184,7 @@ public interface MailSender {
    *
    * @param bytes the message
    * @param contentType the content type.
-   * @see javax.activation.DataContentHandler
+   * @see jakarta.activation.DataContentHandler
    *
    */
   public void setMessage(byte[] bytes, String contentType) throws MailException;

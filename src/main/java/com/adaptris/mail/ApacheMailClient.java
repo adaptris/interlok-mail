@@ -29,10 +29,10 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.URLName;
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Session;
+import jakarta.mail.URLName;
+import jakarta.mail.internet.MimeMessage;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.net.pop3.POP3Client;

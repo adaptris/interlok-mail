@@ -2,7 +2,7 @@ package com.adaptris.core.mail;
 
 import static com.adaptris.core.mail.SendEmail.resolve;
 import java.nio.charset.StandardCharsets;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;

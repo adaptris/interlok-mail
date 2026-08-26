@@ -16,7 +16,7 @@
 
 package com.adaptris.mail;
 
-import javax.mail.URLName;
+import jakarta.mail.URLName;
 import org.apache.commons.net.pop3.POP3Client;
 import com.icegreen.greenmail.pop3.Pop3Server;
 import com.icegreen.greenmail.util.GreenMail;

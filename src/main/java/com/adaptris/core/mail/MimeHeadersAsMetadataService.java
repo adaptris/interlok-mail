@@ -18,10 +18,10 @@ package com.adaptris.core.mail;
 import java.io.InputStream;
 import java.util.Properties;
 
-import javax.mail.Session;
-import javax.mail.internet.MimeMessage;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.mail.Session;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;

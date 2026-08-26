@@ -16,8 +16,8 @@
 
 package com.adaptris.mail;
 
-import javax.mail.Message;
-import javax.mail.MessagingException;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
 
 /**
  * Interface for filtering mailboxes.
