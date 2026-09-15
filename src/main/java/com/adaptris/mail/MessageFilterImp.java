@@ -19,9 +19,9 @@ package com.adaptris.mail;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.mail.Address;
-import javax.mail.Message;
-import javax.mail.MessagingException;
+import jakarta.mail.Address;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
 
 abstract class MessageFilterImp implements MessageFilter {
   

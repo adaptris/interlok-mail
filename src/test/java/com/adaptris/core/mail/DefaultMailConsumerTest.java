@@ -30,8 +30,8 @@ import com.adaptris.util.text.mime.SelectByPosition;
 
 import org.junit.jupiter.api.Test;
 
-import javax.mail.Session;
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.Session;
+import jakarta.mail.internet.MimeMessage;
 import java.io.FileInputStream;
 import java.util.List;
 import java.util.Properties;

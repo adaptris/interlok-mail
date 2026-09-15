@@ -21,7 +21,7 @@ import static com.adaptris.mail.MailReceiverCase.DEFAULT_POP3_USER;
 import static com.adaptris.mail.MailReceiverCase.createURLName;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import javax.mail.URLName;
+import jakarta.mail.URLName;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import com.icegreen.greenmail.pop3.Pop3Server;

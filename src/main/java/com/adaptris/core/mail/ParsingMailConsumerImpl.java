@@ -16,7 +16,7 @@
 
 package com.adaptris.core.mail;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import com.adaptris.util.text.mime.PartSelector;
 

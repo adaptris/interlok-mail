@@ -18,8 +18,8 @@ package com.adaptris.core.mail.attachment;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
-import javax.mail.internet.ContentType;
-import javax.mail.internet.ParseException;
+import jakarta.mail.internet.ContentType;
+import jakarta.mail.internet.ParseException;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;

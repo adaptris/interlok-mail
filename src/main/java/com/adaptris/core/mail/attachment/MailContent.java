@@ -17,8 +17,8 @@
 package com.adaptris.core.mail.attachment;
 
 import java.security.MessageDigest;
-import javax.mail.internet.ContentType;
-import javax.mail.internet.ParseException;
+import jakarta.mail.internet.ContentType;
+import jakarta.mail.internet.ParseException;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 

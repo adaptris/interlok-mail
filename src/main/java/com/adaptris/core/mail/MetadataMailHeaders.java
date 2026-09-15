@@ -19,10 +19,10 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.mail.Header;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-import javax.validation.Valid;
+import jakarta.mail.Header;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.validation.Valid;
 
 import org.apache.commons.lang3.StringUtils;
 

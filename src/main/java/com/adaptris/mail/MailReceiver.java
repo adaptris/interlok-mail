@@ -16,7 +16,7 @@ package com.adaptris.mail;
 import java.io.Closeable;
 import java.util.Iterator;
 import java.util.List;
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMessage;
 
 /**
  * Interface for Adaptris mail receiver clients

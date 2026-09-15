@@ -17,7 +17,7 @@
 package com.adaptris.core.mail;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-import javax.mail.URLName;
+import jakarta.mail.URLName;
 import com.adaptris.security.exc.PasswordException;
 import com.adaptris.security.password.Password;
 import lombok.AccessLevel;

@@ -1,6 +1,6 @@
 package com.adaptris.core.mail;
 
-import javax.mail.URLName;
+import jakarta.mail.URLName;
 
 import org.apache.commons.lang3.StringUtils;
 

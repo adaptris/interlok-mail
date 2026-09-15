@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.net.MalformedURLException;
 
-import javax.mail.URLName;
+import jakarta.mail.URLName;
 
 import org.junit.jupiter.api.Test;
 

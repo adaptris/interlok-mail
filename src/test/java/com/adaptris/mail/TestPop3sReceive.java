@@ -16,7 +16,7 @@
 
 package com.adaptris.mail;
 
-import javax.mail.URLName;
+import jakarta.mail.URLName;
 import javax.net.ssl.SSLContext;
 import org.apache.commons.net.pop3.POP3Client;
 import org.apache.commons.net.util.SSLContextUtils;

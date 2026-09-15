@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import javax.mail.URLName;
+import jakarta.mail.URLName;
 
 import org.apache.commons.net.pop3.POP3Client;
 

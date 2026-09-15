@@ -39,9 +39,9 @@ import lombok.NonNull;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Abstract implementation of the AdaptrisMessageProducer interface for handling Email.
@@ -51,7 +51,7 @@ import javax.validation.constraints.NotNull;
  * </p>
  * <p>
  * It is possible to control the underlying behaviour of this producer through the use of various properties that will be passed to
- * the <code>javax.mail.Session</code> instance. You need to refer to the javamail documentation to see a list of the available
+ * the <code>jakarta.mail.Session</code> instance. You need to refer to the javamail documentation to see a list of the available
  * properties and meanings.
  * </p>
  * <p>
@@ -109,7 +109,7 @@ public abstract class MailProducer extends ProduceOnlyProducerImp {
   @InputFieldHint(expression = true)
   private String bccList = null;
   /**
-   * Any additional behaviour that should be applied to the underlying {@code javax.mail.Session}.
+   * Any additional behaviour that should be applied to the underlying {@code jakarta.mail.Session}.
    * <p>
    * You probably need to consult the javamail documentation to find the exhaustive list of
    * properties.

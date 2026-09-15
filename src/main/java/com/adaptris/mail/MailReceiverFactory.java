@@ -16,7 +16,7 @@
 
 package com.adaptris.mail;
 
-import javax.mail.URLName;
+import jakarta.mail.URLName;
 
 /**
  * Interface for creating a mail receiver.

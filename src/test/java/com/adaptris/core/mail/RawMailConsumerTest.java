@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import javax.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeBodyPart;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import com.adaptris.core.AdaptrisMessage;

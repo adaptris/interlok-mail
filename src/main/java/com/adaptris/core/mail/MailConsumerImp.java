@@ -35,10 +35,10 @@ import lombok.Setter;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.mail.internet.MimeMessage;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.io.Closeable;
 import java.util.HashMap;
 import java.util.List;
@@ -72,7 +72,7 @@ import static org.apache.commons.lang3.StringUtils.split;
  * {@link #setRegularExpressionStyle(String)} method.
  * <p>
  * It is possible to control the underlying behaviour of this consumer through the use of various properties that will be passed to
- * the <code>javax.mail.Session</code> instance. You need to refer to the javamail documentation to see a list of the available
+ * the <code>jakarta.mail.Session</code> instance. You need to refer to the javamail documentation to see a list of the available
  * properties and meanings.
  * </p>
  */
